@@ -158,9 +158,8 @@ class Sector(db.Model):
     def format(self):
         return {
                 'id': self.id,
-                'name': self.name,
-                'gender': self.gender,
-                'age': self.age
+                'nombre': self.nombre,
+                'zip_code': self.zipCode,
         }
     
     def insert(self):

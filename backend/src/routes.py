@@ -30,7 +30,24 @@ def get_materiales():
     else:
         return jsonify({
                             'success': False,
-                            'materiales': "Materiales no disponibles"
+                            'mensaje': "Materiales no disponibles"
+                            })
+@app.route('/sectores')
+def get_sectores():
+    sectores = Sector.query.all()
+    response = {}
+    for sector in sectores:
+        response[sector.id] = sector.format()
+    error = False
+    if len(response) > 0:
+        return jsonify({
+                            'success': True,
+                            'sectores': response
+                            })
+    else:
+        return jsonify({
+                            'success': False,
+                            'mensaje': "Sectores no disponibles"
                             })
 @app.route('/eco-amigos')
 def get_ecoAmigos():
