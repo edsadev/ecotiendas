@@ -20,7 +20,7 @@ def get_materiales():
     materiales = Material.query.all()
     response = {}
     for material in materiales:
-        response[material.nombre] = material.format()
+        response[material.id] = material.format()
     error = False
     if len(response) > 0:
         return jsonify({
@@ -48,7 +48,7 @@ def get_ecoAmigos():
                             })
 
 @app.route('/login', methods=['POST'])
-def obtener_usuario():
+def login():
     error = 'd'
     response = {}
     data = request.data
@@ -68,7 +68,7 @@ def obtener_usuario():
                         'id_ecotiendas': [ecotienda.id for ecotienda in ecotiendas]
                         }
             elif usuario.tipo == "ecoamigo":
-                ecoamigo = EcoAmigo.query.filter(EcoAmigo.usuario_id == usuario_id).first()
+                ecoamigo = EcoAmigo.query.filter(EcoAmigo.usuario_id == usuario.id).first()
                 response = {
                         'succes': True,
                         'tipo': usuario.tipo,
@@ -95,24 +95,44 @@ def crear_ecoAmigo():
     error = False
     data = request.data
     data_dictionary = json.loads(data)
-
-    try:
-        cedula = data_dictionary["cedula"]
-        nombre = data_dictionary["nombre"]
-        apellido = data_dictionary["apellido"]
-        direccion = data_dictionary["direccion"]
-        genero = data_dictionary["genero"]
-        correo = data_dictionary["correo"]
-        telefono = data_dictionary["telefono"]
-        usuario = data_dictionary["usuario"]
-        contraseña =data_dictionary["contraseña"]
-        ecoAmigo = EcoAmigo(cedula = cedula, nombre = nombre, apellido = apellido, direccion = direccion, genero = genero, correo = correo,
-                            telefono = telefono, usuario = usuario, contraseña = contraseña)
-        ecoAmigo.insert()
-    except:
-        error = True
-        EcoAmigo.rollback()
-        print(sys.exc_info())
+    cedula = data_dictionary["cedula"]
+    nombre = data_dictionary["nombre"]
+    apellido = data_dictionary["apellido"]
+    direccion = data_dictionary["direccion"]
+    genero = data_dictionary["genero"]
+    correo = data_dictionary["correo"]
+    telefono = data_dictionary["telefono"]
+    usuario = data_dictionary["usuario"]
+    contraseña = data_dictionary["contraseña"]
+    sector_id = data_dictionary["sector"]
+    tipo = "ecoamigo"
+    if Usuario.query.filter(Usuario.usuario == usuario).first():
+        return jsonify({
+                        'success': False,
+                        'mensaje': "Usuario ya existe"
+                        })
+    elif EcoAmigo.query.filter(EcoAmigo.cedula == cedula).first():
+        return jsonify({
+                        'success': False,
+                        'mensaje': "Cedula ya existe"
+                        })
+    else:
+        try: 
+            usuario = Usuario(usuario = usuario, contraseña = contraseña, tipo = tipo)
+            usuario.insert()
+        except:
+            error = True
+            Usuario.rollback()
+            print(sys.exc_info())
+        try:
+            
+            ecoAmigo = EcoAmigo(cedula = cedula, nombre = nombre, apellido = apellido, direccion = direccion, genero = genero, correo = correo,
+                                telefono = telefono, sector_id = sector_id, usuario_id = usuario.id)
+            ecoAmigo.insert()
+        except:
+            error = True
+            EcoAmigo.rollback()
+            print(sys.exc_info())
 
     if error:
         abort(422)
@@ -121,4 +141,54 @@ def crear_ecoAmigo():
                         'success': True,
                         'ecoAmigo': ecoAmigo.format()
                         })
+@app.route('/eco-admin', methods = ['POST'])
+def crear_ecoAdmin():
+    error = False
+    data = request.data
+    data_dictionary = json.loads(data)
+    cedula = data_dictionary["cedula"]
+    nombre = data_dictionary["nombre"]
+    apellido = data_dictionary["apellido"]
+    direccion = data_dictionary["direccion"]
+    genero = data_dictionary["genero"]
+    correo = data_dictionary["correo"]
+    telefono = data_dictionary["telefono"]
+    usuario = data_dictionary["usuario"]
+    contraseña = data_dictionary["contraseña"]
+    sector_id = data_dictionary["sector"]
+    tipo = "ecoadmin"
+    if Usuario.query.filter(Usuario.usuario == usuario).first():
+        return jsonify({
+                        'success': False,
+                        'mensaje': "Usuario ya existe"
+                        })
+    elif EcoAmigo.query.filter(EcoAmigo.cedula == cedula).first():
+        return jsonify({
+                        'success': False,
+                        'mensaje': "Cedula ya existe"
+                        })
+    else:
+        try: 
+            usuario = Usuario(usuario = usuario, contraseña = contraseña, tipo = tipo)
+            usuario.insert()
+        except:
+            error = True
+            Usuario.rollback()
+            print(sys.exc_info())
+        try:
+            
+            ecoAdmin = EcoAdmin(cedula = cedula, nombre = nombre, apellido = apellido, direccion = direccion, genero = genero, correo = correo,
+                                telefono = telefono, sector_id = sector_id, usuario_id = usuario.id)
+            ecoAdmin.insert()
+        except:
+            error = True
+            EcoAmigo.rollback()
+            print(sys.exc_info())
 
+    if error:
+        abort(422)
+    else:
+        return jsonify({
+                        'success': True,
+                        'ecoAdmin': ecoAdmin.format()
+                        })

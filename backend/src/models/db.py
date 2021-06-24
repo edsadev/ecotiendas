@@ -79,9 +79,8 @@ class EcoAdmin(db.Model):
     def format(self):
         return {
                 'id': self.id,
-                'name': self.name,
-                'gender': self.gender,
-                'age': self.age
+                'nombre': self.nombre,
+                'cedula': self.cedula
         }
     
     def insert(self):
@@ -306,7 +305,7 @@ class Material(db.Model):
     def format(self):
         return {
                 'id': self.id,
-                'detalle': self.detalle,
+                'nombre': self.nombre,
                 'ecopuntos': self.ecopuntos,
                 'tipo_material_id': self.tipo_material_id
         }
