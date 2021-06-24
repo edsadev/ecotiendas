@@ -80,7 +80,8 @@ class EcoAdmin(db.Model):
         return {
                 'id': self.id,
                 'nombre': self.nombre,
-                'cedula': self.cedula
+                'cedula': self.cedula,
+                'apellido': self.apellido
         }
     
     def insert(self):

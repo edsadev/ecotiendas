@@ -61,7 +61,21 @@ def get_ecoAmigos():
     else:
         return jsonify({
                             'success': False,
-                            'ecoamigos': "ecoamigos no disponibles"
+                            'mensaje': "ecoamigos no disponibles"
+                            })
+@app.route('/eco-admin')
+def get_ecoAdmin():
+    ecoadmins = EcoAdmin.query.all()
+    response = [ecoadmin.format() for ecoadmin in ecoadmins]
+    if len(response) > 0:
+        return jsonify({
+                            'success': True,
+                            'ecoadmins': response
+                            })
+    else:
+        return jsonify({
+                            'success': False,
+                            'mensaje': "ecoadmins no disponibles"
                             })
 
 @app.route('/login', methods=['POST'])
