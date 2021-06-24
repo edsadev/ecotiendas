@@ -209,3 +209,41 @@ def crear_ecoAdmin():
                         'success': True,
                         'ecoAdmin': ecoAdmin.format()
                         })
+
+@app.route('/eco-tienda', methods = ['POST'])
+def crear_ecoTienda():
+    error = False
+    data = request.data
+    print(data)
+    data_dictionary = json.loads(data)
+    print(data_dictionary)
+    latitud = data_dictionary["latitud"]
+    longitud = data_dictionary["longitud"]
+    capacidad_maxima_m3 = data_dictionary["capacidad_maxima_m3"]
+    capacidad_maxima_kg = data_dictionary["capacidad_maxima_kg"]
+    cantidad_actual_m3 = data_dictionary["cantidad_actual_m3"]
+    cantidad_actual_kg = data_dictionary["cantidad_actual_kg"]
+    ecoadmin_id = data_dictionary["ecoadmin"]
+    sectores_id = data_dictionary["sector"]
+
+    try: 
+        ecotienda = EcoTienda(latitud = latitud, longitud = longitud, 
+                              capacidad_maxima_m3 = capacidad_maxima_m3, 
+                              capacidad_maxima_kg = capacidad_maxima_kg, 
+                              cantidad_actual_m3 = cantidad_actual_m3,
+                              cantidad_actual_kg = cantidad_actual_kg,
+                              ecoadmin_id = ecoadmin_id,
+                              sectores_id = sectores_id
+                              )
+        ecotienda.insert()
+    except:
+        error = True
+        EcoTienda.rollback()
+        print(sys.exc_info())
+    if error:
+        abort(422)
+    else:
+        return jsonify({
+                        'success': True,
+                        'ecoTienda': ecotienda.format()
+                        })

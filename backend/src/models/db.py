@@ -107,7 +107,7 @@ class EcoTienda(db.Model):
     longitud = db.Column(db.String, nullable = False)
     capacidad_maxima_m3 = db.Column(db.Integer, nullable = False)
     capacidad_maxima_kg = db.Column(db.Integer, nullable = False)
-    cantidad_acutal_m3 = db.Column(db.Integer, nullable = False)
+    cantidad_actual_m3 = db.Column(db.Integer, nullable = False)
     cantidad_actual_kg = db.Column(db.Integer, nullable = False)
     ecoadmin_id = db.Column(db.Integer, db.ForeignKey('ecoAdmins.id'), nullable = False)
     sectores_id = db.Column(db.Integer, db.ForeignKey('sectores.id'), nullable = False)
