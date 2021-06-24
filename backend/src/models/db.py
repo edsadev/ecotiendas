@@ -34,14 +34,14 @@ class EcoAmigo(db.Model):
     ecopuntos = db.Column(db.Integer, default = 0)
     sector_id = db.Column(db.Integer, db.ForeignKey('sectores.id'), nullable = False)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable = False)
-    tickets = db.relationship("Ticket", backref="ecoamigo")
+    tickets = db.relationship("Tickets", backref="ecoamigo")
     usuario = db.relationship("Usuario", backref=db.backref("ecoamigo", uselist=False))
     def format(self):
         return {
                 'id': self.id,
                 'nombre': self.nombre,
                 'genero': self.genero,
-                'usuario': self.usuario
+                'correo': self.correo
         }
     
     def insert(self):
@@ -112,14 +112,23 @@ class EcoTienda(db.Model):
     cantidad_actual_kg = db.Column(db.Integer, nullable = False)
     ecoadmin_id = db.Column(db.Integer, db.ForeignKey('ecoAdmins.id'), nullable = False)
     sectores_id = db.Column(db.Integer, db.ForeignKey('sectores.id'), nullable = False)
-    tickets = db.relationship("Ticket", backref="ecotienda")
+    tickets = db.relationship("Tickets", backref="ecotienda")
 
     def format(self):
         return {
                 'id': self.id,
-                'name': self.name,
-                'gender': self.gender,
-                'age': self.age
+                'capacidad_maxima_m3': self.capacidad_maxima_m3,
+                'capacidad_maxima_kg': self.capacidad_maxima_kg,
+                'cantidad_actual_m3': self.cantidad_actual_m3,
+                'cantidad_actual_kg': self.cantidad_actual_kg
+        }
+    
+    def posicion(self):
+        return {self.id:
+                        {
+                            'latitud': self.latitud,
+                            'longitud': self.longitud
+                        }
         }
     
     def insert(self):
@@ -178,6 +187,7 @@ class Usuario(db.Model):
     usuario = db.Column(db.String, nullable = False)
     contraseña = db.Column(db.String, nullable = False)
     tipo = db.Column(db.String, nullable = False)
+
     def format(self):
         return {
                 'id': self.id,
@@ -296,9 +306,9 @@ class Material(db.Model):
     def format(self):
         return {
                 'id': self.id,
-                'name': self.name,
-                'gender': self.gender,
-                'age': self.age
+                'detalle': self.detalle,
+                'ecopuntos': self.ecopuntos,
+                'tipo_material_id': self.tipo_material_id
         }
     
     def insert(self):

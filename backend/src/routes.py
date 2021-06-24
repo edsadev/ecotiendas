@@ -2,7 +2,7 @@ from flask import Flask, request, abort, jsonify
 import json
 import sys
 from src import app
-from src.models.db import EcoAmigo
+from src.models.db import *
 
 @app.after_request
 def after_request(response):
@@ -15,32 +15,72 @@ def index():
     return jsonify({
         "hola":"Edmundo"
     })
-@app.route('/ecoAmigos')
-def get_ecoAmigos():
-    ecoAmigos = EcoAmigo.query.all()
-    response = [ecoAmigo.format for ecoAmigo in ecoAmigos]
+@app.route('/materiales')
+def get_materiales():
+    materiales = Material.query.all()
+    response = {}
+    for material in materiales:
+        response[material.nombre] = material.format()
+    error = False
     if len(response) > 0:
         return jsonify({
                             'success': True,
-                            'actors': actors_formatted
+                            'materiales': response
                             })
     else:
         return jsonify({
                             'success': False,
-                            'actors': "ecoAmigos no disponibles"
+                            'materiales': "Materiales no disponibles"
+                            })
+@app.route('/eco-amigos')
+def get_ecoAmigos():
+    ecoamigos = EcoAmigo.query.all()
+    response = [ecoAmigo.format() for ecoAmigo in ecoamigos]
+    if len(response) > 0:
+        return jsonify({
+                            'success': True,
+                            'ecoamigos': response
+                            })
+    else:
+        return jsonify({
+                            'success': False,
+                            'ecoamigos': "ecoamigos no disponibles"
                             })
 
 @app.route('/login', methods=['POST'])
-def obtener_ecoAmigo():
+def obtener_usuario():
     error = 'd'
+    response = {}
     data = request.data
     data_dictionary = json.loads(data)
     print(data_dictionary)
     try:
-        ecoAmigo = EcoAmigo.query.filter(EcoAmigo.usuario == data_dictionary["user"]).first()
+        usuario = Usuario.query.filter(Usuario.usuario == data_dictionary["user"]).first()
         contraseña = data_dictionary['pass']
-        if ecoAmigo.contraseña == contraseña:
+        if usuario.contraseña == contraseña:
             error = False
+            if usuario.tipo == "ecoadmin":
+                ecoadmin = EcoAdmin.query.filter(EcoAdmin.usuario_id == usuario.id).first()
+                ecotiendas = EcoTienda.query.filter(EcoTienda.ecoadmin_id == ecoadmin.id)
+                response = {
+                        'succes': True,
+                        'tipo': usuario.tipo,
+                        'id_ecotiendas': [ecotienda.id for ecotienda in ecotiendas]
+                        }
+            elif usuario.tipo == "ecoamigo":
+                ecoamigo = EcoAmigo.query.filter(EcoAmigo.usuario_id == usuario_id).first()
+                response = {
+                        'succes': True,
+                        'tipo': usuario.tipo,
+                        'id_ecotamigo': ecoamigo.id
+                        }
+            else:
+                ecotiendas = EcoTiendas.query.all()
+                
+                response = {
+                    'succes': True,
+                    'ecotiendas': [ecotienda.format() for ecotienda in ecotiendas]
+                }
     except:        
         error = True
         print(sys.exc_info())
@@ -48,10 +88,7 @@ def obtener_ecoAmigo():
     if error:
         abort(404)
     else:
-        return jsonify({
-                        'succes': True,
-                        'id_usuario': ecoAmigo.id
-                        })
+        return jsonify(response)
 
 @app.route('/eco-amigos', methods = ['POST'])
 def crear_ecoAmigo():
@@ -85,5 +122,3 @@ def crear_ecoAmigo():
                         'ecoAmigo': ecoAmigo.format()
                         })
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=500, debug=True)
