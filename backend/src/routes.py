@@ -30,7 +30,7 @@ def get_ecoAmigos():
                             'actors': "ecoAmigos no disponibles"
                             })
 
-@app.route('/eco-amigo/login', methods=['POST'])
+@app.route('/login', methods=['POST'])
 def obtener_ecoAmigo():
     error = 'd'
     data = request.data
