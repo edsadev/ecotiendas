@@ -77,7 +77,23 @@ def get_ecoAdmin():
                             'success': False,
                             'mensaje': "ecoadmins no disponibles"
                             })
+@app.route('/validacion-cedula', methods = ['POST'])
+def get_cedulas():
+    ecoamigos = EcoAmigo.query.all()
+    data = request.data
+    data_dictionary = json.loads(data)
+    ecoamigo = EcoAmigo.query.filter(EcoAmigo.cedula == data_dictionary["cedula"]).first()
 
+    if ecoamigo:
+        return jsonify({
+                            'success': True,
+                            'mensaje': "Cedula existe"
+                            })
+    else:
+        return jsonify({
+                            'success': False,
+                            'mensaje': "Cedula no existe"
+                            })
 @app.route('/login', methods=['POST'])
 def login():
     error = 'd'
