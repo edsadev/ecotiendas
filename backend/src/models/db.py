@@ -24,7 +24,8 @@ from datetime import datetime
 class EcoAmigo(db.Model):
     __tablename__ = "ecoAmigos"
     id = db.Column(db.Integer, primary_key = True)
-    cedula = db.Column(db.Integer, nullable = False)
+    cedula = db.Column(db.String, nullable = False)
+    fecha_nacimiento = db.Column(db.String)
     nombre = db.Column(db.String)
     apellido = db.Column(db.String)
     direccion = db.Column(db.String)
@@ -65,7 +66,8 @@ class EcoAmigo(db.Model):
 class EcoAdmin(db.Model):
     __tablename__ = "ecoAdmins"
     id = db.Column(db.Integer, primary_key = True)
-    cedula = db.Column(db.Integer, nullable = False)
+    cedula = db.Column(db.String, nullable = False)
+    fecha_nacimiento = db.Column(db.String)
     nombre = db.Column(db.String)
     apellido = db.Column(db.String)
     direccion = db.Column(db.String)
@@ -245,32 +247,24 @@ class Almacen(db.Model):
     
     def __repre__(self):
         return json.dumps(self.format())
-detalle_ticket = db.Table('detalle_ticket',
-    db.Column('ticket_id', db.Integer, db.ForeignKey('tickets.id'), primary_key=True),
-    db.Column('material_id', db.Integer, db.ForeignKey('materiales.id'), primary_key=True),
-    db.Column('cantidad_kg', db.Integer, nullable = False),
-    db.Column('ecopuntos', db.Integer, nullable = False),
-    db.Column('cantidad_m3', db.Integer, nullable = False)
-)
-class Tickets(db.Model):
-    __tablename__ = 'tickets'
+
+class DetalleTickets(db.Model):
+    __tablename__ = "detalle_ticket"
     id = db.Column(db.Integer, primary_key = True)
-    fecha = db.Column(db.DateTime, nullable = False, default = datetime.strftime(datetime.today(), "%b %d %Y"))
-    numero_semana = db.Column(db.String, nullable = False, default =datetime.now().strftime("%W"))
-    entrada = db.Column(db.Boolean, nullable = False)
-    total_kg = db.Column(db.Integer, nullable = False)
-    total_m3 = db.Column(db.Integer, nullable = False)
-    total_ecopuntos = db.Column(db.Integer, nullable = False)
-    ecoamigo_id = db.Column(db.Integer, db.ForeignKey('ecoAmigos.id'), nullable = False)
-    ecotienda_id = db.Column(db.Integer, db.ForeignKey('ecoTiendas.id'), nullable = False)
-    materiales = db.relationship('Material', secondary = detalle_ticket, backref=db.backref('tickets', lazy=True))
+    ticket_id = db.Column(db.Integer, db.ForeignKey('tickets.id'))
+    material_id = db.Column(db.Integer, db.ForeignKey('materiales.id'))
+    cantidad_kg = db.Column(db.Integer, nullable = False)
+    ecopuntos = db.Column( db.Integer, nullable = False)
+    cantidad_m3 = db.Column(db.Integer, nullable = False)
+    detalle = db.relationship('Material')
 
     def format(self):
         return {
                 'id': self.id,
-                'name': self.name,
-                'gender': self.gender,
-                'age': self.age
+                'nombre': self.nombre,
+                'ecopuntos': self.ecopuntos,
+                'tipo_material_id': self.tipo_material_id,
+                'cantidad_m3': self.cantidad_m3
         }
     
     def insert(self):
@@ -290,6 +284,49 @@ class Tickets(db.Model):
     def __repre__(self):
         return json.dumps(self.format())
 
+class Tickets(db.Model):
+    __tablename__ = 'tickets'
+    id = db.Column(db.Integer, primary_key = True)
+    fecha = db.Column(db.DateTime, nullable = True, default = datetime.strftime(datetime.today(), "%b %d %Y"))
+    numero_semana = db.Column(db.String, nullable = False, default =datetime.now().strftime("%W"))
+    cliente = db.Column(db.String)
+    entrada = db.Column(db.Boolean, nullable = False)
+    total_kg = db.Column(db.Integer, nullable = False)
+    total_m3 = db.Column(db.Integer, nullable = False)
+    total_ecopuntos = db.Column(db.Integer, nullable = False)
+    ecoamigo_id = db.Column(db.Integer, db.ForeignKey('ecoAmigos.id'), nullable = False)
+    ecotienda_id = db.Column(db.Integer, db.ForeignKey('ecoTiendas.id'), nullable = False)
+    materiales = db.relationship('DetalleTickets')
+
+    def format(self):
+        return {
+                'id': self.id,
+                'fecha': self.fecha,
+                'entrada': self.entrada,
+                'total_kg': self.total_kg,
+                'total_ecopuntos': self.total_ecopuntos,
+                'cliente': self.cliente
+        }
+    
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+    
+    def update(self):
+        db.session.commit()
+    
+    def rollback():
+        db.session.rollback()
+    
+    def __repre__(self):
+        return json.dumps(self.format())
+
+    
+
 
 class Material(db.Model):
     __tablename__ = 'materiales'
@@ -298,6 +335,7 @@ class Material(db.Model):
     detalle = db.Column(db.String, nullable = False)
     codigo = db.Column(db.String, nullable = False)
     ecopuntos = db.Column(db.Integer, nullable = False)
+    cantidad_m3 = db.Column(db.Integer, nullable = True)
     valor_max = db.Column(db.Integer, nullable = False)
     valor_min = db.Column(db.Integer, nullable = False)
     tipo_material_id = db.Column(db.Integer, db.ForeignKey('tipoMateriales.id'), nullable = False)
@@ -307,7 +345,8 @@ class Material(db.Model):
                 'id': self.id,
                 'nombre': self.nombre,
                 'ecopuntos': self.ecopuntos,
-                'tipo_material_id': self.tipo_material_id
+                'tipo_material_id': self.tipo_material_id,
+                'cantidad_m3': self.cantidad_m3
         }
     
     def insert(self):

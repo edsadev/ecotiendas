@@ -3,6 +3,9 @@ import json
 import sys
 from src import app
 from src.models.db import *
+from src.prueba import enviar_email
+import email.message
+import smtplib
 
 @app.after_request
 def after_request(response):
@@ -87,7 +90,8 @@ def get_cedulas():
     if ecoamigo:
         return jsonify({
                             'success': True,
-                            'mensaje': "Cedula existe"
+                            'mensaje': "Cedula existe",
+                            'id_usuario': ecoamigo.id
                             })
     else:
         return jsonify({
@@ -108,18 +112,18 @@ def login():
             error = False
             if usuario.tipo == "ecoadmin":
                 ecoadmin = EcoAdmin.query.filter(EcoAdmin.usuario_id == usuario.id).first()
-                ecotiendas = EcoTienda.query.filter(EcoTienda.ecoadmin_id == ecoadmin.id)
+                ecotienda = EcoTienda.query.filter(EcoTienda.ecoadmin_id == ecoadmin.id).first()
                 response = {
                         'succes': True,
-                        'tipo': usuario.tipo,
-                        'id_ecotiendas': [ecotienda.id for ecotienda in ecotiendas]
+                        'rango': usuario.tipo,
+                        'id': ecotienda.id 
                         }
             elif usuario.tipo == "ecoamigo":
                 ecoamigo = EcoAmigo.query.filter(EcoAmigo.usuario_id == usuario.id).first()
                 response = {
                         'succes': True,
-                        'tipo': usuario.tipo,
-                        'id_ecotamigo': ecoamigo.id
+                        'rango': usuario.tipo,
+                        'id': ecoamigo.id
                         }
             else:
                 ecotiendas = EcoTiendas.query.all()
@@ -141,6 +145,7 @@ def login():
 def crear_ecoAmigo():
     error = False
     data = request.data
+    print(data)
     data_dictionary = json.loads(data)
     cedula = data_dictionary["cedula"]
     nombre = data_dictionary["nombre"]
@@ -148,7 +153,8 @@ def crear_ecoAmigo():
     direccion = data_dictionary["direccion"]
     genero = data_dictionary["genero"]
     correo = data_dictionary["correo"]
-    telefono = data_dictionary["telefono"]
+    telefono = data_dictionary["celular"]
+    fecha_nacimiento = data_dictionary["fecha_nacimiento"]
     usuario = data_dictionary["usuario"]
     contraseña = data_dictionary["contraseña"]
     sector_id = data_dictionary["sector"]
@@ -156,12 +162,17 @@ def crear_ecoAmigo():
     if Usuario.query.filter(Usuario.usuario == usuario).first():
         return jsonify({
                         'success': False,
-                        'mensaje': "Usuario ya existe"
+                        'mensaje': "Este nombre de usuario ya está en uso"
                         })
     elif EcoAmigo.query.filter(EcoAmigo.cedula == cedula).first():
         return jsonify({
                         'success': False,
-                        'mensaje': "Cedula ya existe"
+                        'mensaje': "Esta cedula ya existe"
+                        })
+    elif EcoAmigo.query.filter(EcoAmigo.correo == correo).first():
+        return jsonify({
+                        'success': False,
+                        'mensaje': "Este correo ya está registrado"
                         })
     else:
         try: 
@@ -173,7 +184,7 @@ def crear_ecoAmigo():
             print(sys.exc_info())
         try:
             
-            ecoAmigo = EcoAmigo(cedula = cedula, nombre = nombre, apellido = apellido, direccion = direccion, genero = genero, correo = correo,
+            ecoAmigo = EcoAmigo(cedula = cedula, fecha_nacimiento = fecha_nacimiento, nombre = nombre, apellido = apellido, direccion = direccion, genero = genero, correo = correo,
                                 telefono = telefono, sector_id = sector_id, usuario_id = usuario.id)
             ecoAmigo.insert()
         except:
@@ -199,7 +210,8 @@ def crear_ecoAdmin():
     direccion = data_dictionary["direccion"]
     genero = data_dictionary["genero"]
     correo = data_dictionary["correo"]
-    telefono = data_dictionary["telefono"]
+    telefono = data_dictionary["celular"]
+    fecha_nacimiento = data_dictionary["fecha_nacimiento"]
     usuario = data_dictionary["usuario"]
     contraseña = data_dictionary["contraseña"]
     sector_id = data_dictionary["sector"]
@@ -224,7 +236,7 @@ def crear_ecoAdmin():
             print(sys.exc_info())
         try:
             
-            ecoAdmin = EcoAdmin(cedula = cedula, nombre = nombre, apellido = apellido, direccion = direccion, genero = genero, correo = correo,
+            ecoAdmin = EcoAdmin(cedula = cedula, fecha_nacimiento = fecha_nacimiento, nombre = nombre, apellido = apellido, direccion = direccion, genero = genero, correo = correo,
                                 telefono = telefono, sector_id = sector_id, usuario_id = usuario.id)
             ecoAdmin.insert()
         except:
@@ -244,9 +256,7 @@ def crear_ecoAdmin():
 def crear_ecoTienda():
     error = False
     data = request.data
-    print(data)
     data_dictionary = json.loads(data)
-    print(data_dictionary)
     latitud = data_dictionary["latitud"]
     longitud = data_dictionary["longitud"]
     capacidad_maxima_m3 = data_dictionary["capacidad_maxima_m3"]
@@ -277,3 +287,70 @@ def crear_ecoTienda():
                         'success': True,
                         'ecoTienda': ecotienda.format()
                         })
+@app.route('/crear-ticket', methods = ['POST'])
+def crear_ticket():
+    error = False
+    data = request.data
+    print(data)
+    data_dictionary = json.loads(data)
+    ecoamigo_id = data_dictionary['ecoamigo']
+    ecotienda_id = data_dictionary['ecotienda']
+    entrada = data_dictionary['entrada']
+    total_kg = data_dictionary['total_kg']
+    total_m3 = data_dictionary['total_m3']
+    total_ecopuntos = data_dictionary['total_ecopuntos']
+    materiales = data_dictionary['materiales']
+    cliente = EcoAmigo.query.filter(EcoAmigo.id == ecoamigo_id).first()
+    try: 
+        ticket = Tickets(entrada = entrada, total_kg = total_kg, total_m3 = total_m3, total_ecopuntos = total_ecopuntos,
+                            ecoamigo_id = ecoamigo_id, ecotienda_id = ecotienda_id, cliente = f"{cliente.nombre} {cliente.apellido}"  )
+        ticket.insert()
+    except:
+        error = True
+        Tickets.rollback()
+        print(sys.exc_info())
+
+    try:
+        for material in materiales:
+            ticket_id = ticket.id
+            material_id = material['id']
+            cantidad_kg = material['cantidad_kg']
+            ecopuntos = material['ecopuntos']
+            cantidad_m3  = material['cantidad_m3']
+            detalle = DetalleTickets(ticket_id = ticket_id, material_id = material_id, cantidad_kg = cantidad_kg, 
+                                    ecopuntos = ecopuntos, cantidad_m3 = cantidad_m3)
+            detalle.insert()
+    except:
+        error = True
+        DetalleTickets.rollback()
+        print(sys.exc_info())
+    if error:
+        abort(422)
+    else:
+        enviar_email(cliente.correo)
+        return jsonify({
+                        'success': True,
+                        'ticket': ticket.format()
+                        })
+
+    
+@app.route('/historial', methods = ['POST'])
+def historial():
+    error = False
+    data = request.data
+    print(data)
+    data_dictionary = json.loads(data)
+    ecotienda_id = data_dictionary['ecotienda']
+    tickets = Tickets.query.filter(Tickets.ecotienda_id == ecotienda_id)
+    response = [ticket.format() for ticket in tickets]
+    if len(response) > 0:
+        return jsonify({
+                        'success': True,
+                        'historial': response
+                        })
+    else:
+        return jsonify({
+                            'success': False,
+                            'mensaje': "Historial no disponibles"
+                            })
+    
