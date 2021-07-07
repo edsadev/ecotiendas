@@ -8,7 +8,7 @@
 const char* ssid = "NETLIFE";
 const char* password = "123456789";
 int val = 0;
-int ecotienda_id = 1:
+int ecotienda_id = 3;
  
 void setup() 
 {
