@@ -6,6 +6,7 @@ from src.models.db import *
 from src.prueba import enviar_email
 import email.message
 import smtplib
+from sqlalchemy import and_
 
 @app.after_request
 def after_request(response):
@@ -291,43 +292,104 @@ def crear_ecoTienda():
 def crear_ticket():
     error = False
     data = request.data
-    print(data)
     data_dictionary = json.loads(data)
-    ecoamigo_id = data_dictionary['ecoamigo']
     ecotienda_id = data_dictionary['ecotienda']
     entrada = data_dictionary['entrada']
     total_kg = data_dictionary['total_kg']
     total_m3 = data_dictionary['total_m3']
-    total_ecopuntos = data_dictionary['total_ecopuntos']
     materiales = data_dictionary['materiales']
-    cliente = EcoAmigo.query.filter(EcoAmigo.id == ecoamigo_id).first()
-    try: 
-        ticket = Tickets(entrada = entrada, total_kg = total_kg, total_m3 = total_m3, total_ecopuntos = total_ecopuntos,
-                            ecoamigo_id = ecoamigo_id, ecotienda_id = ecotienda_id, cliente = f"{cliente.nombre} {cliente.apellido}"  )
-        ticket.insert()
-    except:
-        error = True
-        Tickets.rollback()
-        print(sys.exc_info())
+    ecotienda = EcoTienda.query.filter(EcoTienda.id == ecotienda_id).first()
+    cantidad_neta_m3 = ecotienda.capacidad_maxima_m3 - ecotienda.cantidad_actual_m3 
+    cantidad_neta_kg = ecotienda.capacidad_maxima_kg - ecotienda.cantidad_actual_kg
+ 
+    if entrada:
+        if total_kg > cantidad_neta_kg:
+            return jsonify({
+                            'success': False,
+                            'mensaje': "Sobrepasamos la cantidad en KG"
+                            })
+        elif total_m3 > cantidad_neta_m3:
+            return jsonify({
+                            'success': False,
+                            'mensaje': "Sobrepasamos la cantidad en M3"
+                            })
 
-    try:
-        for material in materiales:
-            ticket_id = ticket.id
-            material_id = material['id']
-            cantidad_kg = material['cantidad_kg']
-            ecopuntos = material['ecopuntos']
-            cantidad_m3  = material['cantidad_m3']
-            detalle = DetalleTickets(ticket_id = ticket_id, material_id = material_id, cantidad_kg = cantidad_kg, 
-                                    ecopuntos = ecopuntos, cantidad_m3 = cantidad_m3)
-            detalle.insert()
-    except:
-        error = True
-        DetalleTickets.rollback()
-        print(sys.exc_info())
+        total_ecopuntos = data_dictionary['total_ecopuntos']
+        cliente_id = data_dictionary['ecoamigo']
+        cliente = EcoAmigo.query.filter(EcoAmigo.id == cliente_id).first()
+        try: 
+            ticket = Tickets(entrada = entrada, total_kg = total_kg, total_m3 = total_m3, total_ecopuntos = total_ecopuntos,
+                                ecoamigo_id = cliente_id, ecotienda_id = ecotienda_id, cliente = f"{cliente.nombre} {cliente.apellido}"  )
+            ticket.insert()
+        except:
+            error = True
+            Tickets.rollback()
+            print(sys.exc_info())
+
+        try:
+            for material in materiales:
+                ticket_id = ticket.id
+                material_id = material['id']
+                cantidad_kg = material['cantidad_kg']
+                ecopuntos = material['ecopuntos']
+                cantidad_m3  = material['cantidad_m3']
+                detalle = DetalleTickets(ticket_id = ticket_id, material_id = material_id, cantidad_kg = cantidad_kg, 
+                                        ecopuntos = ecopuntos, cantidad_m3 = cantidad_m3)
+                detalle.insert()
+            
+            ecotienda.cantidad_actual_kg += total_kg
+            ecotienda.cantidad_actual_m3 += total_m3
+            cliente.ecopuntos += total_ecopuntos
+            ecotienda.update()
+            cliente.update()
+        
+        except:
+            error = True
+            DetalleTickets.rollback()
+            print(sys.exc_info())
+        enviar_email(cliente.correo)
+    else:
+        if total_kg > ecotienda.cantidad_actual_kg:
+            return jsonify({
+                            'success': False,
+                            'mensaje': "No tienes tanto material Kg"
+                            })
+        elif total_m3 > ecotienda.cantidad_actual_m3:
+            return jsonify({
+                            'success': False,
+                            'mensaje': "No tienes tanto material M3"
+                            })
+        try: 
+            ticket = Tickets(entrada = entrada, total_kg = total_kg, total_m3 = total_m3, 
+                                ecotienda_id = ecotienda_id)
+            ticket.insert()
+        except:
+            error = True
+            Tickets.rollback()
+            print(sys.exc_info())
+
+        try:
+            for material in materiales:
+                ticket_id = ticket.id
+                material_id = material['id']
+                cantidad_kg = material['cantidad_kg']
+                ecopuntos = material['ecopuntos']
+                cantidad_m3  = material['cantidad_m3']
+                detalle = DetalleTickets(ticket_id = ticket_id, material_id = material_id, cantidad_kg = cantidad_kg, 
+                                        ecopuntos = ecopuntos, cantidad_m3 = cantidad_m3)
+                detalle.insert()
+
+            ecotienda.cantidad_actual_kg -= total_kg
+            ecotienda.cantidad_actual_m3 -= total_m3
+            ecotienda.update()
+        except:
+            error = True
+            DetalleTickets.rollback()
+            print(sys.exc_info())
+                
     if error:
         abort(422)
     else:
-        enviar_email(cliente.correo)
         return jsonify({
                         'success': True,
                         'ticket': ticket.format()
@@ -338,9 +400,9 @@ def crear_ticket():
 def historial():
     error = False
     data = request.data
-    print(data)
     data_dictionary = json.loads(data)
     ecotienda_id = data_dictionary['ecotienda']
+    print(ecotienda_id)
     tickets = Tickets.query.filter(Tickets.ecotienda_id == ecotienda_id)
     response = [ticket.format() for ticket in tickets]
     if len(response) > 0:
@@ -353,4 +415,79 @@ def historial():
                             'success': False,
                             'mensaje': "Historial no disponibles"
                             })
-    
+
+@app.route('/record', methods = ['POST'])
+def ingresar_peso():
+    error = False
+    print(request.data)
+    print(json.loads(request.data))
+    print(request.get_data().decode("utf-8"))
+    parametros = request.get_data().decode("utf-8").split(',')
+    print(parametros)
+    # ecotienda_id = parametros[0]
+    # peso = parametros[1]
+    # try:
+    #     record = Records(ecotienda_id = ecotienda_id, peso = peso)
+    #     record.insert()
+    # except:
+    #     error = True
+    #     Tickets.rollback()
+    #     print(sys.exc_info())
+    # if error:
+    #     abort(422)
+    # else:
+    #     return jsonify({
+    #                     'success': True,
+    #                     'record': record.format()
+    #                     })
+
+@app.route('/balanza', methods = ['POST'])
+def obtener_peso():
+    error = False
+    data = request.data
+    data_dictionary = json.loads(data)
+    ecotienda_id = data_dictionary["ecotienda_id"]
+    record = Records.query.filter(Records.ecotienda_id == ecotienda_id).last()
+    if record:
+        return jsonify({
+                        'success': True,
+                        'peso': record.peso
+                        })
+    else: 
+        return jsonify({
+                        'success': False,
+                        'record': "Tenemos un problema al cargar el peso de la balanza"
+                        })
+
+
+@app.route('/velocimetro', methods = ['POST'])
+def velocimetro():
+    error = False
+    data = request.data
+    data_dictionary = json.loads(data)
+    ecotienda_id = data_dictionary['ecotienda']
+    ecotienda = EcoTienda.query.filter(EcoTienda.id == ecotienda_id).first()
+    if ecotienda:
+        return jsonify({
+                        'success': True,
+                        'ecotienda': ecotienda.format()
+                        })
+    else: 
+        return jsonify({
+                        'success': False,
+                        'ecotienda': "Data no disponible"
+                        })
+
+@app.route('/meta', methods = ['POST'])
+def meta():
+    error = False
+    data = request.data
+    data_dictionary = json.loads(data)
+    ecotienda_id = data_dictionary["ecotienda_id"]
+    ecotienda = Ecotienda.query.filter(Ecotienda.id == ecotienda_id).first()
+    tickets = Tickets.query.filter(and_(Tickets.ecotienda_id == ecotienda_id, Tickets.fecha))
+    suma = 0
+    for ticket in tickets:
+        suma += ticket
+
+

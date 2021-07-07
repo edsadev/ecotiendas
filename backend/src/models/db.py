@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 import json
 from src import db
 from datetime import datetime
+from sqlalchemy.sql import func
 # db = SQLAlchemy()
 # database_name = os.getenv('DB_NAME',"ecotiendas")
 # user = os.getenv('DB_USER','jamiltorres')
@@ -27,6 +28,7 @@ class EcoAmigo(db.Model):
     cedula = db.Column(db.String, nullable = False)
     fecha_nacimiento = db.Column(db.String)
     nombre = db.Column(db.String)
+    fecha_registro = db.Column(db.DateTime(timezone=True), server_default=func.now())
     apellido = db.Column(db.String)
     direccion = db.Column(db.String)
     genero = db.Column(db.String, nullable = False)
@@ -42,7 +44,8 @@ class EcoAmigo(db.Model):
                 'id': self.id,
                 'nombre': self.nombre,
                 'genero': self.genero,
-                'correo': self.correo
+                'correo': self.correo,
+                'fecha': self.fecha_registro.strftime("%m/%d/%Y, %H:%M:%S")
         }
     
     def insert(self):
@@ -71,6 +74,7 @@ class EcoAdmin(db.Model):
     nombre = db.Column(db.String)
     apellido = db.Column(db.String)
     direccion = db.Column(db.String)
+    fecha_registro = db.Column(db.DateTime(timezone=True), server_default=func.now())
     genero = db.Column(db.String, nullable = False)
     correo = db.Column(db.String, nullable = False)
     telefono = db.Column(db.Integer)
@@ -79,11 +83,13 @@ class EcoAdmin(db.Model):
     ecotiendas = db.relationship("EcoTienda", backref="ecoadmin")
     usuario = db.relationship("Usuario", backref=db.backref("ecoadmin", uselist=False))
     def format(self):
+        print(self.fecha_registro, type(self.fecha_registro))
         return {
                 'id': self.id,
                 'nombre': self.nombre,
                 'cedula': self.cedula,
-                'apellido': self.apellido
+                'apellido': self.apellido,
+                'fecha_registro': self.fecha_registro.strftime("%m/%d/%Y, %H:%M:%S")
         }
     
     def insert(self):
@@ -106,12 +112,14 @@ class EcoAdmin(db.Model):
 class EcoTienda(db.Model):
     __tablename__ = 'ecoTiendas'
     id = db.Column(db.Integer, primary_key = True)
-    latitud = db.Column(String, nullable = False)
+    latitud = db.Column(db.String, nullable = False)
     longitud = db.Column(db.String, nullable = False)
+    fecha_registro = db.Column(db.DateTime(timezone=True), server_default=func.now())
     capacidad_maxima_m3 = db.Column(db.Integer, nullable = False)
     capacidad_maxima_kg = db.Column(db.Integer, nullable = False)
     cantidad_actual_m3 = db.Column(db.Integer, nullable = False)
     cantidad_actual_kg = db.Column(db.Integer, nullable = False)
+    meta_semanal = db.Column(db.Integer)
     ecoadmin_id = db.Column(db.Integer, db.ForeignKey('ecoAdmins.id'), nullable = False)
     sectores_id = db.Column(db.Integer, db.ForeignKey('sectores.id'), nullable = False)
     tickets = db.relationship("Tickets", backref="ecotienda")
@@ -219,6 +227,8 @@ class Almacen(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     cantidad_kg = db.Column(db.Integer, default = 0)
     cantidad_m3 = db.Column(db.Integer, default = 0)
+    cantidad_actual_kg = db.Column(db.Integer, default = 0)
+    cantidad_actual_m3 = db.Column(db.Integer, default = 0)
     ecotienda_id = db.Column(db.Integer, db.ForeignKey('ecoTiendas.id'), nullable = False)
     material_id = db.Column(db.Integer, db.ForeignKey('materiales.id'), nullable = False)
     ecotienda = db.relationship("EcoTienda", backref=db.backref("almacen", uselist=False))
@@ -254,7 +264,7 @@ class DetalleTickets(db.Model):
     ticket_id = db.Column(db.Integer, db.ForeignKey('tickets.id'))
     material_id = db.Column(db.Integer, db.ForeignKey('materiales.id'))
     cantidad_kg = db.Column(db.Integer, nullable = False)
-    ecopuntos = db.Column( db.Integer, nullable = False)
+    ecopuntos = db.Column( db.Integer)
     cantidad_m3 = db.Column(db.Integer, nullable = False)
     detalle = db.relationship('Material')
 
@@ -283,25 +293,54 @@ class DetalleTickets(db.Model):
     
     def __repre__(self):
         return json.dumps(self.format())
+class Records(db.Model):
+    __tablename__ = 'records'
+    id = db.Column(db.Integer, primary_key = True)
+    ecotienda_id = db.Column(db.Integer, db.ForeignKey('ecoTiendas.id'), nullable = False)
+    peso = db.Column(db.Integer, nullable = False)
+
+
+    def format(self):
+        return {
+                'id': self.id,
+                'peso': self.peso
+        }
+    
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+    
+    def update(self):
+        db.session.commit()
+    
+    def rollback():
+        db.session.rollback()
+    
+    def __repre__(self):
+        return json.dumps(self.format())
 
 class Tickets(db.Model):
     __tablename__ = 'tickets'
     id = db.Column(db.Integer, primary_key = True)
-    fecha = db.Column(db.DateTime, nullable = True, default = datetime.strftime(datetime.today(), "%b %d %Y"))
     numero_semana = db.Column(db.String, nullable = False, default =datetime.now().strftime("%W"))
     cliente = db.Column(db.String)
     entrada = db.Column(db.Boolean, nullable = False)
     total_kg = db.Column(db.Integer, nullable = False)
     total_m3 = db.Column(db.Integer, nullable = False)
-    total_ecopuntos = db.Column(db.Integer, nullable = False)
-    ecoamigo_id = db.Column(db.Integer, db.ForeignKey('ecoAmigos.id'), nullable = False)
+    total_ecopuntos = db.Column(db.Integer)
+    ecoamigo_id = db.Column(db.Integer, db.ForeignKey('ecoAmigos.id'))
     ecotienda_id = db.Column(db.Integer, db.ForeignKey('ecoTiendas.id'), nullable = False)
     materiales = db.relationship('DetalleTickets')
+    fecha_registro = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
     def format(self):
         return {
                 'id': self.id,
-                'fecha': self.fecha,
+                'fecha': self.fecha_registro.isoformat(),
                 'entrada': self.entrada,
                 'total_kg': self.total_kg,
                 'total_ecopuntos': self.total_ecopuntos,
