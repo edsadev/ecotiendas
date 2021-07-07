@@ -419,27 +419,24 @@ def historial():
 @app.route('/record', methods = ['POST'])
 def ingresar_peso():
     error = False
-    print(request.data)
-    print(json.loads(request.data))
-    print(request.get_data().decode("utf-8"))
-    parametros = request.get_data().decode("utf-8").split(',')
-    print(parametros)
-    # ecotienda_id = parametros[0]
-    # peso = parametros[1]
-    # try:
-    #     record = Records(ecotienda_id = ecotienda_id, peso = peso)
-    #     record.insert()
-    # except:
-    #     error = True
-    #     Tickets.rollback()
-    #     print(sys.exc_info())
-    # if error:
-    #     abort(422)
-    # else:
-    #     return jsonify({
-    #                     'success': True,
-    #                     'record': record.format()
-    #                     })
+    data = request.data
+    data_dictionary = json.loads(data)
+    ecotienda_id = data_dictionary['ecotienda']
+    peso = data_dictionary['peso']
+    try:
+        record = Records(ecotienda_id = ecotienda_id, peso = peso)
+        record.insert()
+    except:
+        error = True
+        Records.rollback()
+        print(sys.exc_info())
+    if error:
+        abort(422)
+    else:
+        return jsonify({
+                        'success': True,
+                        'record': record.format()
+                        })
 
 @app.route('/balanza', methods = ['POST'])
 def obtener_peso():

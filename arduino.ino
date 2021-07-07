@@ -55,6 +55,8 @@ void loop()
     http.end();
   }
 
+  delay(5000)
+
 }
 
 
