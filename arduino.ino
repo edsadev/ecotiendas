@@ -1,5 +1,6 @@
 #define SERVER_IP "192.168.100.119:5000"
 
+#include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 #include <WiFiClient.h>
@@ -7,6 +8,7 @@
 const char* ssid = "NETLIFE";
 const char* password = "123456789";
 int val = 0;
+int ecotienda_id = 1:
  
 void setup() 
 {
@@ -25,10 +27,14 @@ void loop()
     // configure traged server and url
     http.begin(client, "http://" SERVER_IP "/record"); //HTTP
     http.addHeader("Content-Type", "application/json");
-    val = analogRead(A0);
+    DynamicJsonDocument doc(2048);
+    doc["ecotienda"] = ecotienda_id;
+    doc["peso"] = analogRead(A0);
+    String json;
+    serializeJson(doc, json);
     Serial.print("[HTTP] POST...\n");
     // start connection and send HTTP header and body
-    int httpCode = http.POST("{\"ecotienda_id\":\"3\",\"peso\":\"10\"}");
+    int httpCode = http.POST(json);
 
     // httpCode will be negative on error
     if (httpCode > 0) {
