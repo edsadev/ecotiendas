@@ -67,6 +67,22 @@ def get_ecoAmigos():
                             'success': False,
                             'mensaje': "ecoamigos no disponibles"
                             })
+@app.route('/ecopuntos', methods = ['POST'])
+def get_ecopuntos():
+    data = request.data
+    data_dictionary = json.loads(data)
+    ecoamigo = EcoAmigo.query.filter(EcoAmigo.id == data_dictionary['ecoamigo']).first()
+    if ecoamigo:
+        return jsonify({
+                            'success': True,
+                            'ecopuntos': ecoamigo.ecopuntos
+                            })
+    else:
+        return jsonify({
+                            'success': False,
+                            'mensaje': "Error"
+                            })
+
 @app.route('/eco-admin')
 def get_ecoAdmin():
     ecoadmins = EcoAdmin.query.all()
@@ -110,8 +126,10 @@ def login():
         usuario = Usuario.query.filter(Usuario.usuario == data_dictionary["user"]).first()
         contraseña = data_dictionary['pass']
         if usuario.contraseña == contraseña:
+            print("hola")
             error = False
             if usuario.tipo == "ecoadmin":
+                print("hola2")
                 ecoadmin = EcoAdmin.query.filter(EcoAdmin.usuario_id == usuario.id).first()
                 ecotienda = EcoTienda.query.filter(EcoTienda.ecoadmin_id == ecoadmin.id).first()
                 response = {
@@ -126,8 +144,22 @@ def login():
                         'rango': usuario.tipo,
                         'id': ecoamigo.id
                         }
+            elif usuario.tipo == "ecobodeguero":
+                bodeguero = Bodeguero.query.filter(Bodeguero.usuario_id == usuario.id).first()
+                response = {
+                        'succes': True,
+                        'rango': usuario.tipo,
+                        'id': bodeguero.id
+                        }
+            elif usuario.tipo == "ecoregional":
+                regional = Regional.query.filter(Regional.usuario_id == usuario.id).first()
+                response = {
+                        'succes': True,
+                        'rango': usuario.tipo,
+                        'id': regional.id
+                        }
             else:
-                ecotiendas = EcoTiendas.query.all()
+                ecotiendas = EcoTienda.query.all()
                 
                 response = {
                     'succes': True,
@@ -200,6 +232,126 @@ def crear_ecoAmigo():
                         'success': True,
                         'ecoAmigo': ecoAmigo.format()
                         })
+@app.route('/ecotiendas')
+def posiciones():
+    ecotiendas = EcoTienda.query.all()
+    response = {}
+    for ecotienda in ecotiendas:
+        response[ecotienda.id] = ecotienda.posicion()
+    error = False
+    if len(response) > 0:
+        return jsonify({
+                            'success': True,
+                            'sectores': response
+                            })
+    else:
+        return jsonify({
+                            'success': False,
+                            'mensaje': "Ecotiendas no disponibles"
+                            })
+@app.route('/regional', methods = ['POST'])
+def crear_regional():
+    error = False
+    data = request.data
+    data_dictionary = json.loads(data)
+    cedula = data_dictionary["cedula"]
+    nombre = data_dictionary["nombre"]
+    apellido = data_dictionary["apellido"]
+    direccion = data_dictionary["direccion"]
+    genero = data_dictionary["genero"]
+    correo = data_dictionary["correo"]
+    telefono = data_dictionary["celular"]
+    fecha_nacimiento = data_dictionary["fecha_nacimiento"]
+    usuario = data_dictionary["usuario"]
+    contraseña = data_dictionary["contraseña"]
+    tipo = "ecoregional"
+    if Usuario.query.filter(Usuario.usuario == usuario).first():
+        return jsonify({
+                        'success': False,
+                        'mensaje': "Usuario ya existe"
+                        })
+    elif Regional.query.filter(Regional.cedula == cedula).first():
+        return jsonify({
+                        'success': False,
+                        'mensaje': "Cedula ya existe"
+                        })
+    else:
+        try: 
+            usuario = Usuario(usuario = usuario, contraseña = contraseña, tipo = tipo)
+            usuario.insert()
+        except:
+            error = True
+            Usuario.rollback()
+            print(sys.exc_info())
+        try:
+            
+            regional = Regional(cedula = cedula, fecha_nacimiento = fecha_nacimiento, nombre = nombre, apellido = apellido, direccion = direccion, genero = genero, correo = correo,
+                                telefono = telefono, usuario_id = usuario.id)
+            regional.insert()
+        except:
+            error = True
+            Regional.rollback()
+            print(sys.exc_info())
+
+    if error:
+        abort(422)
+    else:
+        return jsonify({
+                        'success': True,
+                        'regional': regional.format()
+                        })
+@app.route('/bodeguero', methods = ['POST'])
+def crear_bodeguero():
+    error = False
+    data = request.data
+    data_dictionary = json.loads(data)
+    cedula = data_dictionary["cedula"]
+    nombre = data_dictionary["nombre"]
+    apellido = data_dictionary["apellido"]
+    direccion = data_dictionary["direccion"]
+    genero = data_dictionary["genero"]
+    correo = data_dictionary["correo"]
+    telefono = data_dictionary["celular"]
+    fecha_nacimiento = data_dictionary["fecha_nacimiento"]
+    usuario = data_dictionary["usuario"]
+    contraseña = data_dictionary["contraseña"]
+    tipo = "ecobodeguero"
+    if Usuario.query.filter(Usuario.usuario == usuario).first():
+        return jsonify({
+                        'success': False,
+                        'mensaje': "Usuario ya existe"
+                        })
+    elif Bodeguero.query.filter(Bodeguero.cedula == cedula).first():
+        return jsonify({
+                        'success': False,
+                        'mensaje': "Cedula ya existe"
+                        })
+    else:
+        try: 
+            usuario = Usuario(usuario = usuario, contraseña = contraseña, tipo = tipo)
+            usuario.insert()
+        except:
+            error = True
+            Usuario.rollback()
+            print(sys.exc_info())
+        try:
+            
+            bodeguero = Regional(cedula = cedula, fecha_nacimiento = fecha_nacimiento, nombre = nombre, apellido = apellido, direccion = direccion, genero = genero, correo = correo,
+                                telefono = telefono, usuario_id = usuario.id)
+            regional.insert()
+        except:
+            error = True
+            Regional.rollback()
+            print(sys.exc_info())
+
+    if error:
+        abort(422)
+    else:
+        return jsonify({
+                        'success': True,
+                        'regional': regional.format()
+                        })
+
 @app.route('/eco-admin', methods = ['POST'])
 def crear_ecoAdmin():
     error = False
@@ -215,7 +367,7 @@ def crear_ecoAdmin():
     fecha_nacimiento = data_dictionary["fecha_nacimiento"]
     usuario = data_dictionary["usuario"]
     contraseña = data_dictionary["contraseña"]
-    sector_id = data_dictionary["sector"]
+    regional_id = data_dictionary["regional_id"]
     tipo = "ecoadmin"
     if Usuario.query.filter(Usuario.usuario == usuario).first():
         return jsonify({
@@ -238,11 +390,11 @@ def crear_ecoAdmin():
         try:
             
             ecoAdmin = EcoAdmin(cedula = cedula, fecha_nacimiento = fecha_nacimiento, nombre = nombre, apellido = apellido, direccion = direccion, genero = genero, correo = correo,
-                                telefono = telefono, sector_id = sector_id, usuario_id = usuario.id)
+                                telefono = telefono, usuario_id = usuario.id, regional_id = regional_id)
             ecoAdmin.insert()
         except:
             error = True
-            EcoAmigo.rollback()
+            EcoAdmin.rollback()
             print(sys.exc_info())
 
     if error:
@@ -260,6 +412,7 @@ def crear_ecoTienda():
     data_dictionary = json.loads(data)
     latitud = data_dictionary["latitud"]
     longitud = data_dictionary["longitud"]
+    regional_id = data_dictionary["regional_id"]
     capacidad_maxima_m3 = data_dictionary["capacidad_maxima_m3"]
     capacidad_maxima_kg = data_dictionary["capacidad_maxima_kg"]
     cantidad_actual_m3 = data_dictionary["cantidad_actual_m3"]
@@ -274,7 +427,7 @@ def crear_ecoTienda():
                               cantidad_actual_m3 = cantidad_actual_m3,
                               cantidad_actual_kg = cantidad_actual_kg,
                               ecoadmin_id = ecoadmin_id,
-                              sectores_id = sectores_id
+                              sectores_id = sectores_id, regional_id = regional_id
                               )
         ecotienda.insert()
     except:
@@ -423,6 +576,7 @@ def ingresar_peso():
     data_dictionary = json.loads(data)
     ecotienda_id = data_dictionary['ecotienda']
     peso = data_dictionary['peso']
+    print(data_dictionary)
     try:
         record = Records(ecotienda_id = ecotienda_id, peso = peso)
         record.insert()
@@ -443,8 +597,8 @@ def obtener_peso():
     error = False
     data = request.data
     data_dictionary = json.loads(data)
-    ecotienda_id = data_dictionary["ecotienda_id"]
-    record = Records.query.filter(Records.ecotienda_id == ecotienda_id).last()
+    ecotienda_id = data_dictionary["ecotienda"]
+    record = Records.query.filter(Records.ecotienda_id == ecotienda_id).order_by(Records.id.desc()).first()
     if record:
         return jsonify({
                         'success': True,
