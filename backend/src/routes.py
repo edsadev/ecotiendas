@@ -6,7 +6,8 @@ from src.models.db import *
 from src.prueba import enviar_email
 import email.message
 import smtplib
-from sqlalchemy import and_
+from sqlalchemy import and_, func
+from datetime import datetime
 
 @app.after_request
 def after_request(response):
@@ -135,7 +136,8 @@ def login():
                 response = {
                         'succes': True,
                         'rango': usuario.tipo,
-                        'id': ecotienda.id 
+                        'id': ecotienda.id,
+                        'nombre': ecoadmin.nombre + " " + ecoadmin.apellido
                         }
             elif usuario.tipo == "ecoamigo":
                 ecoamigo = EcoAmigo.query.filter(EcoAmigo.usuario_id == usuario.id).first()
@@ -151,12 +153,12 @@ def login():
                         'rango': usuario.tipo,
                         'id': bodeguero.id
                         }
-            elif usuario.tipo == "ecoregional":
-                regional = Regional.query.filter(Regional.usuario_id == usuario.id).first()
+            elif usuario.tipo == "ecozonal":
+                zonal = Zonal.query.filter(Zonal.usuario_id == usuario.id).first()
                 response = {
                         'succes': True,
                         'rango': usuario.tipo,
-                        'id': regional.id
+                        'id': zonal.id
                         }
             else:
                 ecotiendas = EcoTienda.query.all()
@@ -249,8 +251,8 @@ def posiciones():
                             'success': False,
                             'mensaje': "Ecotiendas no disponibles"
                             })
-@app.route('/regional', methods = ['POST'])
-def crear_regional():
+@app.route('/zonal', methods = ['POST'])
+def crear_zonal():
     error = False
     data = request.data
     data_dictionary = json.loads(data)
@@ -264,13 +266,13 @@ def crear_regional():
     fecha_nacimiento = data_dictionary["fecha_nacimiento"]
     usuario = data_dictionary["usuario"]
     contraseña = data_dictionary["contraseña"]
-    tipo = "ecoregional"
+    tipo = "ecozonal"
     if Usuario.query.filter(Usuario.usuario == usuario).first():
         return jsonify({
                         'success': False,
                         'mensaje': "Usuario ya existe"
                         })
-    elif Regional.query.filter(Regional.cedula == cedula).first():
+    elif Zonal.query.filter(Zonal.cedula == cedula).first():
         return jsonify({
                         'success': False,
                         'mensaje': "Cedula ya existe"
@@ -285,12 +287,12 @@ def crear_regional():
             print(sys.exc_info())
         try:
             
-            regional = Regional(cedula = cedula, fecha_nacimiento = fecha_nacimiento, nombre = nombre, apellido = apellido, direccion = direccion, genero = genero, correo = correo,
+            zonal = Zonal(cedula = cedula, fecha_nacimiento = fecha_nacimiento, nombre = nombre, apellido = apellido, direccion = direccion, genero = genero, correo = correo,
                                 telefono = telefono, usuario_id = usuario.id)
-            regional.insert()
+            zonal.insert()
         except:
             error = True
-            Regional.rollback()
+            Zonal.rollback()
             print(sys.exc_info())
 
     if error:
@@ -298,7 +300,7 @@ def crear_regional():
     else:
         return jsonify({
                         'success': True,
-                        'regional': regional.format()
+                        'zonal': zonal.format()
                         })
 @app.route('/bodeguero', methods = ['POST'])
 def crear_bodeguero():
@@ -336,12 +338,12 @@ def crear_bodeguero():
             print(sys.exc_info())
         try:
             
-            bodeguero = Regional(cedula = cedula, fecha_nacimiento = fecha_nacimiento, nombre = nombre, apellido = apellido, direccion = direccion, genero = genero, correo = correo,
+            bodeguero = Zonal(cedula = cedula, fecha_nacimiento = fecha_nacimiento, nombre = nombre, apellido = apellido, direccion = direccion, genero = genero, correo = correo,
                                 telefono = telefono, usuario_id = usuario.id)
-            regional.insert()
+            zonal.insert()
         except:
             error = True
-            Regional.rollback()
+            Zonal.rollback()
             print(sys.exc_info())
 
     if error:
@@ -349,7 +351,7 @@ def crear_bodeguero():
     else:
         return jsonify({
                         'success': True,
-                        'regional': regional.format()
+                        'zonal': zonal.format()
                         })
 
 @app.route('/eco-admin', methods = ['POST'])
@@ -367,7 +369,7 @@ def crear_ecoAdmin():
     fecha_nacimiento = data_dictionary["fecha_nacimiento"]
     usuario = data_dictionary["usuario"]
     contraseña = data_dictionary["contraseña"]
-    regional_id = data_dictionary["regional_id"]
+    zonal_id = data_dictionary["zonal_id"]
     tipo = "ecoadmin"
     if Usuario.query.filter(Usuario.usuario == usuario).first():
         return jsonify({
@@ -390,7 +392,7 @@ def crear_ecoAdmin():
         try:
             
             ecoAdmin = EcoAdmin(cedula = cedula, fecha_nacimiento = fecha_nacimiento, nombre = nombre, apellido = apellido, direccion = direccion, genero = genero, correo = correo,
-                                telefono = telefono, usuario_id = usuario.id, regional_id = regional_id)
+                                telefono = telefono, usuario_id = usuario.id, zonal_id = zonal_id)
             ecoAdmin.insert()
         except:
             error = True
@@ -412,7 +414,7 @@ def crear_ecoTienda():
     data_dictionary = json.loads(data)
     latitud = data_dictionary["latitud"]
     longitud = data_dictionary["longitud"]
-    regional_id = data_dictionary["regional_id"]
+    zonal_id = data_dictionary["zonal_id"]
     capacidad_maxima_m3 = data_dictionary["capacidad_maxima_m3"]
     capacidad_maxima_kg = data_dictionary["capacidad_maxima_kg"]
     cantidad_actual_m3 = data_dictionary["cantidad_actual_m3"]
@@ -427,7 +429,7 @@ def crear_ecoTienda():
                               cantidad_actual_m3 = cantidad_actual_m3,
                               cantidad_actual_kg = cantidad_actual_kg,
                               ecoadmin_id = ecoadmin_id,
-                              sectores_id = sectores_id, regional_id = regional_id
+                              sectores_id = sectores_id, zonal_id = zonal_id
                               )
         ecotienda.insert()
     except:
@@ -454,6 +456,7 @@ def crear_ticket():
     ecotienda = EcoTienda.query.filter(EcoTienda.id == ecotienda_id).first()
     cantidad_neta_m3 = ecotienda.capacidad_maxima_m3 - ecotienda.cantidad_actual_m3 
     cantidad_neta_kg = ecotienda.capacidad_maxima_kg - ecotienda.cantidad_actual_kg
+    zonal_id = ecotienda.zonal_id
  
     if entrada:
         if total_kg > cantidad_neta_kg:
@@ -471,7 +474,7 @@ def crear_ticket():
         cliente_id = data_dictionary['ecoamigo']
         cliente = EcoAmigo.query.filter(EcoAmigo.id == cliente_id).first()
         try: 
-            ticket = Tickets(entrada = entrada, total_kg = total_kg, total_m3 = total_m3, total_ecopuntos = total_ecopuntos,
+            ticket = Tickets(zonal_id = zonal_id, entrada = entrada, total_kg = total_kg, total_m3 = total_m3, total_ecopuntos = total_ecopuntos,
                                 ecoamigo_id = cliente_id, ecotienda_id = ecotienda_id, cliente = f"{cliente.nombre} {cliente.apellido}"  )
             ticket.insert()
         except:
@@ -486,7 +489,7 @@ def crear_ticket():
                 cantidad_kg = material['cantidad_kg']
                 ecopuntos = material['ecopuntos']
                 cantidad_m3  = material['cantidad_m3']
-                detalle = DetalleTickets(ticket_id = ticket_id, material_id = material_id, cantidad_kg = cantidad_kg, 
+                detalle = DetalleTickets(entrada = entrada, ticket_id = ticket_id, material_id = material_id, cantidad_kg = cantidad_kg, 
                                         ecopuntos = ecopuntos, cantidad_m3 = cantidad_m3)
                 detalle.insert()
             
@@ -513,7 +516,7 @@ def crear_ticket():
                             'mensaje': "No tienes tanto material M3"
                             })
         try: 
-            ticket = Tickets(entrada = entrada, total_kg = total_kg, total_m3 = total_m3, 
+            ticket = Tickets(zonal_id = zonal_id, entrada = entrada, total_kg = total_kg, total_m3 = total_m3, 
                                 ecotienda_id = ecotienda_id)
             ticket.insert()
         except:
@@ -528,7 +531,7 @@ def crear_ticket():
                 cantidad_kg = material['cantidad_kg']
                 ecopuntos = material['ecopuntos']
                 cantidad_m3  = material['cantidad_m3']
-                detalle = DetalleTickets(ticket_id = ticket_id, material_id = material_id, cantidad_kg = cantidad_kg, 
+                detalle = DetalleTickets(entrada = entrada, ticket_id = ticket_id, material_id = material_id, cantidad_kg = cantidad_kg, 
                                         ecopuntos = ecopuntos, cantidad_m3 = cantidad_m3)
                 detalle.insert()
 
@@ -557,6 +560,24 @@ def historial():
     ecotienda_id = data_dictionary['ecotienda']
     print(ecotienda_id)
     tickets = Tickets.query.filter(Tickets.ecotienda_id == ecotienda_id)
+    response = [ticket.format() for ticket in tickets]
+    if len(response) > 0:
+        return jsonify({
+                        'success': True,
+                        'historial': response
+                        })
+    else:
+        return jsonify({
+                            'success': False,
+                            'mensaje': "Historial no disponibles"
+                            })
+@app.route('/historial-diario', methods = ['POST'])
+def historial_diario():
+    error = False
+    data = request.data
+    data_dictionary = json.loads(data)
+    ecotienda_id = data_dictionary['ecotienda']
+    tickets = Tickets.query.filter(and_(Tickets.ecotienda_id == ecotienda_id, Tickets.fecha_registro >= func.current_date() ))
     response = [ticket.format() for ticket in tickets]
     if len(response) > 0:
         return jsonify({
@@ -641,4 +662,138 @@ def meta():
     for ticket in tickets:
         suma += ticket
 
+@app.route('/grafico-ecotienda', methods = ['POST'])
+def grafico_ecotienda():
+    error = False
+    data = request.data 
+    data_dictionary = json.loads(data)
+    ecotienda_id = data_dictionary["ecotienda"]
+    mes = datetime.now().strftime("%m")
+    año = datetime.now().strftime("%Y")
+    response = {}
+    valores = Tickets.query.join(DetalleTickets, Tickets.id==DetalleTickets.ticket_id)\
+                .filter(and_(Tickets.ecotienda_id == ecotienda_id, Tickets.mes == mes, Tickets.año == año))\
+                .order_by(DetalleTickets.material_id)
+    for e in Material.query.all():
+        response[e.id] = {"nombre": e.nombre, "peso": 0} 
+    for e in valores:
+        for material in e.materiales:
+            if material.entrada:
+                response[material.material_id]["peso"] += material.cantidad_kg
+            else:
+                response[material.material_id]["peso"] -= material.cantidad_kg
+        
+    return jsonify({
+                        'success': True,
+                        'data': response
+                        })
 
+
+@app.route('/grafico-zonal', methods = ['POST'])
+def grafico_zonal():
+    error = False
+    data = request.data 
+    data_dictionary = json.loads(data)
+    mes = datetime.now().strftime("%m")
+    año = datetime.now().strftime("%Y")
+    zonal_id = data_dictionary["zonal"]
+    response = {}
+    valores = Tickets.query.join(DetalleTickets, Tickets.id==DetalleTickets.ticket_id)\
+                .filter(and_(Tickets.zonal_id == zonal_id, Tickets.mes == mes, Tickets.año == año))\
+                .order_by(DetalleTickets.material_id)
+    for e in Material.query.all():
+        response[e.id] = {"nombre": e.nombre, "peso": 0} 
+    for e in valores:
+        for material in e.materiales:
+            if material.entrada:
+                response[material.material_id]["peso"] += material.cantidad_kg
+        
+    return jsonify({
+                        'success': True,
+                        'data': response
+                        })
+
+@app.route('/detalle-zonal', methods = ['POST'])
+def detalle_zonal():
+    error = False
+    data = request.data 
+    data_dictionary = json.loads(data)
+    mes = datetime.now().strftime("%m")
+    año = datetime.now().strftime("%Y")
+    zonal_id = data_dictionary["zonal"]
+    material_id = data_dictionary["material"]
+    response = {}
+    detalles = DetalleTickets.query.join(Tickets, Tickets.id==DetalleTickets.ticket_id)\
+                .filter(and_(Tickets.zonal_id == zonal_id, Tickets.mes == mes, Tickets.año == año, DetalleTickets.material_id == material_id))\
+                .order_by(Tickets.ecotienda_id)
+
+    for e in EcoTienda.query.all():
+        response[e.id] = {"nombre": e.nombre, "peso": 0} 
+    for detalle in detalles:
+        if detalle.entrada:
+            response[detalle.ticket.ecotienda_id]["peso"] += detalle.cantidad_kg
+    
+        
+    return jsonify({
+                        'success': True,
+                        'data': response
+                        })
+
+@app.route('/grafico-general')
+def grafico_general():
+    error = False
+    mes = datetime.now().strftime("%m")
+    año = datetime.now().strftime("%Y")
+    response = {}
+    valores = Tickets.query.join(DetalleTickets, Tickets.id==DetalleTickets.ticket_id)\
+                .filter(and_(Tickets.mes == mes, Tickets.año == año))\
+                .order_by(DetalleTickets.material_id)
+    for e in Material.query.all():
+        response[e.id] = {"nombre": e.nombre, "peso": 0} 
+    for e in valores:
+        for material in e.materiales:
+            if material.entrada:
+                response[material.material_id]["peso"] += material.cantidad_kg
+            
+        
+    return jsonify({
+                        'success': True,
+                        'data': response
+                        })
+@app.route('/detalle-general', methods = ['POST'])
+def detalle_general():
+    error = False
+    data = request.data 
+    data_dictionary = json.loads(data)
+    mes = datetime.now().strftime("%m")
+    año = datetime.now().strftime("%Y")
+    material_id = data_dictionary["material"]
+    response = {}
+    detalles = DetalleTickets.query.join(Tickets, Tickets.id==DetalleTickets.ticket_id)\
+                .filter(and_(Tickets.mes == mes, Tickets.año == año, DetalleTickets.material_id == material_id))\
+                .order_by(Tickets.ecotienda_id)
+
+    for e in EcoTienda.query.all():
+        response[e.id] = {"nombre": e.nombre, "peso": 0} 
+    for detalle in detalles:
+        print(detalle)
+        if detalle.entrada:
+            response[detalle.ticket.ecotienda_id]["peso"] += detalle.cantidad_kg
+        
+    return jsonify({
+                        'success': True,
+                        'data': response
+                        })
+
+@app.route('/detalle-ticket', methods = ['POST'])
+def detalle_ticket():
+    error = False
+    data = request.data 
+    data_dictionary = json.loads(data)
+    ticket_id = data_dictionary["ticket"]
+    detalles = DetalleTickets.query.filter(DetalleTickets.ticket_id == ticket_id)
+    response = [detalle.format() for detalle in detalles]
+    return jsonify({
+                        'success': True,
+                        'materiales': response
+                        })

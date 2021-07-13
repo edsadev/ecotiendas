@@ -65,8 +65,8 @@ class EcoAmigo(db.Model):
     def __repre__(self):
         return json.dumps(self.format())
 
-class Regional(db.Model):
-    __tablename__ = "regionales"
+class Zonal(db.Model):
+    __tablename__ = "zonales"
     id = db.Column(db.Integer, primary_key = True)
     cedula = db.Column(db.String, nullable = False)
     fecha_nacimiento = db.Column(db.String)
@@ -78,7 +78,7 @@ class Regional(db.Model):
     correo = db.Column(db.String, nullable = False)
     telefono = db.Column(db.String)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable = False)
-    usuario = db.relationship("Usuario", backref=db.backref("regional", uselist=False))
+    usuario = db.relationship("Usuario", backref=db.backref("zonal", uselist=False))
     def format(self):
         return {
                 'id': self.id,
@@ -117,7 +117,7 @@ class Bodeguero(db.Model):
     genero = db.Column(db.String, nullable = False)
     correo = db.Column(db.String, nullable = False)
     telefono = db.Column(db.String)
-    regional_id = db.Column(db.Integer, db.ForeignKey('regionales.id'))
+    zonal_id = db.Column(db.Integer, db.ForeignKey('zonales.id'))
     sector_id = db.Column(db.Integer, db.ForeignKey('sectores.id'), nullable = False)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable = False)
     usuario = db.relationship("Usuario", backref=db.backref("bodeguero", uselist=False))
@@ -160,7 +160,7 @@ class EcoAdmin(db.Model):
     correo = db.Column(db.String, nullable = False)
     telefono = db.Column(db.String)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable = False)
-    regional_id = db.Column(db.Integer, db.ForeignKey('regionales.id'))
+    zonal_id = db.Column(db.Integer, db.ForeignKey('zonales.id'))
     ecotiendas = db.relationship("EcoTienda", backref="ecoadmin")
     usuario = db.relationship("Usuario", backref=db.backref("ecoadmin", uselist=False))
     def format(self):
@@ -200,8 +200,9 @@ class EcoTienda(db.Model):
     capacidad_maxima_kg = db.Column(db.Integer, nullable = False)
     cantidad_actual_m3 = db.Column(db.Integer, nullable = False)
     cantidad_actual_kg = db.Column(db.Integer, nullable = False)
+    nombre = db.Column(db.String)
     meta_semanal = db.Column(db.Integer)
-    regional_id = db.Column(db.Integer, db.ForeignKey('regionales.id'))
+    zonal_id = db.Column(db.Integer, db.ForeignKey('zonales.id'))
     ecoadmin_id = db.Column(db.Integer, db.ForeignKey('ecoAdmins.id'), nullable = False)
     sectores_id = db.Column(db.Integer, db.ForeignKey('sectores.id'), nullable = False)
     tickets = db.relationship("Tickets", backref="ecotienda")
@@ -379,14 +380,17 @@ class DetalleTickets(db.Model):
     año = db.Column(db.String, nullable = False, default =datetime.now().strftime("%Y"))
     cantidad_kg = db.Column(db.Integer, nullable = False)
     ecopuntos = db.Column( db.Integer)
+    entrada = db.Column(db.Boolean, nullable = True)
     cantidad_m3 = db.Column(db.Integer, nullable = False)
     detalle = db.relationship('Material')
 
+
     def format(self):
         return {
-                'id': self.id,
+                'material_id': self.material_id,
                 'ecopuntos': self.ecopuntos,
-                'cantidad_m3': self.cantidad_m3
+                'cantidad_m3': self.cantidad_m3,
+                'cantidad_kg': self.cantidad_kg
         }
     
     def insert(self):
@@ -420,7 +424,8 @@ class Tickets(db.Model):
     total_ecopuntos = db.Column(db.Integer)
     ecoamigo_id = db.Column(db.Integer, db.ForeignKey('ecoAmigos.id'))
     ecotienda_id = db.Column(db.Integer, db.ForeignKey('ecoTiendas.id'), nullable = False)
-    materiales = db.relationship('DetalleTickets')
+    zonal_id = db.Column(db.Integer, db.ForeignKey('zonales.id'), nullable = False)
+    materiales = db.relationship('DetalleTickets', backref='ticket')
     fecha_registro = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
     def format(self):
