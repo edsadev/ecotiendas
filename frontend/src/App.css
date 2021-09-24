@@ -1,0 +1,292 @@
+.body {
+  background-color: #B2DDE7;
+}
+
+.title_green{
+  color: #02735F;
+}
+
+.title_lightgreen{
+  color: rgba(2,115,95,.5);
+}
+
+.nav{
+  position: absolute;
+  background-color: #02735F;
+  width: 15vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 1000;
+  flex-flow: column;
+}
+
+.nav-items{
+  padding-top: 24px;
+  width: 100%;
+  display: flex;
+  flex-flow: column;
+  list-style: none;
+  align-items: center;
+  flex-grow: 1;
+  font-weight: bold;
+}
+
+.nav-item-selected a {
+  background-color: #B2DDE7;
+  border-bottom-left-radius: 17px;
+  border-top-left-radius: 17px;
+  padding: 8px;
+  width: 100%;
+  display: block;
+  color: #02735F;
+}
+
+.nav-item-selected, .nav-item-selected-white{
+  text-align: center;
+  width: 100%;
+  padding: 24px 0 24px 10%;
+}
+
+.nav-item-selected-white a {
+  background-color: white;
+  border-bottom-left-radius: 17px;
+  border-top-left-radius: 17px;
+  padding: 8px;
+  width: 100%;
+  display: block;
+  color: #02735F;
+  text-decoration: none;
+}
+
+.nav-item {
+  padding: 24px 0;
+}
+
+.nav-item a {
+  color: white;
+}
+
+.nav-item a, .nav-item-selected a {
+  text-decoration: none;
+}
+
+.perfil-container{
+  padding-top: 36px;
+  display: flex;
+  justify-content: center;
+  flex-flow: column;
+  align-items: center;
+  color: white;
+}
+
+.perfil-container img{
+  padding-bottom: 12px;
+  width: 50%;
+  border-radius: 50%;
+}
+
+.container-default{
+  padding-left: 15vw;
+}
+
+.background-default{
+  background-color: #B2DDE7;
+  background-image: url('./utils/images/patron.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.logo{
+  height: auto;
+  width: auto;
+  padding-top: 36px;
+}
+
+.btn{
+  background-color: #02735F;
+  display: flex;
+  text-decoration: none;
+  color: white;
+  border-radius: 0 40px 0 40px;
+  font-weight: bold;
+}
+
+.btn-form{
+  background-color: #02735F;
+  text-decoration: none;
+  color: white;
+  border-radius: 15px;
+  padding: 8px 12px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-icon{
+  background-color: #6FB85D;  
+  border-radius: 0 40px 0 40px;
+  padding: 8% 6%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-text{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.btn-icon img{
+  width: 50%;
+}
+
+.logo_alt{
+  height: 150px;
+}
+
+.indicador{
+  font-size: 40px;
+  font-weight: 400; 
+  border-bottom: 5px solid black;
+}
+
+.dropdown-select{
+  padding: 8px 8px;
+  border-radius: 24px;
+  outline: none;
+  width: 100%;
+  border: none;
+}
+
+.horizontal-btns{
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  padding: 0 10%;
+}
+
+.inputDefault{
+  padding: 8px 8px;
+  border-radius: 24px;
+  border: 1px solid rgba(0,0,0,0.4);
+  outline: none;
+  width: 100%;
+}
+
+.inputDefault:focus{
+  border: 1px solid rgba(0,0,0,0.4);
+  border-radius: 24px;
+}
+
+.labelForm {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.inputContainer{
+  margin: 8px 0 8px 0;
+  border: 1px solid rgba(0,0,0,0.4);
+  border-radius: 24px;
+  display: flex;
+}
+
+.inputContainer_noBorder{
+  margin: 12px 0 24px 0;
+  border: none;
+  border-radius: 24px;
+  display: flex;
+}
+
+.inputLeft{
+  width: 100%;
+  text-align: end;
+  padding: 8px 8px;
+  border: none;
+  outline: none;
+  border-top-left-radius: 24px;
+  border-bottom-left-radius: 24px;
+  border-right: 1px solid rgba(0,0,0,0.4);
+}
+
+.inputRight{
+  width: 100%;
+  padding: 8px 8px;
+  border: none;
+  outline: none;
+  border-top-right-radius: 24px;
+  border-bottom-right-radius: 24px;
+}
+
+.inputSingle{
+  padding: 8px 8px;
+  border-radius: 24px;
+  border: none;
+  outline: none;
+  width: 100%;
+}
+
+.flexBoxHorizontal{
+  display: flex;
+}
+
+.centerContainer{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.littleSelect{
+  padding: 8px 8px;
+  border: none;
+  border-radius: 24px;
+  outline: none;
+}
+
+.flex-column-sa-c{
+  display: flex;
+  justify-content: space-around;
+  flex-flow: column; 
+  align-items: center;
+}
+
+.shadow {
+  box-shadow: -2px 2px 16px -4px rgba(0,0,0,0.83);
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.no-td {
+  text-decoration: none;
+}
+
+.titulo-carta {
+  text-align: center;
+  line-height: 56px;
+  background-color: #00472d;
+  color: white;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.centerPag ul{
+  justify-content: center;
+}
+
+.arrow{
+  transform: translate(-5px, 20%);
+}
+
+.arrow_history{
+  transform: translate(-8.5vw, 20%);
+}
+
+.flechaMapa{
+  position: absolute;
+  z-index: 100000000000;
+  top: 15px;
+  left: 15px;
+}

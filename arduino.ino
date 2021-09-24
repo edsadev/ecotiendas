@@ -1,47 +1,60 @@
-#define SERVER_IP "192.168.100.119:5000"
+#define DOUT  D5
+#define CLK  D6
+#define SERVER_IP "192.168.100.4:4000"
 
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 #include <WiFiClient.h>
+#include "HX711.h"  
 
-const char* ssid = "NETLIFE";
-const char* password = "123456789";
+const char* ssid = "NETLIFE-FAMILIA TORRES";
+const char* password = "andres2607.";
 int val = 0;
 int ecotienda_id = 3;
+HX711 scale(DOUT, CLK);
+float calibration_factor = -109525;
  
 void setup() 
 {
   Serial.begin(9600);   
   inicializar_wifi();  
+  Serial.println("HX711 Calibration");
+  Serial.println("Remove all weight from scale");
+  scale.set_scale();
+  scale.tare();
+  long zero_factor = scale.read_average();
+  Serial.print("Zero factor: "); 
+  Serial.println(zero_factor);
 }
 void loop() 
 {
-
+  Serial.print("Reading: ");
+  Serial.print(scale.get_units(), 3);
+  Serial.print(" kg"); 
+  Serial.println();
   if ((WiFi.status() == WL_CONNECTED)) {
 
     WiFiClient client;
     HTTPClient http;
 
     Serial.print("[HTTP] begin...\n");
-    // configure traged server and url
-    http.begin(client, "http://" SERVER_IP "/record"); //HTTP
+    http.begin(client, "http://" SERVER_IP "/record");
     http.addHeader("Content-Type", "application/json");
     DynamicJsonDocument doc(2048);
     doc["ecotienda"] = ecotienda_id;
-    doc["peso"] = analogRead(A0);
+    doc["peso"] = scale.get_units();
     String json;
     serializeJson(doc, json);
     Serial.print("[HTTP] POST...\n");
-    // start connection and send HTTP header and body
     int httpCode = http.POST(json);
 
-    // httpCode will be negative on error
+    
     if (httpCode > 0) {
-      // HTTP header has been send and Server response header has been handled
+      
       Serial.printf("[HTTP] POST... code: %d\n", httpCode);
 
-      // file found at server
+      
       if (httpCode == HTTP_CODE_OK) {
         const String& payload = http.getString();
         Serial.println("received payload:\n<<");
@@ -55,7 +68,7 @@ void loop()
     http.end();
   }
 
-  delay(5000)
+  delay(5000);
 
 }
 

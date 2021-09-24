@@ -1,0 +1,67 @@
+name: Build and Deploy to GKE
+
+on:
+  push:
+    branches:
+    - '**'
+
+env:
+  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+  GKE_CLUSTER: gke-ecotiendas-cluster-1   # TODO: update to cluster name
+  GKE_ZONE: us-central1-c   # TODO: update to cluster zone
+  IMAGE_BACKEND: backend
+  IMAGE_FRONTEND: frontend
+
+jobs:
+  setup-build-publish-deploy:
+    name: Setup, Build, Publish, and Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # Setup gcloud CLI
+    - uses: google-github-actions/setup-gcloud@v0.2.0
+      with:
+        service_account_key: ${{ secrets.GKE_SA_KEY }}
+        project_id: ${{ secrets.GKE_PROJECT }}
+
+    # Configure Docker to use the gcloud command-line tool as a credential
+    # helper for authentication
+    - run: |-
+        gcloud --quiet auth configure-docker
+
+    # Get the GKE credentials so we can deploy to the cluster
+    - uses: google-github-actions/get-gke-credentials@v0.2.1
+      with:
+        cluster_name: ${{ env.GKE_CLUSTER }}
+        location: ${{ env.GKE_ZONE }}
+        credentials: ${{ secrets.GKE_SA_KEY }}
+
+    # Build the Docker image
+    - name: Build Backend
+      run: |-
+        docker build \
+          --tag "gcr.io/$PROJECT_ID/$IMAGE_BACKEND:$GITHUB_SHA" \
+          --build-arg GITHUB_SHA="$GITHUB_SHA" \
+          --build-arg GITHUB_REF="$GITHUB_REF" \
+          .
+    # Push the Docker image to Google Container Registry
+    - name: Publish Backend
+      run: |-
+        docker push "gcr.io/$PROJECT_ID/$IMAGE_BACKEND:$GITHUB_SHA"
+    
+    - name: Build Frontend
+      run: |-
+        docker build \
+          --tag "gcr.io/$PROJECT_ID/$IMAGE_FRONTEND:$GITHUB_SHA" \
+          --build-arg GITHUB_SHA="$GITHUB_SHA" \
+          --build-arg GITHUB_REF="$GITHUB_REF" \
+          .
+    - name: Publish Frontend
+      run: |-
+        docker push "gcr.io/$PROJECT_ID/$IMAGE_FRONTEND:$GITHUB_SHA"
+   
+        

@@ -46,6 +46,7 @@ class EcoAmigo(db.Model):
                 'genero': self.genero,
                 'correo': self.correo,
                 'fecha': self.fecha_registro.strftime("%m/%d/%Y, %H:%M:%S")
+                
         }
     
     def insert(self):
@@ -74,6 +75,7 @@ class Zonal(db.Model):
     fecha_registro = db.Column(db.DateTime(timezone=True), server_default=func.now())
     apellido = db.Column(db.String)
     direccion = db.Column(db.String)
+    foto = db.Column(db.LargeBinary)
     genero = db.Column(db.String, nullable = False)
     correo = db.Column(db.String, nullable = False)
     telefono = db.Column(db.String)
@@ -85,7 +87,8 @@ class Zonal(db.Model):
                 'nombre': self.nombre,
                 'genero': self.genero,
                 'correo': self.correo,
-                'fecha': self.fecha_registro.strftime("%m/%d/%Y, %H:%M:%S")
+                'fecha': self.fecha_registro.strftime("%m/%d/%Y, %H:%M:%S"),
+                'foto': self.foto.decode("utf-8")
         }
     
     def insert(self):
@@ -114,6 +117,7 @@ class Bodeguero(db.Model):
     fecha_registro = db.Column(db.DateTime(timezone=True), server_default=func.now())
     apellido = db.Column(db.String)
     direccion = db.Column(db.String)
+    foto = db.Column(db.LargeBinary)
     genero = db.Column(db.String, nullable = False)
     correo = db.Column(db.String, nullable = False)
     telefono = db.Column(db.String)
@@ -127,7 +131,8 @@ class Bodeguero(db.Model):
                 'nombre': self.nombre,
                 'genero': self.genero,
                 'correo': self.correo,
-                'fecha': self.fecha_registro.strftime("%m/%d/%Y, %H:%M:%S")
+                'fecha': self.fecha_registro.strftime("%m/%d/%Y, %H:%M:%S"), 
+                'foto': self.foto.decode("utf-8")
         }
     
     def insert(self):
@@ -155,6 +160,7 @@ class EcoAdmin(db.Model):
     nombre = db.Column(db.String)
     apellido = db.Column(db.String)
     direccion = db.Column(db.String)
+    foto = db.Column(db.LargeBinary)
     fecha_registro = db.Column(db.DateTime(timezone=True), server_default=func.now())
     genero = db.Column(db.String, nullable = False)
     correo = db.Column(db.String, nullable = False)
@@ -164,15 +170,24 @@ class EcoAdmin(db.Model):
     ecotiendas = db.relationship("EcoTienda", backref="ecoadmin")
     usuario = db.relationship("Usuario", backref=db.backref("ecoadmin", uselist=False))
     def format(self):
-        print(self.fecha_registro, type(self.fecha_registro))
+        
         return {
                 'id': self.id,
                 'nombre': self.nombre,
-                'cedula': self.cedula,
+                'cedula': str(self.cedula),
                 'apellido': self.apellido,
-                'fecha_registro': self.fecha_registro.strftime("%m/%d/%Y, %H:%M:%S")
+                'fecha_registro': self.fecha_registro.strftime("%m/%d/%Y, %H:%M:%S"),
+                'fecha_nacimiento': self.fecha_nacimiento,
+                'correo': self.correo,
+                'telefono': '0'+str(self.telefono),
+                'foto': self.foto.decode("utf-8"),
+                'zonal_id': self.zonal_id
         }
-    
+    def nombres(self):
+        return {
+                'nombre': f'{self.nombre} {self.apellido}',
+                'id': self.id
+        }
     def insert(self):
         db.session.add(self)
         db.session.commit()
@@ -200,28 +215,35 @@ class EcoTienda(db.Model):
     capacidad_maxima_kg = db.Column(db.Integer, nullable = False)
     cantidad_actual_m3 = db.Column(db.Integer, nullable = False)
     cantidad_actual_kg = db.Column(db.Integer, nullable = False)
+    provincia = db.Column(db.String)
+    ciudad = db.Column(db.String)
+    fecha_apertura = db.Column(db.String)
     nombre = db.Column(db.String)
     meta_semanal = db.Column(db.Integer)
     zonal_id = db.Column(db.Integer, db.ForeignKey('zonales.id'))
-    ecoadmin_id = db.Column(db.Integer, db.ForeignKey('ecoAdmins.id'), nullable = False)
+    ecoadmin_id = db.Column(db.Integer, db.ForeignKey('ecoAdmins.id'), nullable = True)
     sectores_id = db.Column(db.Integer, db.ForeignKey('sectores.id'), nullable = False)
     tickets = db.relationship("Tickets", backref="ecotienda")
 
     def format(self):
         return {
                 'id': self.id,
+                'nombre': self.nombre,
+                'zonal_id': self.zonal_id,
+                'provincia': self.provincia,
                 'capacidad_maxima_m3': self.capacidad_maxima_m3,
                 'capacidad_maxima_kg': self.capacidad_maxima_kg,
                 'cantidad_actual_m3': self.cantidad_actual_m3,
-                'cantidad_actual_kg': self.cantidad_actual_kg
+                'cantidad_actual_kg': self.cantidad_actual_kg,
+                'ecoadmin': self.ecoadmin.nombre +' '+ self.ecoadmin.apellido
         }
     
     def posicion(self):
-        return {self.id:
-                        {
-                            'latitud': self.latitud,
-                            'longitud': self.longitud
-                        }
+        return {
+                   'id': self.id, 
+                    'latitud': self.latitud,
+                    'longitud': self.longitud
+                        
         }
     
     def insert(self):
@@ -462,12 +484,13 @@ class Material(db.Model):
     __tablename__ = 'materiales'
     id = db.Column(db.Integer, primary_key = True)
     nombre = db.Column(db.String, nullable = False)
-    detalle = db.Column(db.String, nullable = False)
-    codigo = db.Column(db.String, nullable = False)
+    detalle = db.Column(db.String)
+    codigo = db.Column(db.String)
+    foto = db.Column(db.LargeBinary)
     ecopuntos = db.Column(db.Integer, nullable = False)
-    cantidad_m3 = db.Column(db.Integer, nullable = True)
-    valor_max = db.Column(db.Integer, nullable = False)
-    valor_min = db.Column(db.Integer, nullable = False)
+    cantidad_m3 = db.Column(db.Integer, nullable = False)
+    valor_max = db.Column(db.Integer)
+    valor_min = db.Column(db.Integer)
     tipo_material_id = db.Column(db.Integer, db.ForeignKey('tipoMateriales.id'), nullable = False)
 
     def format(self):
@@ -476,7 +499,8 @@ class Material(db.Model):
                 'nombre': self.nombre,
                 'ecopuntos': self.ecopuntos,
                 'tipo_material_id': self.tipo_material_id,
-                'cantidad_m3': self.cantidad_m3
+                'cantidad_m3': self.cantidad_m3,
+                'foto': self.foto.decode('utf-8')
         }
     
     def insert(self):
@@ -508,9 +532,9 @@ class TipoMaterial(db.Model):
     def format(self):
         return {
                 'id': self.id,
-                'name': self.name,
-                'gender': self.gender,
-                'age': self.age
+                'nombre': self.nombre,
+                'detalle': self.detalle,
+                'codigo': self.codigo
         }
     
     def insert(self):
@@ -566,17 +590,16 @@ class DetalleCanje(db.Model):
         return json.dumps(self.format())
 
 
-class Caje(db.Model):
+class Canje(db.Model):
     __tablename__ = 'canjes'
     id = db.Column(db.Integer, primary_key = True)
     numero_semana = db.Column(db.String, nullable = False, default =datetime.now().strftime("%W"))
     mes = db.Column(db.String, nullable = False, default =datetime.now().strftime("%m"))
     año = db.Column(db.String, nullable = False, default =datetime.now().strftime("%Y"))
-    cliente = db.Column(db.String)
-    entrada = db.Column(db.Boolean, nullable = False)
+    nombre_cliente = db.Column(db.String)
     total_ecopuntos = db.Column(db.Integer)
     ecoamigo_id = db.Column(db.Integer, db.ForeignKey('ecoAmigos.id'))
-    bodeguero_id = db.Column(db.Integer, db.ForeignKey('bodegueros.id'), nullable = False)
+    ecoadmin_id = db.Column(db.Integer, db.ForeignKey('ecoAdmins.id'), nullable = False)
     productos = db.relationship('DetalleCanje')
     fecha_registro = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
@@ -610,11 +633,13 @@ class Producto(db.Model):
     __tablename__ = 'productos'
     id = db.Column(db.Integer, primary_key = True)
     nombre = db.Column(db.String, nullable = False)
-    detalle = db.Column(db.String, nullable = False)
-    codigo = db.Column(db.String, nullable = False)
+    detalle = db.Column(db.String)
+    codigo = db.Column(db.String)
+    foto = db.Column(db.LargeBinary, nullable = False)
+    stock = db.Column(db.Integer, nullable = False)
     ecopuntos = db.Column(db.Integer, nullable = False)
-    valor_max = db.Column(db.Integer, nullable = False)
-    valor_min = db.Column(db.Integer, nullable = False)
+    valor_max = db.Column(db.Integer)
+    valor_min = db.Column(db.Integer)
     tipo_producto_id = db.Column(db.Integer, db.ForeignKey('tipoProductos.id'), nullable = False)
 
     def format(self):
@@ -623,6 +648,8 @@ class Producto(db.Model):
                 'nombre': self.nombre,
                 'ecopuntos': self.ecopuntos,
                 'tipo_material_id': self.tipo_producto_id,
+                'foto': self.foto.decode('utf-8'),
+                'stock': self.stock
         }
     
     def insert(self):
@@ -654,9 +681,9 @@ class TipoProductos(db.Model):
     def format(self):
         return {
                 'id': self.id,
-                'name': self.name,
-                'gender': self.gender,
-                'age': self.age
+                'nombre': self.nombre,
+                'detalle': self.detalle,
+                'codigo': self.codigo
         }
     
     def insert(self):
