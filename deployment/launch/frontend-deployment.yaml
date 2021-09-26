@@ -9,7 +9,7 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ecotiendas-frontend
+      service: ecotiendas-frontend
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -18,7 +18,8 @@ spec:
   template:
     metadata:
       labels:
-        app: ecotiendas-frontend
+        service: ecotiendas-frontend
+        api: external
     spec:
       containers:
       - name: ecotiendas-frontend
