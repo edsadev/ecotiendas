@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ecotiendas-backend
+  namespace: piloto
+  labels:
+    service: ecotiendas-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: ecotiendas-backend
+  template:
+    metadata:
+      labels:
+        service: ecotiendas-backend
+    spec:
+      containers:
+      - name: ecotiendas-backend
+        image: backend_app
+        imagePullPolicy: Always 
+        ports:
+        - containerPort: 5000             
+      restartPolicy: Always

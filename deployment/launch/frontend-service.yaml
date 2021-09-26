@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ecotiendas-frontend
+spec:
+  selector:
+    app: ecotiendas-frontend
+    tier: ecotiendas-frontend
+  ports:
+  - protocol: "TCP"
+    port: 80
+    targetPort: 80
+  type: LoadBalancer

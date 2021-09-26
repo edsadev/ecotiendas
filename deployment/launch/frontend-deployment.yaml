@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ecotiendas-frontend
+  namespace: "piloto"
+  labels:
+    app: ecotiendas-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ecotiendas-frontend
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: ecotiendas-frontend
+    spec:
+      containers:
+      - name: ecotiendas-frontend
+        image: frontend_app
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 100m
+          limits:
+            cpu: 100m
