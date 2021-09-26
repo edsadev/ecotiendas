@@ -5,8 +5,7 @@ metadata:
   namespace: "piloto"
 spec:
   selector:
-    app: ecotiendas-frontend
-    tier: ecotiendas-frontend
+    service: ecotiendas-frontend
   ports:
   - protocol: "TCP"
     port: 80

@@ -4,7 +4,7 @@ metadata:
   name: ecotiendas-frontend
   namespace: "piloto"
   labels:
-    app: ecotiendas-frontend
+    service: ecotiendas-frontend
 spec:
   replicas: 1
   selector:
