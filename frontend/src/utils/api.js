@@ -55,7 +55,7 @@ export async function getInitialDataEcoAdmin(){
     }
   })
 }
-function helloworld(){
+export function helloworld(){
   return axios({
     method: 'get',
     url: `${ipUrl}${puerto}/`,
