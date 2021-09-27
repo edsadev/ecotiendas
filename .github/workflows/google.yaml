@@ -88,5 +88,5 @@ jobs:
       run: |-
         ./kustomize edit set image frontend_app=gcr.io/$PROJECT_ID/$IMAGE_FRONTEND:$GITHUB_SHA
         ./kustomize edit set image backend_app=gcr.io/$PROJECT_ID/$IMAGE_BACKEND:$GITHUB_SHA
-        .kustomize edit set image reverse_proxy_app=gcr.io/$PROJECT_ID/$IMAGE_PROXY:$GITHUB_SHA
+        ./kustomize edit set image reverse_proxy_app=gcr.io/$PROJECT_ID/$IMAGE_PROXY:$GITHUB_SHA
         ./kustomize build . | kubectl apply -f -
