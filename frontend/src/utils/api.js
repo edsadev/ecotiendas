@@ -58,7 +58,7 @@ export async function getInitialDataEcoAdmin(){
 export function helloworld(){
   return axios({
     method: 'get',
-    url: `${ipUrl}${puerto}/`,
+    url: `${ipUrl}${puerto}`,
   })
 }
 function getMaterials(){
