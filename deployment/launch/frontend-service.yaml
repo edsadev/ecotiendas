@@ -10,6 +10,6 @@ spec:
     service: ecotiendas-frontend
   ports:
   - protocol: "TCP"
-    port: 80
+    port: 5000
     targetPort: 80
   type: LoadBalancer
