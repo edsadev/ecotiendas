@@ -11,6 +11,7 @@ env:
   GKE_ZONE: us-central1-c   # TODO: update to cluster zone
   IMAGE_BACKEND: backend
   IMAGE_FRONTEND: frontend
+  IMAGE_PROXY: proxy
 
 jobs:
   setup-build-publish-deploy:
@@ -63,6 +64,17 @@ jobs:
     - name: Publish Frontend
       run: |-
         docker push "gcr.io/$PROJECT_ID/$IMAGE_FRONTEND:$GITHUB_SHA"
+    
+    - name: Build Proxy
+      run: |-
+        docker build --file=deployment/docker/reverse-proxy.dockerfile\
+          --tag "gcr.io/$PROJECT_ID/$IMAGE_PROXY:$GITHUB_SHA" \
+          --build-arg GITHUB_SHA="$GITHUB_SHA" \
+          --build-arg GITHUB_REF="$GITHUB_REF" \
+          .
+    - name: Publish Proxy
+      run: |-
+        docker push "gcr.io/$PROJECT_ID/$IMAGE_PROXY:$GITHUB_SHA"
    
         
     # Set up kustomize
@@ -76,4 +88,5 @@ jobs:
       run: |-
         ./kustomize edit set image frontend_app=gcr.io/$PROJECT_ID/$IMAGE_FRONTEND:$GITHUB_SHA
         ./kustomize edit set image backend_app=gcr.io/$PROJECT_ID/$IMAGE_BACKEND:$GITHUB_SHA
+        .kustomize edit set image reverse_proxy_app=gcr.io/$PROJECT_ID/$IMAGE_PROXY:$GITHUB_SHA
         ./kustomize build . | kubectl apply -f -

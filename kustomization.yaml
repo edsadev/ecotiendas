@@ -6,3 +6,5 @@ resources:
 - deployment/launch/backend-service.yaml
 - deployment/launch/frontend-deployment.yaml
 - deployment/launch/frontend-service.yaml
+- deployment/launch/reverse-proxy-deployment.yaml
+- deployment/launch/reverse-proxy-service.yaml
