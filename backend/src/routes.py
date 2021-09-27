@@ -578,7 +578,7 @@ def crear_ecoAdmin():
 @app.route('/ecotienda')
 def get_ecotiendas_disponibles():
     ecotiendas = EcoTienda.query.filter(EcoTienda.ecoadmin == None)
-    response = [ecotienda.format() for ecotienda in ecotiendas]
+    response = [ecotienda.response_create() for ecotienda in ecotiendas]
     if len(response) > 0:
         return jsonify({
                             'success': True,
