@@ -15,12 +15,25 @@ spec:
       labels:
         service: ecotiendas-backend
     spec:
+      restartPolicy: Always
+      serviceAccountName: piloto
       containers:
       - name: ecotiendas-backend
         image: backend_app
         imagePullPolicy: Always 
         ports:
-        - containerPort: 5000             
-      restartPolicy: Always
-      serviceAccountName: piloto
+        - containerPort: 5000    
+      - name: cloud-sql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.17
+        command:
+          - "/cloud_sql_proxy"   
+          - "-instances=ecotiendas-327016:us-central1:root=tcp:5432"   
+        securityContext:
+          runAsNonRoot: true
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1"   
+      
+      
       
