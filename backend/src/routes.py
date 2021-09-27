@@ -22,6 +22,12 @@ def index():
     return jsonify({
         "hola":"Edmundo"
     })
+
+@app.route('/hola')
+def hola():
+    return jsonify({
+        "hola":"Edmundo Salamanca"
+    })
 @app.route('/materiales')
 def get_materiales():
     materiales = Material.query.all()
