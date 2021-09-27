@@ -25,7 +25,7 @@ spec:
       - name: ecotiendas-frontend
         image: frontend_app
         ports:
-        - containerPort: 80
+        - containerPort: 5000
         resources:
           requests:
             cpu: 100m
