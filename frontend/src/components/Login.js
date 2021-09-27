@@ -30,7 +30,10 @@ class Login extends React.Component {
       .catch((err) => {
         alert('Hubo un error al tratar de logear')
         console.error(err)
-        console.log(helloworld)
+        helloworld()
+        .then((res) => {
+          console.log(res.data)
+        })
       })
   }
   render (){
