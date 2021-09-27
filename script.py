@@ -10,7 +10,7 @@ with serial.Serial('/dev/cu.usbserial-1240', 9600, timeout=1) as ser:
     print(f'Antes de enviar comando \n{ser.readline().decode("utf-8")}')
     ser.write(b'R')      
     peso = ser.readline().decode("utf-8")
-    print(f'despues de enviar el comando {peso}')
+    print(f"despues de enviar el comando {peso.split(' ')[4].strip()}")
     # data = {
     #     'ecotienda': 1,
     #     'peso': peso

@@ -628,7 +628,7 @@ def crear_ecoTienda():
     else:
         return jsonify({
                         'success': True,
-                        'ecoTienda': ecotienda.format()
+                        'ecoTienda': ecotienda.response_create()
                         })
 @app.route('/crear-ticket', methods = ['POST'])
 def crear_ticket():

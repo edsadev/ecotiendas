@@ -237,6 +237,17 @@ class EcoTienda(db.Model):
                 'cantidad_actual_kg': self.cantidad_actual_kg,
                 'ecoadmin': self.ecoadmin.nombre +' '+ self.ecoadmin.apellido
         }
+    def response_create(self):
+        return {
+                'id': self.id,
+                'nombre': self.nombre,
+                'zonal_id': self.zonal_id,
+                'provincia': self.provincia,
+                'capacidad_maxima_m3': self.capacidad_maxima_m3,
+                'capacidad_maxima_kg': self.capacidad_maxima_kg,
+                'cantidad_actual_m3': self.cantidad_actual_m3,
+                'cantidad_actual_kg': self.cantidad_actual_kg,
+        }
     
     def posicion(self):
         return {
