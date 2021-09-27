@@ -5,8 +5,7 @@ import PersonIcon from '@material-ui/icons/Person';
 import LockIcon from '@material-ui/icons/Lock';
 import { connect } from 'react-redux';
 import { handleLogin } from '../actions/shared'
-import { getInitialUser } from '../utils/api'
-
+import { getInitialUser, helloworld } from '../utils/api'
 import Carga from './UI/Carga'
 
 class Login extends React.Component {
@@ -31,10 +30,7 @@ class Login extends React.Component {
       .catch((err) => {
         alert('Hubo un error al tratar de logear')
         console.error(err)
-        console.log(axios({
-          method: 'get',
-          url: `${ipUrl}${puerto}/`,
-        }))
+        console.log(helloworld)
       })
   }
   render (){
