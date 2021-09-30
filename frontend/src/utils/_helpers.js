@@ -45,3 +45,16 @@ export function renderSemaforo(semaforo){
     )
   }
 }
+
+export function _setLabels(ids, data, tipo_producto = '1'){
+  return ids.map((id) => {
+    console.log('Entre a setLabels')
+    return data[id].tipo_producto.toString() === tipo_producto && data[id].nombre
+  }).filter(index => index !== false)
+}  
+
+export function _setData(ids, data, tipo_producto = '1'){
+  return ids.map((id) => {
+    return data[id].tipo_producto.toString() === tipo_producto && data[id].peso
+  }).filter(index => index !== false)
+}

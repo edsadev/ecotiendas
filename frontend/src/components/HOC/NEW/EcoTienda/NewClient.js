@@ -99,7 +99,7 @@ class NewClient extends React.Component {
                 <input className="inputSingle" required ref={(input) => this.direccion = input}/>
               </div>
               <div>
-                <label className="labelForm">Zona</label>
+                <label className="labelForm">Región</label>
                 <div className="inputContainer">
                   <select className="inputSingle" required ref={(input) => this.sector = input}>
                     {this.state.sectores.length !== 0 && this.state.sectores.map((sector) => (

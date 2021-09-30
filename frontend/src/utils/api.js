@@ -1,12 +1,6 @@
 import axios from 'axios'
 
-// export const ipUrl = 'http://186.101.197.159'
-// export const ipUrl = 'http://192.168.100.45'
-//export const ipUrl = 'http://192.168.36.79'
-export const ipUrl = 'http://192.168.10.24'
-// export const ipUrl = "http://172.20.10.2"
-// export const ipUrl = 'http://192.168.100.4'
-// export const ipUrl = 'http://192.168.100.130'
+export const ipUrl = 'http://192.168.36.224'
 export const puerto = ':5000/'
 
 export function getInitialUser (user, pass) {
