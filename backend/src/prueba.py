@@ -5,7 +5,7 @@ import smtplib
  
 # create message object instance
 
-def enviar_email(correo, ecopuntos):
+def enviar_email(correo, ecopuntos, total_ecopuntos):
     email_content = f"""
     <html>
 
@@ -16,7 +16,7 @@ def enviar_email(correo, ecopuntos):
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <body style="margin: 0 !important; padding: 0 !important; background-color: #eeeeee;" bgcolor="#eeeeee">
-       Se te han acreditado {ecopuntos} ecopuntos
+       Se te han acreditado {ecopuntos} ecopuntos, por el momento posees un total de {total_ecopuntos} ecopuntos
     </body>
 
     </html>
