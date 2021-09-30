@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import MiniHistory from '../../UI/MiniHistory'
 
 import { velocimetro, getStockEcoAdmin, getTipoProductos } from '../../../utils/api'
+import { _setData, _setLabels } from '../../../utils/_helpers'
 
 import { Line } from 'react-chartjs-2';
 
@@ -33,23 +34,6 @@ class Dashboard extends React.Component {
     selected: 4
   }
 
-  setLabels = (ids, data, tipo_producto = '4') => {
-    console.log(data)
-    return ids.map((id) => {
-      return data[id].tipo_producto.toString() === tipo_producto
-        ? data[id].nombre
-        : null
-    })
-  }  
-  
-  setData = (ids, data, tipo_producto = '4') => {
-    return ids.map((id) => {
-      return data[id].tipo_producto.toString() === tipo_producto
-        ? data[id].peso
-        : null
-    })
-  }
-
   componentDidMount(){
     this.setState(() => ({
       options: {
@@ -71,11 +55,11 @@ class Dashboard extends React.Component {
       this.setState(() => ({
         tipos_productos: res[2].data.tipos_productos,
         data: {
-          labels: this.setLabels(ids, data),
+          labels: _setLabels(ids, data),
           datasets: [
             {
               label: 'Kg',
-              data: this.setData(ids, data),
+              data: _setData(ids, data),
               fill: false,
               backgroundColor: 'rgba(0,104,0,1.0)',
               borderColor: 'rgba(0,104,0,.4)',
@@ -128,11 +112,11 @@ class Dashboard extends React.Component {
         this.setState(() => {
           return {
             data: {
-              labels: this.setLabels(ids, data, this.state.selected),
+              labels: _setLabels(ids, data, this.state.selected),
               datasets: [
                 {
                   label: 'Kg',
-                  data: this.setData(ids, data, this.state.selected),
+                  data: _setData(ids, data, this.state.selected),
                   fill: false,
                   backgroundColor: 'rgba(0,104,0,1.0)',
                   borderColor: 'rgba(0,104,0,.4)',
