@@ -19,6 +19,7 @@ class NewRegional extends React.Component {
 
   handleSubmit = (e) => {
     e.preventDefault()
+    this.props.dispatch(toggleLoading(this.props.loading))
     createZonal(this.cedula.value, this.nombre.value, this.apellido.value, this.direccion.value, this.genero.value, this.correo.value, this.celular.value, this.fecha.value, this.state.photo64.result)
       .then(res => {
         if(res.data.success === false){
@@ -59,7 +60,6 @@ class NewRegional extends React.Component {
     const {loading} = this.props
 
     if (loading){
-      debugger;
       return (
         <Container className="container-default background-default">
           <section id="2">

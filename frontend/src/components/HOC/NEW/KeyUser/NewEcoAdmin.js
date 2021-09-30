@@ -28,6 +28,7 @@ class NewRegional extends React.Component {
   }
   handleSubmit = (e) => {
     e.preventDefault()
+    this.props.dispatch(toggleLoading(this.props.loading))
     createEcoAdmin(this.ecotienda.value, this.cedula.value, this.nombre.value, this.apellido.value, this.direccion.value, this.genero.value, this.correo.value, this.state.photo64.result, this.fecha.value, this.celular.value, this.state.zonal_id)
       .then(res => {
         if(res.data.success === false){

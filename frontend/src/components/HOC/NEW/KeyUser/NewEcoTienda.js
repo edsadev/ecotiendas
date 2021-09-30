@@ -39,6 +39,7 @@ class NewRegional extends React.Component {
   }
   handleSubmit = (e) => {
     e.preventDefault()
+    this.props.dispatch(toggleLoading(this.props.loading))
     createEcotienda(JSON.stringify(this.state.lat), JSON.stringify(this.state.lng), this.ecoZonal.value, this.maxm3.value, this.maxkg.value, this.nombre.value, this.provincia.value, this.ciudad.value, this.fecha.value ,this.zona.value)
       .then(res => {
         if(res.data.success === false){

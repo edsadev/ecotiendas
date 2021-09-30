@@ -39,7 +39,6 @@ class NewClient extends React.Component {
   }
   handleSubmit = (e) => {
     e.preventDefault()
-    debugger;
     this.props.dispatch(toggleLoading(this.props.loading))
     const fecha_nacimiento = this.fecha.value
     createEcoAmigo(this.cedula.value, this.nombre.value, this.apellido.value, this.direccion.value, this.genero.value, this.correo.value, this.celular.value, Number.parseInt(this.sector.value), fecha_nacimiento)
