@@ -3,6 +3,9 @@ import styled from 'styled-components'
 import Fade from 'react-reveal/Fade'
 import { getZonas, createEcoAmigo } from '../../../../utils/api'
 import { connect } from 'react-redux'
+import { toggleLoading } from '../../../../actions/loading'
+
+import Carga from '../../../UI/Carga'
 
 class NewClient extends React.Component {
   state={
@@ -36,14 +39,18 @@ class NewClient extends React.Component {
   }
   handleSubmit = (e) => {
     e.preventDefault()
+    debugger;
+    this.props.dispatch(toggleLoading(this.props.loading))
     const fecha_nacimiento = this.fecha.value
     createEcoAmigo(this.cedula.value, this.nombre.value, this.apellido.value, this.direccion.value, this.genero.value, this.correo.value, this.celular.value, Number.parseInt(this.sector.value), fecha_nacimiento)
       .then(res => {
         if(res.data.success === false){
           alert('Algo sucedio, intentalo denuevo')
           console.error(res.data.mensaje)
+          this.props.dispatch(toggleLoading(this.props.loading))
         } else {
           alert('Usuario creado')
+          this.props.dispatch(toggleLoading(this.props.loading))
           this.props.history.push('/new-entry')
         }
       })
@@ -53,6 +60,21 @@ class NewClient extends React.Component {
       })
   }
   render(){
+
+    const {loading} = this.props
+
+    if (loading){
+      return (
+        <Container className="container-default background-default" style={{display: "block"}}>
+          <section id="2">
+            <SubContainer>
+              <Carga text="Enviando..."/>
+            </SubContainer>
+          </section>
+        </Container>
+      )
+    }
+
     return (
       <Container className="container-default">
         <Izq>
@@ -130,7 +152,32 @@ const Container = styled.div`
   background-size: cover;
   display: flex;
   height: 100vh;
+  section[id='2']{
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    #sub{
+      max-width: 500px;
+      display: flex;
+      flex-flow: column;
+      justify-content: space-around;
+      align-items: center;
+      padding: 60px;
+    }
+  }
 `
+
+const SubContainer = styled.div`
+  width: 70vw;
+  height: 75vh;
+  grid-area: container;
+  display: flex;
+  box-shadow: 0px 0px 20px -5px rgba(0,0,0,0.73);
+  border-radius: 40px;
+  background-color: white;
+`
+
 const Izq = styled.div`
   margin: 2% 5%;
   background-color: white;
@@ -153,9 +200,10 @@ const Der = styled.div`
 
 `
 
-function mapStateToProps({authedUser}){
+function mapStateToProps({authedUser, loading}){
   return {
-    authedUser
+    authedUser,
+    loading
   }
 }
 

@@ -692,7 +692,7 @@ def crear_ticket():
             error = True
             DetalleTickets.rollback()
             print(sys.exc_info())
-        enviar_email(cliente.correo, cliente.ecopuntos)
+        enviar_email(cliente.correo, total_ecopuntos)
     else:
         if total_kg > ecotienda.cantidad_actual_kg:
             return jsonify({

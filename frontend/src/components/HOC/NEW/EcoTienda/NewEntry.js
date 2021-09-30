@@ -127,9 +127,9 @@ class NewEntry extends React.Component {
     createEntry(id_usuario, authedUser.id, entrada, total_kg, total_m3, total_ecopuntos, materiales)
       .then((res) => {
         if(res.data.success === false){
-          alert(res.data.mensaje)
+          alert('Algo sucedio, intentalo denuevo')
           this.props.dispatch(toggleLoading(this.props.loading))
-
+          console.error(res.data.mensaje)
         } else {
           alert('Ingreso enviado correctamente')
           this.props.dispatch(toggleLoading(this.props.loading))

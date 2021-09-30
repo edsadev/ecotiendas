@@ -4,6 +4,9 @@ import Fade from 'react-reveal/Fade'
 import { createZonal } from '../../../../utils/api'
 import { connect } from 'react-redux'
 import GoBackArrow from '../../../UI/GoBackArrow'
+import { toggleLoading } from '../../../../actions/loading'
+
+import Carga from '../../../UI/Carga'
 
 class NewRegional extends React.Component {
   state = {
@@ -20,9 +23,11 @@ class NewRegional extends React.Component {
       .then(res => {
         if(res.data.success === false){
           alert('Algo sucedio, intentalo denuevo')
+          this.props.dispatch(toggleLoading(this.props.loading))
           console.error(res.data.mensaje)
         } else {
           alert('EcoZonal creado')
+          this.props.dispatch(toggleLoading(this.props.loading))
           this.props.history.push('/')
         }
       })
@@ -50,6 +55,22 @@ class NewRegional extends React.Component {
     }
   }
   render(){
+
+    const {loading} = this.props
+
+    if (loading){
+      debugger;
+      return (
+        <Container className="container-default background-default">
+          <section id="2">
+            <SubContainer>
+              <Carga text="Enviando..."/>
+            </SubContainer>
+          </section>
+        </Container>
+      )
+    }
+
     return (
       <Container className="container-default background-default">
         <Fade>
@@ -120,6 +141,12 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  section[id='2']{
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 `
 
 const SubContainer = styled.div`
@@ -178,9 +205,10 @@ const Img = styled.img`
   border-radius: 50%;
 `
 
-function mapStateToProps({authedUser}){
+function mapStateToProps({authedUser, loading}){
   return {
-    authedUser
+    authedUser,
+    loading
   }
 }
 

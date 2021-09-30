@@ -4,6 +4,10 @@ import styled from 'styled-components'
 import Fade from 'react-reveal/Fade'
 import { createExit, balanza } from '../../../../utils/api'
 
+import { toggleLoading } from '../../../../actions/loading'
+
+import Carga from '../../../UI/Carga'
+
 class NewExit extends React.Component {
   state = {
     peso: 0,
@@ -13,7 +17,6 @@ class NewExit extends React.Component {
     total_kg: 0,
     total_m3: 0,
     total_ecopuntos: 0,
-    loading: false
   }
   addMaterial = (e) => {
     e.preventDefault()
@@ -91,15 +94,19 @@ class NewExit extends React.Component {
   }
   handleSubmit = (e) => {
     e.preventDefault()
+    this.props.dispatch(toggleLoading(this.props.loading))
     const {entrada, materiales, total_kg, total_m3, total_ecopuntos } = this.state
     const {authedUser} = this.props
     console.log(entrada , materiales, total_kg, total_m3, total_ecopuntos)
     createExit(authedUser.id, entrada, total_kg, total_m3, materiales)
     .then((res) => {
       if(res.data.success === false){
-        alert(res.data.mensaje)
+        alert("Algo sucedio, intentalo nuevamente")
+        this.props.dispatch(toggleLoading(this.props.loading))
+        console.error(res.data.mensaje)
       } else {
         alert('Ingreso enviado correctamente')
+        this.props.dispatch(toggleLoading(this.props.loading))
         this.props.history.push('/')
       }
     })
@@ -109,15 +116,17 @@ class NewExit extends React.Component {
     })
   }
   render() {
-    const {materiales, toggle, loading} = this.state
-    const {materialId, materials} = this.props
+    const {materiales, toggle} = this.state
+    const {materialId, materials, loading} = this.props
 
     if (loading){
       return (
         <Container className="container-default background-default">
-          <SubContainer>
-
-          </SubContainer>
+          <section id="2">
+            <SubContainer>
+              <Carga text="Enviando..."/>
+            </SubContainer>
+          </section>
         </Container>
       )
     }
@@ -272,11 +281,12 @@ const Form = styled.form`
   }
 `
 
-function mapStateToProps({ materials, authedUser }){
+function mapStateToProps({ materials, authedUser, loading }){
   return {
     materialId: Object.keys(materials),
     materials, 
-    authedUser
+    authedUser,
+    loading
   }
 }
 

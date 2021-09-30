@@ -4,6 +4,9 @@ import Fade from 'react-reveal/Fade'
 import { createEcoAdmin } from '../../../../utils/api'
 import { connect } from 'react-redux'
 import GoBackArrow from '../../../UI/GoBackArrow'
+import { toggleLoading } from '../../../../actions/loading'
+
+import Carga from '../../../UI/Carga'
 
 class NewEcosupervisor extends React.Component {
   check = () => {
@@ -14,29 +17,12 @@ class NewEcosupervisor extends React.Component {
     createEcoAdmin(this.props.authedUser.id ,this.user.value, this.cedula.value, this.nombre.value, this.apellido.value, this.direccion.value, this.genero.value, this.correo.value, this.celular.value, this.fecha.value)
       .then(res => {
         if(res.data.success === false){
-          // 0 -> Cedula ya registrada, 1 -> Correo ya en uso, 2 -> Celular ya en uso
-          const span = document.createElement('span')
-          span.style.fontWeight = 400
-          span.style.fontSize = '12px'
-          span.style.color = 'red'
-          switch(0){
-            case 0:
-              span.innerHTML=`<br>${res.data.mensaje}`
-              document.getElementById('cedula').appendChild(span)
-              break;
-            case 1:
-              span.innerHTML=`<br>${res.data.mensaje}`
-              document.getElementById('correo').appendChild(span)
-              break;
-            case 2:
-              span.innerHTML=`<br>${res.data.mensaje}`
-              document.getElementById('celular').appendChild(span)
-              break;
-            default:
-              alert('Algo sucedio, intentalo denuevo')
-          }
+          alert('Algo sucedio, intentalo denuevo')
+          this.props.dispatch(toggleLoading(this.props.loading))
+          console.error(res.data.mensaje)
         } else {
           alert('Usuario creado')
+          this.props.dispatch(toggleLoading(this.props.loading))
           this.props.history.push('/')
         }
       })
@@ -51,6 +37,21 @@ class NewEcosupervisor extends React.Component {
     img.src = URL.createObjectURL(e.target.files[0])
   }
   render(){
+
+    const {loading} = this.props
+
+    if (loading){
+      return (
+        <Container className="container-default background-default">
+          <section id="2">
+            <SubContainer>
+              <Carga text="Enviando..."/>
+            </SubContainer>
+          </section>
+        </Container>
+      )
+    }
+
     return (
       <Container className="container-default background-default">
         <Fade>
@@ -188,9 +189,10 @@ const Img = styled.img`
   border-radius: 50%;
 `
 
-function mapStateToProps({authedUser}){
+function mapStateToProps({authedUser, loading}){
   return {
-    authedUser
+    authedUser,
+    loading
   }
 }
 
