@@ -6,6 +6,9 @@ import { connect } from 'react-redux'
 import GoBackArrow from '../../../UI/GoBackArrow'
 import { toggleLoading } from '../../../../actions/loading'
 
+
+import { _actualDate } from '../../../../utils/_helpers'
+
 import Carga from '../../../UI/Carga'
 
 import GoogleMapReact from 'google-map-react';
@@ -154,7 +157,7 @@ class NewRegional extends React.Component {
                 <div>
                   <label className="labelForm">Fecha de apertura</label>
                   <div className="inputContainer">
-                    <input className="inputSingle" required ref={(input) => this.fecha = input} type="date"/>
+                    <input className="inputSingle" required ref={(input) => this.fecha = input} type="date" min={_actualDate()}/>
                   </div>
                 </div>
                 <button onClick={this.handleSubmit} style={{width: '100%'}} className="btn-form">Registrar</button>

@@ -8,6 +8,8 @@ import { toggleLoading } from '../../../../actions/loading'
 
 import Carga from '../../../UI/Carga'
 
+import { _actualDate } from '../../../../utils/_helpers'
+
 class NewEcosupervisor extends React.Component {
   check = () => {
     console.log(this.cedula.value, this.nombre.value, this.apellido.value, this.direccion.value, this.genero.value, this.correo.value, this.celular.value, this.fecha.value, this.userPhoto.value)
@@ -96,7 +98,7 @@ class NewEcosupervisor extends React.Component {
                   <div style={{marginLeft: '24px', flexGrow: 1}}>
                     <label className="labelForm">Fecha de nacimiento</label>
                     <div className="inputContainer">
-                      <input className="inputSingle" required ref={(input) => this.fecha = input} type="date"/>
+                      <input className="inputSingle" required ref={(input) => this.fecha = input} type="date" max={_actualDate()}/>
                     </div>
                   </div>
                 </div>
