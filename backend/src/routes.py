@@ -31,10 +31,12 @@ def hola():
 @app.route('/materiales')
 def get_materiales():
     materiales = Material.query.all()
+    
     response = {}
     for material in materiales:
         response[material.id] = material.format()
     error = False
+    
     if len(response) > 0:
         return jsonify({
                             'success': True,
@@ -212,7 +214,7 @@ def login():
                         'succes': True,
                         'rango': usuario.tipo,
                         'id': zonal.id,
-                        'foto': zonal.foto.decode("utf-8")
+                        # 
                         }
             else:
                 ecotiendas = EcoTienda.query.all()
@@ -338,7 +340,7 @@ def crear_producto():
     else:
         return jsonify({
                         'success': True,
-                        'producto': producto.format()
+                        'producto': producto.response_create()
                         })
 
 
@@ -365,7 +367,7 @@ def crear_premio():
     else:
         return jsonify({
                         'success': True,
-                        'premio': premio.format()
+                        'premio': premio.response_create()
                         })
 
 @app.route('/premios')
@@ -458,7 +460,7 @@ def crear_zonal():
     else:
         return jsonify({
                         'success': True,
-                        'zonal': zonal.format()
+                        'zonal': zonal.response_create()
                         })
 @app.route('/bodeguero', methods = ['POST'])
 def crear_bodeguero():
@@ -573,7 +575,7 @@ def crear_ecoAdmin():
     else:
         return jsonify({
                         'success': True,
-                        'ecoAdmin': ecoAdmin.format()
+                        'ecoAdmin': ecoAdmin.response_create()
                         })
 @app.route('/ecotienda')
 def get_ecotiendas_disponibles():
@@ -825,7 +827,7 @@ def ingresar_peso():
     print(data)
     data_dictionary = json.loads(data)
     ecotienda_id = data_dictionary['ecotienda']
-    peso = math.floor(data_dictionary['peso'])
+    peso = float(data_dictionary['peso'])
     print(data_dictionary)
     try:
         record = Records(ecotienda_id = ecotienda_id, peso = peso)

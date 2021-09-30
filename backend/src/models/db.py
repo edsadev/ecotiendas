@@ -1,5 +1,5 @@
 import os
-from sqlalchemy import Column, String, Integer, create_engine
+from sqlalchemy import Column, String, Integer, create_engine, Float
 from flask_sqlalchemy import SQLAlchemy
 import json
 from src import db
@@ -91,6 +91,16 @@ class Zonal(db.Model):
                 'foto': self.foto.decode("utf-8")
         }
     
+    def response_create(self):
+        return {
+
+                'id': self.id,
+                'nombre': self.nombre,
+                'genero': self.genero,
+                'correo': self.correo,
+                'fecha': self.fecha_registro.strftime("%m/%d/%Y, %H:%M:%S"),
+        }
+    
     def insert(self):
         db.session.add(self)
         db.session.commit()
@@ -180,7 +190,19 @@ class EcoAdmin(db.Model):
                 'fecha_nacimiento': self.fecha_nacimiento,
                 'correo': self.correo,
                 'telefono': '0'+str(self.telefono),
-                'foto': self.foto.decode("utf-8"),
+                'zonal_id': self.zonal_id,
+                'foto': self.foto.decode("utf-8")
+        }
+    def response_create(self):
+        return {
+            'id': self.id,
+                'nombre': self.nombre,
+                'cedula': str(self.cedula),
+                'apellido': self.apellido,
+                'fecha_registro': self.fecha_registro.strftime("%m/%d/%Y, %H:%M:%S"),
+                'fecha_nacimiento': self.fecha_nacimiento,
+                'correo': self.correo,
+                'telefono': '0'+str(self.telefono),
                 'zonal_id': self.zonal_id
         }
     def nombres(self):
@@ -377,7 +399,7 @@ class Records(db.Model):
     __tablename__ = 'records'
     id = db.Column(db.Integer, primary_key = True)
     ecotienda_id = db.Column(db.Integer, db.ForeignKey('ecoTiendas.id'), nullable = False)
-    peso = db.Column(db.Integer, nullable = False)
+    peso = db.Column(db.Float, nullable = False)
 
 
     def format(self):
@@ -512,6 +534,14 @@ class Material(db.Model):
                 'tipo_material_id': self.tipo_material_id,
                 'cantidad_m3': self.cantidad_m3,
                 'foto': self.foto.decode('utf-8')
+        }
+    def response_create(self):
+        return {
+                'id': self.id,
+                'nombre': self.nombre,
+                'ecopuntos': self.ecopuntos,
+                'tipo_material_id': self.tipo_material_id,
+                'cantidad_m3': self.cantidad_m3,
         }
     
     def insert(self):
@@ -659,8 +689,17 @@ class Producto(db.Model):
                 'nombre': self.nombre,
                 'ecopuntos': self.ecopuntos,
                 'tipo_material_id': self.tipo_producto_id,
+                'stock': self.stock,
                 'foto': self.foto.decode('utf-8'),
-                'stock': self.stock
+        }
+    
+    def response_create(self):
+        return {
+                'id': self.id,
+                'nombre': self.nombre,
+                'ecopuntos': self.ecopuntos,
+                'tipo_material_id': self.tipo_producto_id,
+                'stock': self.stock,
         }
     
     def insert(self):
