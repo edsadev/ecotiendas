@@ -5,13 +5,16 @@ import time
 
 url = 'http://localhost:5000/record'
 headers = {'content-type': 'application/json'}
+puerto = '/dev/cu.usbserial-1240'
+baud_rate = 9600
 pesos = []
 contador = 0
-while true:
+while True:
 
-    with serial.Serial('/dev/cu.usbserial-1240', 9600, timeout=1) as ser:
-        peso = ser.readline().decode("utf-8").split(' ')[4].strip()
-        if peso in pesos and int(peso) != 0:
+    with serial.Serial(puerto, baud_rate, timeout=1) as ser:
+        peso = ser.readline().decode("utf-8").split(' ')[4].strip()[:-2]
+        print(peso)
+        if peso in pesos and peso != '0.00':
             contador +=1
         else:
             pesos.append(peso)

@@ -3,7 +3,7 @@ import axios from 'axios'
 // export const ipUrl = 'http://186.101.197.159'
 // export const ipUrl = 'http://192.168.100.45'
 //export const ipUrl = 'http://192.168.36.79'
-export const ipUrl = 'http://35.192.44.68'
+export const ipUrl = 'http://192.168.10.24'
 // export const ipUrl = "http://172.20.10.2"
 // export const ipUrl = 'http://192.168.100.4'
 // export const ipUrl = 'http://192.168.100.130'
