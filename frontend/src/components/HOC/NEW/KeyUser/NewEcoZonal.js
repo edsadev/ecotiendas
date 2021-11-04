@@ -6,6 +6,8 @@ import { connect } from 'react-redux'
 import GoBackArrow from '../../../UI/GoBackArrow'
 import { toggleLoading } from '../../../../actions/loading'
 
+import { _actualDate } from '../../../../utils/_helpers'
+
 import Carga from '../../../UI/Carga'
 
 class NewRegional extends React.Component {
@@ -19,6 +21,7 @@ class NewRegional extends React.Component {
 
   handleSubmit = (e) => {
     e.preventDefault()
+    this.props.dispatch(toggleLoading(this.props.loading))
     createZonal(this.cedula.value, this.nombre.value, this.apellido.value, this.direccion.value, this.genero.value, this.correo.value, this.celular.value, this.fecha.value, this.state.photo64.result)
       .then(res => {
         if(res.data.success === false){
@@ -59,7 +62,6 @@ class NewRegional extends React.Component {
     const {loading} = this.props
 
     if (loading){
-      debugger;
       return (
         <Container className="container-default background-default">
           <section id="2">
@@ -105,7 +107,7 @@ class NewRegional extends React.Component {
                   <div style={{marginLeft: '24px', flexGrow: 1}}>
                     <label className="labelForm">Fecha de nacimiento</label>
                     <div className="inputContainer">
-                      <input className="inputSingle" required ref={(input) => this.fecha = input} type="date"/>
+                      <input className="inputSingle" required ref={(input) => this.fecha = input} type="date" max={_actualDate()}/>
                     </div>
                   </div>
                 </div>

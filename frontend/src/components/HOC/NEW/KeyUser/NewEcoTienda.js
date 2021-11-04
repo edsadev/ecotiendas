@@ -6,6 +6,9 @@ import { connect } from 'react-redux'
 import GoBackArrow from '../../../UI/GoBackArrow'
 import { toggleLoading } from '../../../../actions/loading'
 
+
+import { _actualDate } from '../../../../utils/_helpers'
+
 import Carga from '../../../UI/Carga'
 
 import GoogleMapReact from 'google-map-react';
@@ -39,6 +42,7 @@ class NewRegional extends React.Component {
   }
   handleSubmit = (e) => {
     e.preventDefault()
+    this.props.dispatch(toggleLoading(this.props.loading))
     createEcotienda(JSON.stringify(this.state.lat), JSON.stringify(this.state.lng), this.ecoZonal.value, this.maxm3.value, this.maxkg.value, this.nombre.value, this.provincia.value, this.ciudad.value, this.fecha.value ,this.zona.value)
       .then(res => {
         if(res.data.success === false){
@@ -153,7 +157,7 @@ class NewRegional extends React.Component {
                 <div>
                   <label className="labelForm">Fecha de apertura</label>
                   <div className="inputContainer">
-                    <input className="inputSingle" required ref={(input) => this.fecha = input} type="date"/>
+                    <input className="inputSingle" required ref={(input) => this.fecha = input} type="date" min={_actualDate()}/>
                   </div>
                 </div>
                 <button onClick={this.handleSubmit} style={{width: '100%'}} className="btn-form">Registrar</button>

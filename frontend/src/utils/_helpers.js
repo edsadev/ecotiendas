@@ -57,3 +57,7 @@ export function _setData(ids, data, tipo_producto = '1'){
     return data[id].tipo_producto.toString() === tipo_producto && data[id].peso
   }).filter(index => index !== false)
 }
+
+export function _actualDate(){
+  return `${new Date().getFullYear()}-${(new Date().getMonth() + 1) < 10 ? ('0' + (new Date().getMonth() + 1)) : (new Date().getMonth() + 1) }-${new Date().getDate()}`
+}
