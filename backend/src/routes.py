@@ -11,8 +11,10 @@ from datetime import datetime
 import pandas as pd
 import base64
 import math
+
 @app.after_request
 def after_request(response):
+    
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
     return response
@@ -155,9 +157,11 @@ def get_cedulas():
 
 @app.route('/login', methods=['POST'])
 def login():
+    print("hola")
     error = 'd'
     response = {}
     data = request.data
+    print(data)
     data_dictionary = json.loads(data)
     print(data_dictionary)
     if data_dictionary["user"]=="keyUser" and data_dictionary["pass"] == "123456789":
@@ -289,6 +293,7 @@ def crear_ecoAmigo():
                         'success': True,
                         'ecoAmigo': ecoAmigo.format()
                         })
+
 @app.route('/tipos-productos')
 def get_tipos_productos():
     tipo_materiales = TipoMaterial.query.all()
@@ -577,6 +582,7 @@ def crear_ecoAdmin():
                         'success': True,
                         'ecoAdmin': ecoAdmin.response_create()
                         })
+
 @app.route('/ecotienda')
 def get_ecotiendas_disponibles():
     ecotiendas = EcoTienda.query.filter(EcoTienda.ecoadmin == None)
@@ -632,6 +638,7 @@ def crear_ecoTienda():
                         'success': True,
                         'ecoTienda': ecotienda.response_create()
                         })
+                    
 @app.route('/crear-ticket', methods = ['POST'])
 def crear_ticket():
     error = False
