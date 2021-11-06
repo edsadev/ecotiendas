@@ -16,7 +16,6 @@ spec:
         service: ecotiendas-backend
     spec:
       restartPolicy: Always
-      serviceAccountName: piloto
       containers:
       - name: ecotiendas-backend
         image: backend_app
@@ -24,12 +23,26 @@ spec:
         ports:
         - containerPort: 5000    
       - name: cloud-sql-proxy
-        image: gcr.io/cloudsql-docker/gce-proxy:latest
-        command:
-          - "/cloud_sql_proxy"   
-          - "-instances=ecotiendas-327016:us-central1:root=tcp:5432"   
-        securityContext:
-          runAsNonRoot: true
+          image: gcr.io/cloudsql-docker/gce-proxy:1.17
+          command:
+            - "/cloud_sql_proxy"
+            - "-instances=ecotiendas-327016:us-central1:root=tcp:5432"
+            - "-credential_file=/secrets/key.json"
+          securityContext:
+            runAsNonRoot: true
+          volumeMounts:
+          - name: cloudsql-instance-credentials
+            mountPath: /secrets/
+            readOnly: true
+          resources:
+            requests:
+
+              memory: "0.5Gi"
+              cpu:    "100m"
+      volumes:
+      - name: cloudsql-instance-credentials
+        secret:
+          secretName: cloudsql-instance-credentials
           
       
       

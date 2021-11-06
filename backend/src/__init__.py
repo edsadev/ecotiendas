@@ -4,7 +4,7 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 import os
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] ='postgresql+psycopg2://postgres:tbwIr0Bj4eb1Jzov@34.123.179.176:5432/ecotiendas' # 'postgresql+psycopg2://postgres:123456789@localhost:5432/prueba2'
+app.config['SQLALCHEMY_DATABASE_URI'] ='postgresql+psycopg2://postgres:tbwIr0Bj4eb1Jzov@localhost:5432/ecotiendas' # 'postgresql+psycopg2://postgres:123456789@localhost:5432/prueba2'
 root_path = os.path.dirname(os.path.abspath(__file__))
 app.config['UPLOAD_FOLDER'] = os.path.join(root_path, 'reportes')
 db = SQLAlchemy(app)

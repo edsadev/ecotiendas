@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "ecotiendas-327016",
+  "private_key_id": "f96e853eb3c65f503624ed4edf3b1f0536ab6b32",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCtVWbbNHhbCsqT\nMqjvMkO/HIj6UQzaFA1O9oK09hyASKiQHHBASxQO5sm/V5ms4wlPIUIQDFdrFKQL\nuHEnWJ2CjWaQkVJd/xq9Wy9JWV1AOhFe7M2VWe/F38wn4ZPf7VM38bqf3O1Bp3Mb\ncUSuAnncGbRT4pkNEJMGpgmmNMQ2KHLgTLKP8rrI67DB2tnNHpvRjiwx4zUxBiSU\n+RHIuufETDpqNw/xorCGd442nr8pvfsS4aDSm8czk5JMkBA/e/IaceEa792et4VQ\nMtSZxDgOW7stWjQMWSPR84KW9DIvUctI2pIu3em/A0BEp4eGvfr/Fp558qWGxA2y\nyJ/pNSrxAgMBAAECggEACMYGHQnYnrka3F0H1oWrjrCd0VfJZ/90Vf8dyhWcBzVG\nTPcXinWSaBev9g6z0V+zkK0NCD1rrlie3hYBqj1uyZUpMB+e9PGM87E6IUMT+ISH\n7Q9c75acD56+mXUuVDsRx4bljKJ04uocJjMzSACJlQW7DjTtzM6+NmuwmNhaZyhK\n/y8u/+vGZ2u9E3Dvwuw4mSGpf13SDrs2c8n5M4KzrWm1u80C661NX4kxjh6FEUx6\ngABytAPouinU61DfpNwXCSM9mdJ8d1bvV2MuIfuJb5CQATWPcZ03JaCIVGc9K1KC\ncZ03H0oafn2ARD+UwStA5j2dpdk6rEuVYRmu39xHAQKBgQDtspbB8bSrGwyTI9rf\nmDly/W2y5vmU34Fon30P1hUzJJhzWzkLImC3uiG1MD7JU+/lMlpPTHeRgYr6BY/K\nSKUu25OlQzLmesEHcmnO5lLCKWLZJhMFebe/rcC4PXqp80dGHL2AxRQe2Xjg5vVH\nUgXARAkzEnXgVTmzXx2QoFTQQQKBgQC6rhegPCx6vZ98wb/BHCS6hak7iIKbZQqi\nJQc/IKFUsJK3mp3iLuo5GGIwNJ1WJBfDEpkhI8bP/vhJKg7hmlRtOCveurvhy+XF\nF0H4FjXymNxwhoe+fFqanjGsvVSZf0OCwEqevBgthAOq6vPnq4GuvY8xhxlVAJfn\nBGNZZ8WusQKBgGLa+0f9th3TSg+Hwedr77ibHZxh4zq/GZrheam0Z2y1s5GGRtsS\nmRbQGmS4g+RHPGYd4uFH9BJXxezlkz+Vpt0uBOGeaPTh6JWoR8j8kT6e57VX2GFW\nlczp/lShfPphaysFmOqNDCkoWNVwOGJJAotLwGe1LcD2sOCgljMn+x4BAoGABuJ+\nypENjuVJaX93w/Z2wE5HpINvVa3PS5WUA9b/PDFa59yS8BGM39gvXtnB57hjC/W2\nogtAvNEJdSFQ9S8M6A5HR+qZHUW4zqEB9NVU3gKXNqsvfG33pXYqHNXKtfKEmeDf\nn6UOOzeALyCFKEkh+kDRdCEoZQMllwaJZ3W1S7ECgYEAmckSk5gIpbBN7xSLnyH3\nPSD00aqlIWUfD5QTaIcV05H10SI3iB4uhBiYvhAj+vgLsjdCF9e4YijrOEVNc6cY\nEngpTI+a8K0q9H/IkblzmGjzdFqp+9tq4xEEKpTEF9CMpdDt1rcz517p/pxj14eW\nUkeUP3ShVM07rMhnDyeIXJo=\n-----END PRIVATE KEY-----\n",
+  "client_email": "cloudsql-proxy@ecotiendas-327016.iam.gserviceaccount.com",
+  "client_id": "107209841187349672671",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/cloudsql-proxy%40ecotiendas-327016.iam.gserviceaccount.com"
+}
