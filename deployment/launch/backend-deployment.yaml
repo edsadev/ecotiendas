@@ -17,12 +17,12 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-      - name: ecotiendas-backend
-        image: backend_app
-        imagePullPolicy: Always 
-        ports:
-        - containerPort: 5000    
-      - name: cloud-sql-proxy
+        - name: ecotiendas-backend
+          image: backend_app
+          imagePullPolicy: Always 
+          ports:
+          - containerPort: 5000    
+        - name: cloud-sql-proxy
           image: gcr.io/cloudsql-docker/gce-proxy:1.17
           command:
             - "/cloud_sql_proxy"
@@ -36,7 +36,6 @@ spec:
             readOnly: true
           resources:
             requests:
-
               memory: "0.5Gi"
               cpu:    "100m"
       volumes:
