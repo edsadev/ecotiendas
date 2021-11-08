@@ -161,9 +161,7 @@ def login():
     error = 'd'
     response = {}
     data = request.data
-    print(data)
     data_dictionary = json.loads(data)
-    print(data_dictionary)
     if data_dictionary["user"]=="keyUser" and data_dictionary["pass"] == "123456789":
         return jsonify({
                         "id": 1,
@@ -183,26 +181,44 @@ def login():
         usuario = Usuario.query.filter(Usuario.usuario == data_dictionary["user"]).first()
         contraseña = data_dictionary['pass']
         if usuario.contraseña == contraseña:
-            print("hola")
             error = False
             if usuario.tipo == "ecoadmin":
-                print("hola2")
                 ecoadmin = EcoAdmin.query.filter(EcoAdmin.usuario_id == usuario.id).first()
                 ecotienda = EcoTienda.query.filter(EcoTienda.ecoadmin_id == ecoadmin.id).first()
+                foto = ''
+                if ecoadmin.foto:
+                    foto = ecoadmin.foto.decode("utf-8")
+                else:
+                    pass
                 response = {
                         'succes': True,
                         'rango': usuario.tipo,
                         'id': ecotienda.id,
                         'nombre': ecoadmin.nombre + " " + ecoadmin.apellido,
-                        'foto': ecoadmin.foto.decode("utf-8")
+                        'foto': foto
                         }
             elif usuario.tipo == "ecoamigo":
                 ecoamigo = EcoAmigo.query.filter(EcoAmigo.usuario_id == usuario.id).first()
+                foto = ''
+                if ecoamigo.foto:
+                    foto = ecoamigo.foto.decode("utf-8")  
+                else:
+                    pass
                 response = {
                         'succes': True,
+                        'cedula': ecoamigo.cedula,
+                        'direccion': ecoamigo.direccion,
+                        'genero': ecoamigo.genero,
+                        'correo': ecoamigo.correo,
+                        'telefono': ecoamigo.telefono,
+                        'fecha_nacimiento': ecoamigo.fecha_nacimiento,
                         'rango': usuario.tipo,
                         'id': ecoamigo.id,
-                        'ecopuntos': ecoamigo.ecopuntos
+                        'apellido': ecoamigo.apellido,
+                        'ecopuntos': ecoamigo.ecopuntos,
+                        'foto': foto,
+                        'nombre': ecoamigo.nombre,
+
                         }
             elif usuario.tipo == "ecobodeguero":
                 bodeguero = Bodeguero.query.filter(Bodeguero.usuario_id == usuario.id).first()
@@ -214,11 +230,16 @@ def login():
                         }
             elif usuario.tipo == "ecozonal":
                 zonal = Zonal.query.filter(Zonal.usuario_id == usuario.id).first()
+                foto = ''
+                if zonal.foto:
+                    foto = zonal.foto.decode("utf-8")
+                else:
+                    pass
                 response = {
                         'succes': True,
                         'rango': usuario.tipo,
                         'id': zonal.id,
-                        # 
+                        'foto': foto
                         }
             else:
                 ecotiendas = EcoTienda.query.all()
@@ -235,6 +256,116 @@ def login():
         abort(404)
     else:
         return jsonify(response)
+@app.route('/eco-amigos-update', methods=['POST'])
+def actualizar_ecoAmigo():
+    error = False
+    data = request.data
+    data_dictionary = json.loads(data)
+    ecoamigo_id = data_dictionary["id"]
+    nombre = data_dictionary["nombre"]
+    apellido = data_dictionary["apellido"]
+    direccion = data_dictionary["direccion"]
+    genero = data_dictionary["genero"]
+    telefono = data_dictionary["celular"]
+    fecha_nacimiento = data_dictionary["fecha_nacimiento"]
+    foto = data_dictionary["foto"].encode('utf-8')
+    ecoamigo = EcoAmigo.query.filter(EcoAmigo.id == ecoamigo_id).first()
+
+    ecoamigo.nombre = nombre
+    ecoamigo.apellido = apellido
+    ecoamigo.direccion = direccion
+    ecoamigo.genero = genero
+    ecoamigo.telefono = telefono
+    ecoamigo.fecha_nacimiento = fecha_nacimiento
+    ecoamigo.foto = foto
+
+    try:
+        ecoamigo.update()
+    except:
+        error = True
+        EcoAmigo.rollback()
+        print(sys.exc_info())
+
+    if error:
+        abort(422)
+    else:
+        return jsonify({
+                        'success': True,
+                        'mensaje': "Se actualizaron tus datos"
+                        })
+
+
+@app.route('/contrasena-update', methods=['POST'])
+def actualizar_contraseña():
+    error = False
+    data = request.data
+    data_dictionary = json.loads(data)
+    nueva_contrasena = data_dictionary["nueva_contrasena"]
+    vieja_contrasena = data_dictionary["vieja_contrasena"]
+    ecoamigo_id = data_dictionary["id"]
+    ecoamigo = EcoAmigo.query.filter(EcoAmigo.id == ecoamigo_id).first()
+    usuario = Usuario.query.filter(Usuario.id == ecoamigo.usuario_id).first()
+
+    if usuario.contraseña == vieja_contrasena:
+
+        usuario.contraseña = nueva_contrasena
+        try:
+            usuario.update()
+        except:
+            error = True
+            Usuario.rollback()
+            print(sys.exc_info())
+
+        if error:
+            abort(422)
+        else:
+            return jsonify({
+                            'success': True,
+                            'mensaje': "Se actualizo tu contraseña"
+                            })
+    else:
+        return jsonify({
+                            'success': False,
+                            'mensaje': "Ingresa tu contraseña actual válida y vuelva a intentarlo"
+                            })
+    
+
+@app.route('/correo-update', methods=['POST'])
+def actualizar_correo():
+    error = False
+    data = request.data
+    data_dictionary = json.loads(data)
+    correo = data_dictionary["correo"]
+    ecoamigo_id = data_dictionary["id"]
+    ecoamigo = EcoAmigo.query.filter(EcoAmigo.id == ecoamigo_id).first()
+    usuario = Usuario.query.filter(Usuario.id == ecoamigo.usuario_id).first()
+
+    if Usuario.query.filter(Usuario.usuario == correo).first():
+        return jsonify({
+                        'success': False,
+                        'mensaje': "El correo no esta disponible",
+                        'correo': ecoamigo.correo
+                        })
+    else:
+        ecoamigo.correo = correo
+        usuario.usuario = correo
+        try:
+            usuario.update()
+            ecoamigo.update()
+        except:
+            error = True
+            Usuario.rollback()
+            EcoAmigo.rollback()
+            print(sys.exc_info())
+
+    if error:
+        abort(422)
+    else:
+        return jsonify({
+                        'success': True,
+                        'mensaje': "Se actualizo tu correo",
+                        'correo': ecoamigo.correo
+                        })
 
 @app.route('/eco-amigos', methods = ['POST'])
 def crear_ecoAmigo():
@@ -252,6 +383,7 @@ def crear_ecoAmigo():
     usuario = data_dictionary["usuario"]
     contraseña = data_dictionary["contraseña"]
     sector_id = data_dictionary["sector"]
+    foto = data_dictionary["foto"].encode('utf-8')
     tipo = "ecoamigo"
     if Usuario.query.filter(Usuario.usuario == usuario).first():
         return jsonify({
@@ -279,7 +411,7 @@ def crear_ecoAmigo():
         try:
             
             ecoAmigo = EcoAmigo(cedula = cedula, fecha_nacimiento = fecha_nacimiento, nombre = nombre, apellido = apellido, direccion = direccion, genero = genero, correo = correo,
-                                telefono = telefono, sector_id = sector_id, usuario_id = usuario.id)
+                                telefono = telefono, sector_id = sector_id, usuario_id = usuario.id, foto = foto)
             ecoAmigo.insert()
         except:
             error = True
@@ -390,6 +522,41 @@ def get_premios():
                             'success': False,
                             'mensaje': "No Hay premios"
                             })
+
+def calcular_distancia(lat1, lon1, lat2, lon2):
+    lat1 = lat1
+    lon1 = lon1
+
+    lat2 = lat2
+    lon2 = lon2
+
+    rad = math.pi/180
+    dlat = lat2-lat1
+    dlon = lon2-lon1
+    R=6372.795477598
+    a=(math.sin(rad*dlat/2))**2 + math.cos(rad*lat1)*math.cos(rad*lat2)*(math.sin(rad*dlon/2))**2
+    distancia=2*R*math.asin(math.sqrt(a))
+    return distancia
+
+@app.route('/solicitar-ecopicker', methods=['POST'])
+def solicitar_ecopicker():
+    data = request.data
+    data_dictionary = json.loads(data)
+    latitud = data_dictionary["latitud"]
+    longitud = data_dictionary["longitud"]
+    ecotiendas = EcoTienda.query.all()
+    ecotiendas_id = []
+    distancias = []
+    for ecotienda in ecotiendas:
+        distancia = calcular_distancia(latitud, longitud, ecotienda.latitud, ecotienda.longitud)
+        distancias.append(distancia)
+        ecotiendas_id.append(ecotienda.id)
+    minimo = min(distancia)
+    i_min = distancia.index(minimo)
+    return jsonify({
+                    'success': True,
+                    'mensaje': f"Enviamos su pedido a la ecotienda { ecotiendas[i_min].nombre}, pronte se pondran en contacto con usted, muchas gracias."
+                    })
 @app.route('/canje')
 def crear_canje():   
     # To Do:

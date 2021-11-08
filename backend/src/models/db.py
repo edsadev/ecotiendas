@@ -34,20 +34,28 @@ class EcoAmigo(db.Model):
     genero = db.Column(db.String, nullable = False)
     correo = db.Column(db.String, nullable = False)
     telefono = db.Column(db.String)
+    foto = db.Column(db.LargeBinary)
     ecopuntos = db.Column(db.Integer, default = 0)
     sector_id = db.Column(db.Integer, db.ForeignKey('sectores.id'), nullable = False)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable = False)
     tickets = db.relationship("Tickets", backref="ecoamigo")
     usuario = db.relationship("Usuario", backref=db.backref("ecoamigo", uselist=False))
     def format(self):
+        foto = self.check_photo()
         return {
                 'id': self.id,
                 'nombre': self.nombre,
                 'genero': self.genero,
                 'correo': self.correo,
+                'foto': foto,
                 'fecha': self.fecha_registro.strftime("%m/%d/%Y, %H:%M:%S")
                 
         }
+    def check_photo(self):
+        if self.foto:
+            return self.foto.decode("utf-8")
+        else:
+            return ''
     
     def insert(self):
         db.session.add(self)
