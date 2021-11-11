@@ -557,6 +557,29 @@ def solicitar_ecopicker():
                     'success': True,
                     'mensaje': f"Enviamos su pedido a la ecotienda { ecotiendas[i_min].nombre}, pronte se pondran en contacto con usted, muchas gracias."
                     })
+
+@app.route('/ecotiendas-cercanas', methods=['POST'])
+def get_ecotiendas_cercanas():
+    data = request.data
+    data_dictionary = json.loads(data)
+    latitud = data_dictionary["latitud"]
+    longitud = data_dictionary["longitud"]
+    ecotiendas = EcoTienda.query.all()
+    ubicaciones = {}
+    ecotiendas_dicc = {}
+    response = {}
+    for ecotienda in ecotiendas:
+        distancia = calcular_distancia(latitud, longitud, ecotienda.latitud, ecotienda.longitud)
+        ubicaciones[ecotienda.id] = distancia
+        ecotiendas_dicc[ecotienda.id] = {'lat': ecotienda.latitud, 'lon': ecotienda.longitud, 'nombre': ecotienda.nombre}
+    ecotiendas_sort = sorted(clients.items(), key=operator.itemgetter(1), reverse=False)
+    for ecotienda_id in ecotiendas_sort[:4]:
+        response[ecotienda_id[0]] = ecotiendas_dicc[ecotienda_id[0]]
+    return jsonify({
+                    'success': True,
+                    'data': response
+                    })
+
 @app.route('/canje')
 def crear_canje():   
     # To Do:
