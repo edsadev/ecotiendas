@@ -11,6 +11,7 @@ from datetime import datetime
 import pandas as pd
 import base64
 import math
+import operator
 
 @app.after_request
 def after_request(response):
@@ -524,11 +525,11 @@ def get_premios():
                             })
 
 def calcular_distancia(lat1, lon1, lat2, lon2):
-    lat1 = lat1
-    lon1 = lon1
+    lat1 = float(lat1)
+    lon1 = float(lon1)
 
-    lat2 = lat2
-    lon2 = lon2
+    lat2 = float(lat2)
+    lon2 = float(lon2)
 
     rad = math.pi/180
     dlat = lat2-lat1
