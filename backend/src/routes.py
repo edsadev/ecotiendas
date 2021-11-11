@@ -545,7 +545,9 @@ def solicitar_ecopicker():
     data_dictionary = json.loads(data)
     latitud = data_dictionary["latitud"]
     longitud = data_dictionary["longitud"]
+    ecoamigo_id = data_dictionary["id"]
     ecotiendas = EcoTienda.query.all()
+    ecoamigo = EcoAmigo.query.filter(EcoAmigo.id = ecoamigo_id)
     ecotiendas_id = []
     distancias = []
     for ecotienda in ecotiendas:
@@ -556,7 +558,7 @@ def solicitar_ecopicker():
     i_min = distancia.index(minimo)
     return jsonify({
                     'success': True,
-                    'mensaje': f"Enviamos su pedido a la ecotienda { ecotiendas[i_min].nombre}, pronte se pondran en contacto con usted, muchas gracias."
+                    'mensaje': f"Gracias {ecoamigo.nombre } {ecoamigo.apellido}.Enviamos su pedido a la ecotienda { ecotiendas[i_min].nombre}, pronte se pondran en contacto con usted, muchas gracias."
                     })
 
 @app.route('/ecotiendas-cercanas', methods=['POST'])
