@@ -547,7 +547,7 @@ def solicitar_ecopicker():
     longitud = data_dictionary["longitud"]
     ecoamigo_id = data_dictionary["id"]
     ecotiendas = EcoTienda.query.all()
-    ecoamigo = EcoAmigo.query.filter(EcoAmigo.id = ecoamigo_id)
+    ecoamigo = EcoAmigo.query.filter(EcoAmigo.id == ecoamigo_id)
     ecotiendas_id = []
     distancias = []
     for ecotienda in ecotiendas:
