@@ -547,18 +547,18 @@ def solicitar_ecopicker():
     longitud = data_dictionary["longitud"]
     ecoamigo_id = data_dictionary["id"]
     ecotiendas = EcoTienda.query.all()
-    ecoamigo = EcoAmigo.query.filter(EcoAmigo.id == ecoamigo_id)
+    ecoamigo = EcoAmigo.query.filter(EcoAmigo.id == ecoamigo_id).first()
     ecotiendas_id = []
     distancias = []
     for ecotienda in ecotiendas:
         distancia = calcular_distancia(latitud, longitud, ecotienda.latitud, ecotienda.longitud)
         distancias.append(distancia)
         ecotiendas_id.append(ecotienda.id)
-    minimo = min(distancia)
-    i_min = distancia.index(minimo)
+    minimo = min(distancias)
+    i_min = distancias.index(minimo)
     return jsonify({
                     'success': True,
-                    'mensaje': f"Gracias {ecoamigo.nombre } {ecoamigo.apellido}.Enviamos su pedido a la ecotienda { ecotiendas[i_min].nombre}, pronte se pondran en contacto con usted, muchas gracias."
+                    'mensaje': f"Gracias {ecoamigo.nombre } {ecoamigo.apellido}.Enviamos su pedido a la ecotienda { ecotiendas[i_min].nombre}, pronto se pondran en contacto con usted, muchas gracias."
                     })
 
 @app.route('/ecotiendas-cercanas', methods=['POST'])
@@ -575,7 +575,7 @@ def get_ecotiendas_cercanas():
         distancia = calcular_distancia(latitud, longitud, ecotienda.latitud, ecotienda.longitud)
         ubicaciones[ecotienda.id] = distancia
         ecotiendas_dicc[ecotienda.id] = {'lat': ecotienda.latitud, 'lon': ecotienda.longitud, 'nombre': ecotienda.nombre}
-    ecotiendas_sort = sorted(clients.items(), key=operator.itemgetter(1), reverse=False)
+    ecotiendas_sort = sorted(ubicaciones.items(), key=operator.itemgetter(1), reverse=False)
     for ecotienda_id in ecotiendas_sort[:4]:
         response[ecotienda_id[0]] = ecotiendas_dicc[ecotienda_id[0]]
     return jsonify({
