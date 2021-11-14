@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export const ipUrl = 'http://localhost'
+export const ipUrl = 'http://34.135.131.109'
 export const puerto = ':5000/'
 
 export function getInitialUser (user, pass) {
