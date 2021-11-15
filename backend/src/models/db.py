@@ -283,7 +283,8 @@ class EcoTienda(db.Model):
         return {
                    'id': self.id, 
                     'latitud': self.latitud,
-                    'longitud': self.longitud
+                    'longitud': self.longitud,
+                    'nombre': self.nombre
                         
         }
     

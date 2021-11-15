@@ -8,7 +8,7 @@ on:
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
   GKE_CLUSTER: gke-ecotiendas-cluster-1   # TODO: update to cluster name
-  GKE_ZONE: us-central1-c   # TODO: update to cluster zone
+  GKE_ZONE: us-central1   # TODO: update to cluster zone
   IMAGE_BACKEND: backend
   IMAGE_FRONTEND: frontend
   IMAGE_PROXY: proxy
