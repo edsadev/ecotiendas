@@ -12,6 +12,7 @@ import pandas as pd
 import base64
 import math
 import operator
+import secrets
 
 @app.after_request
 def after_request(response):
@@ -583,11 +584,6 @@ def get_ecotiendas_cercanas():
                     'data': response
                     })
 
-@app.route('/canje')
-def crear_canje():   
-    # To Do:
-    pass
-
 @app.route('/ecotiendas', methods=['POST'])
 def posiciones():
     data = request.data
@@ -831,7 +827,66 @@ def crear_ecoTienda():
                         'success': True,
                         'ecoTienda': ecotienda.response_create()
                         })
-                    
+@app.route('/crear-canje', methods = ['POST'])
+def crear_canje():
+    error = False
+    data = request.data
+    data_dictionary = json.loads(data)
+    ecoamigo_id = data_dictionary['ecoamigo']
+    total_ecopuntos = data_dictionary['total_ecopuntos']
+    cantidad_total = data_dictionary['cantidad_total']
+    premios = data_dictionary['premios']    
+    ecoamigo = EcoAmigo.query.filter(EcoAmigo.id == ecoamigo_id).fisrt()
+
+    if total_ecopuntos > ecoamigo.ecopuntos:
+            return jsonify({
+                            'success': False,
+                            'mensaje': "Sobrepasas la cantidad de ecopuntos"
+                            })
+    try: 
+        canje = Canje(total_ecopuntos = total_ecopuntos, cantidad_total = cantidad_total, ecoamigo_id = ecoamigo_id, nombre_cliente = f"{ecoamigo.nombre} {ecoamigo.apellido}")
+        canje.insert()
+    except:
+        error = True
+        Canje.rollback()
+        print(sys.exc_info())
+
+    try:
+        token = secrets.token_hex(8)
+        codigo = Codigos(token = token, ecoamigo_id = ecoamigo_id)
+        codigo.insert()
+    except:
+        error = True
+        Codigos.rollback()
+        print(sys.exc_info())
+
+    try:
+        for premio in premios:
+            canje_id = canje.id
+            premio_id = premio['id']
+            cantidad = premio['cantidad']
+            ecopuntos = premio['ecopuntos']
+            detalle = DetalleCanje( canje_id = canje_id, producto_id = premio_id, cantidad = cantidad, 
+                                    ecopuntos = ecopuntos, codigo_id = codigo.id)
+            detalle.insert()
+        
+        ecoamigo.ecopuntos -= total_ecopuntos
+        ecoamigo.update()
+    
+    except:
+        error = True
+        DetalleCanje.rollback()
+        print(sys.exc_info())
+
+    if error:
+        abort(422)
+    else:
+        return jsonify({
+                        'success': True,
+                        'token': codigo.token
+                        })
+    
+    
 @app.route('/crear-ticket', methods = ['POST'])
 def crear_ticket():
     error = False
