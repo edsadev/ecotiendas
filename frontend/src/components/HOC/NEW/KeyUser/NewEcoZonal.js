@@ -44,6 +44,8 @@ class NewRegional extends React.Component {
     const img = document.getElementById("userPhoto")
     img.src = URL.createObjectURL(e.target.files[0])
 
+    console.log(e.target.files[0])
+
     let filesSelected = e.target.files;
     if (filesSelected.length > 0) {
       let fileToLoad = filesSelected[0];

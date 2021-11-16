@@ -7,7 +7,9 @@ import { toggleLoading } from '../../../../actions/loading'
 
 import Carga from '../../../UI/Carga'
 
+import imageToBase64 from 'image-to-base64/browser'
 import {_actualDate} from '../../../../utils/_helpers'
+import DefaultUser from '../../../../utils/images/DefaultUser.png'
 
 class NewClient extends React.Component {
   state={
@@ -43,7 +45,21 @@ class NewClient extends React.Component {
     e.preventDefault()
     this.props.dispatch(toggleLoading(this.props.loading))
     const fecha_nacimiento = this.fecha.value
-    createEcoAmigo(this.cedula.value, this.nombre.value, this.apellido.value, this.direccion.value, this.genero.value, this.correo.value, this.celular.value, Number.parseInt(this.sector.value), fecha_nacimiento)
+    imageToBase64(DefaultUser) // Path to the image
+    .then(
+      (response) => {
+        debugger
+        console.log(response)
+        this.foto = response
+      }
+    )
+    .catch(
+      (error) => {
+        this.props.dispatch(toggleLoading(this.props.loading))
+        console.error(error) // Logs an error if there was one
+      }
+    )
+    createEcoAmigo(this.cedula.value, this.nombre.value, this.apellido.value, this.direccion.value, this.genero.value, this.correo.value, this.celular.value, Number.parseInt(this.sector.value), fecha_nacimiento, this.foto)
       .then(res => {
         if(res.data.success === false){
           alert('Algo sucedio, intentalo denuevo')
@@ -56,6 +72,7 @@ class NewClient extends React.Component {
         }
       })
       .catch(err => {
+        this.props.dispatch(toggleLoading(this.props.loading))
         alert(err)
         console.error(err)
       })
@@ -82,6 +99,7 @@ class NewClient extends React.Component {
           <Fade>
             <form>
               {/* <button onClick={this.check}>asd</button> */}
+              <img src={DefaultUser} style={{display: 'none'}} alt='avatar' id="avatar"/>
               <h3 className="title_green" style={{margin: '16px 0 6px 0'}}>Registrar Usuario</h3>
               <label className="labelForm">Nombre y apellido</label>
               <div className="inputContainer">
