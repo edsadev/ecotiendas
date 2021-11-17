@@ -85,8 +85,8 @@ class NewClient extends React.Component {
       return (
         <Container className="container-default background-default" style={{display: "block"}}>
           <section id="2">
-            <SubContainer>
-              <Carga text="Enviando..."/>
+            <SubContainer style={{justifyContent: 'center', alignItems: 'center'}}>
+              <Carga/>
             </SubContainer>
           </section>
         </Container>

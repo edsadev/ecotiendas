@@ -5,13 +5,14 @@ import PersonIcon from '@material-ui/icons/Person';
 import LockIcon from '@material-ui/icons/Lock';
 import { connect } from 'react-redux';
 import { handleLogin } from '../actions/shared'
-import { getInitialUser, helloworld } from '../utils/api'
+import { getInitialUser } from '../utils/api'
 import Carga from './UI/Carga'
+import { toggleLoading } from '../actions/loading'
 
 class Login extends React.Component {
   login = (e) => {
     e.preventDefault()
-
+    this.props.dispatch(toggleLoading(this.props.loading))
     getInitialUser(this.user.value, this.password.value)
       .then((res) => {
         this.props.dispatch(handleLogin(res.data.id, res.data.rango, res.data.nombre, res.data.foto))
@@ -19,50 +20,44 @@ class Login extends React.Component {
         return res
       })
       .then((res) => {
+        this.props.dispatch(toggleLoading(this.props.loading))
         if (res.data.rango === "ecoadmin" || res.data.rango === "keyUser" || res.data.rango === "administrativo" || res.data.rango === "ecozonal"){
           this.props.history.push('/')
-        } else if (res.data.rango === "bodegero"){
-          this.props.history.push('/new-ecoadmin')
+        // } else if (res.data.rango === "bodegero"){
+        //   this.props.history.push('/new-ecoadmin')
         } else if (res.data.rango === "ecoamigo"){
           this.props.history.push('/review')
         }
       })
       .catch((err) => {
+        this.props.dispatch(toggleLoading(this.props.loading))
         alert('Hubo un error al tratar de logear')
         console.error(err)
-        helloworld()
-        .then((res) => {
-          console.log(res.data)
-        })
       })
   }
   render (){
-    if (this.loading){
-      return (
-        <Container>
-          <Carga text="Enviando..." />
-        </Container>
-      )
-    }
     return (
       <AllContainer bgImage={"/images/PersonalNovared.jpg"}>
         <Container>
           <Fade>
             <LoginForm>
               <HeroImage bgImage={"/images/PersonalNovared.png"}/>
-              <Formulario>
-                <Usuario>
-                  <PersonIcon style={{ color: 'white' }}/>
-                  <input type="text" placeholder="Nombre de Usuario" ref={(input) => this.user = input}></input>
-                </Usuario>
-                <Contraseña>
-                  <LockIcon style={{ color: 'white' }}></LockIcon>
-                  <input type="password" placeholder="Contraseña" ref={(input) => this.password = input}></input>
-                </Contraseña>
-                <Boton className="btn-form" onClick={this.login}>
-                  <span>Ingresar</span>
-                </Boton>
-              </Formulario>
+                {this.props.loading 
+                  ? <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexGrow: 1}}><Carga /></div>
+                  : <Formulario>
+                      <Usuario>
+                        <PersonIcon style={{ color: 'white' }}/>
+                        <input type="text" placeholder="Nombre de Usuario" ref={(input) => this.user = input}></input>
+                      </Usuario>
+                      <Contraseña>
+                        <LockIcon style={{ color: 'white' }}></LockIcon>
+                        <input type="password" placeholder="Contraseña" ref={(input) => this.password = input}></input>
+                      </Contraseña>
+                      <Boton className="btn-form" onClick={this.login}>
+                        <span>Ingresar</span>
+                      </Boton>
+                    </Formulario>
+                }
             </LoginForm>
           </Fade>
         </Container>
@@ -71,9 +66,10 @@ class Login extends React.Component {
   }
 }
 
-function mapStateToProps({authedUser}){
+function mapStateToProps({authedUser, loading}){
   return {
-    authedUser
+    authedUser,
+    loading
   }
 }
 

@@ -44,6 +44,7 @@ class NewRegional extends React.Component {
         }
       })
       .catch(err => {
+        this.props.dispatch(toggleLoading(this.props.loading))
         alert(err)
         console.error(err)
       })
@@ -78,8 +79,8 @@ class NewRegional extends React.Component {
       return (
         <Container className="container-default background-default">
           <section id="2">
-            <SubContainer>
-              <Carga text="Enviando..."/>
+            <SubContainer style={{justifyContent: 'center', alignItems: 'center'}}>
+              <Carga/>
             </SubContainer>
           </section>
         </Container>

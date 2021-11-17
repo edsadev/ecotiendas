@@ -67,11 +67,7 @@ const Container2 = styled(Container)`
     text-align: center;
   }
 `
-const P = styled.p`
-  padding: 0 16px;
-  text-align: center;
-  line-height: 36px;
-`
+
 const Span = styled.span`
   text-align: center;
   border: 5px solid rgba(0,104,0,1);

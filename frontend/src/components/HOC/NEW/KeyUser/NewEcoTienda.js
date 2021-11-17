@@ -15,8 +15,8 @@ import GoogleMapReact from 'google-map-react';
 
 class NewRegional extends React.Component {
   state = {
-    lat: -2.171076696849325,
-    lng: -79.89203443918525,
+    lat: null,
+    lng: null,
     center: {
       lat: -2.171076696849325,
       lng: -79.89203443918525
@@ -56,11 +56,13 @@ class NewRegional extends React.Component {
         }
       })
       .catch(err => {
+        this.props.dispatch(toggleLoading(this.props.loading))
         alert(err)
         console.error(err)
       })
   }
   _onClick = ({ lat, lng }) => {
+    document.getElementById('marker').style.display = 'block'
     this.setState(() => ({
       lat,
       lng
@@ -74,8 +76,8 @@ class NewRegional extends React.Component {
       return (
         <Container className="container-default background-default">
           <section id="2">
-            <SubContainer>
-              <Carga text="Enviando..."/>
+            <SubContainer style={{justifyContent: 'center', alignItems: 'center'}}>
+              <Carga/>
             </SubContainer>
           </section>
         </Container>
@@ -186,7 +188,7 @@ class NewRegional extends React.Component {
 }
 
 
-const Marker = () => <div><Img width="40" src="./images/Marcador.png" alt="Marcador"/></div>;
+const Marker = () => <div id="marker" style={{display: 'none'}}><Img width="40" src="./images/Marcador.png" alt="Marcador"/></div>;
 
 const Container = styled.div`
   display: flex;

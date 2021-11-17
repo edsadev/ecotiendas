@@ -2,12 +2,10 @@ import { logOut, getInitialDataEcoAdmin, getInitialDataKeyUser } from "../utils/
 import { setAuthedUser, unsetAuthedUser } from "./authedUser";
 import { receiveMaterials, unsetMaterials } from "./materials";
 import { unsetHistory } from "./history";
-import { createLoading } from "./loading";
 
 export function handleLogin(id, rank, name, foto){
   return (dispatch) => {
     dispatch(setAuthedUser(id, rank, name, foto))
-    dispatch(createLoading())
   }
 }
 

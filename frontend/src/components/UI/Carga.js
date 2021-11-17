@@ -3,27 +3,19 @@ import styled from 'styled-components'
 
 export default function Carga(props){
   return(
-    <Container>
-      <img 
-        alt="Hojas de carga" 
-        src="./images/loading.png" 
-        className="rotate"
-        width="250"
-        height="250"
-        style={{position: 'relative', top: "25%"}}
-        />
-        <div className="centered">{props.text}</div>
-    </Container>
+    <IMG 
+      alt="Hojas de carga" 
+      src="./images/loading.png" 
+      className="rotate"
+      width="250"
+      height="250"
+    />
   )
 }
 
-const Container = styled.div`
-  position: relative;
-  text-align: center;
-  width: 100%;
-  .rotate {
-    animation: rotation 2s linear infinite;
-  }
+const IMG = styled.img`
+  animation: rotation 2s linear infinite;
+  position: relative; 
   @keyframes rotation {
     from {
       transform: rotate(0deg);
@@ -31,11 +23,5 @@ const Container = styled.div`
     to {
       transform: rotate(359deg);
     }
-  }
-  .centered {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
   }
 `
