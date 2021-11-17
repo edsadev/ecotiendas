@@ -554,9 +554,12 @@ def solicitar_ecopicker():
     ecotiendas_id = []
     distancias = []
     for ecotienda in ecotiendas:
-        distancia = calcular_distancia(latitud, longitud, ecotienda.latitud, ecotienda.longitud)
-        distancias.append(distancia)
-        ecotiendas_id.append(ecotienda.id)
+        if ecotienda.latitud == 'null':
+            pass
+        else:
+            distancia = calcular_distancia(latitud, longitud, ecotienda.latitud, ecotienda.longitud)
+            distancias.append(distancia)
+            ecotiendas_id.append(ecotienda.id)
     minimo = min(distancias)
     i_min = distancias.index(minimo)
     return jsonify({
@@ -575,9 +578,12 @@ def get_ecotiendas_cercanas():
     ecotiendas_dicc = {}
     response = {}
     for ecotienda in ecotiendas:
-        distancia = calcular_distancia(latitud, longitud, ecotienda.latitud, ecotienda.longitud)
-        ubicaciones[ecotienda.id] = distancia
-        ecotiendas_dicc[ecotienda.id] = {'lat': ecotienda.latitud, 'lon': ecotienda.longitud, 'nombre': ecotienda.nombre}
+        if ecotienda.latitud == 'null':
+            pass
+        else:
+            distancia = calcular_distancia(latitud, longitud, ecotienda.latitud, ecotienda.longitud)
+            ubicaciones[ecotienda.id] = distancia
+            ecotiendas_dicc[ecotienda.id] = {'lat': ecotienda.latitud, 'lon': ecotienda.longitud, 'nombre': ecotienda.nombre}
     ecotiendas_sort = sorted(ubicaciones.items(), key=operator.itemgetter(1), reverse=False)
     for ecotienda_id in ecotiendas_sort[:4]:
         response[ecotienda_id[0]] = ecotiendas_dicc[ecotienda_id[0]]
@@ -595,7 +601,12 @@ def posiciones():
         ecotiendas = EcoTienda.query.filter(EcoTienda.zonal_id == data_dictionary["zonal"])
     else:
         ecotiendas = EcoTienda.query.all()
-    response = [ecotienda.posicion() for ecotienda in ecotiendas]
+    response = []
+    for ecotienda in ecotiendas:
+        if ecotienda.latitud == 'null':
+            pass
+        else:
+            response.append(ecotienda.posicion())
     if len(response) > 0:
         return jsonify({
                             'success': True,
@@ -911,6 +922,7 @@ def crear_ticket():
     error = False
     data = request.data
     data_dictionary = json.loads(data)
+    print(data_dictionary)
     ecotienda_id = data_dictionary['ecotienda']
     entrada = data_dictionary['entrada']
     total_kg = data_dictionary['total_kg']
@@ -1083,6 +1095,7 @@ def historial_diario():
     ecotienda_id = data_dictionary['ecotienda']
     tickets = Tickets.query.filter(and_(Tickets.ecotienda_id == ecotienda_id, Tickets.fecha_registro >= func.current_date() ))
     response = [ticket.format() for ticket in tickets]
+
     if len(response) > 0:
         return jsonify({
                         'success': True,
