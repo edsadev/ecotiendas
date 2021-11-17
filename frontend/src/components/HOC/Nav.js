@@ -45,7 +45,7 @@ class Nav extends React.Component {
           </div>
           <ul className="nav-items">
             <li className={this.state.active === 'dashboard' ? "nav-item-selected-white" : "nav-item"}><Link onClick={() => this.handleState('dashboard')} to="/">Dashboard</Link></li>
-            <li className={this.state.active === 'registro' ? "nav-item-selected-white" : "nav-item"}><Link onClick={() => this.handleState('registro')} to="/registro">Registro</Link></li>
+            <li className={this.state.active === 'registro' ? "nav-item-selected-white" : "nav-item"}><Link onClick={() => this.handleState('registro')} to="/registro">Acciones</Link></li>
             <li className={this.state.active === 'reporte' ? "nav-item-selected-white" : "nav-item"}><Link onClick={() => this.handleState('reporte')} to="/reporte">Reporte</Link></li>
             <li className="nav-item"><Link to="/login" onClick={this.LogOut}>Log Out</Link></li>
           </ul>

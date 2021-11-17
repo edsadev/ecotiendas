@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import Fade from 'react-reveal/Fade'
 import { connect } from 'react-redux'
+import Fade from 'react-reveal/Fade'
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -101,7 +101,6 @@ class Historial extends React.Component {
           </Paper>
         </Fade>
       </Container>
-        
     )
   }
 }

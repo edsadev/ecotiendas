@@ -36,10 +36,10 @@ class NewEntry extends React.Component {
         materiales: [
           ...materiales,
           {
-            cantidad_kg: Number.parseInt(peso),
-            cantidad_m3: peso * materials[id].cantidad_m3,
+            cantidad_kg: Number.parseFloat(peso),
+            cantidad_m3: Number.parseFloat((peso * materials[id].cantidad_m3).toFixed(2)),
             id: this.select.value,
-            ecopuntos: peso * materials[id].ecopuntos
+            ecopuntos: Number.parseFloat((peso * materials[id].ecopuntos).toFixed(2))
           }],
       }))
     } else {
@@ -48,10 +48,10 @@ class NewEntry extends React.Component {
         if(ids[i] === id){
           copiaMateriales.splice(i, 1)
           copiaMateriales.push({
-            cantidad_kg: Number.parseInt(peso),
-            cantidad_m3: peso * materials[id].cantidad_m3,
+            cantidad_kg: Number.parseFloat(peso),
+            cantidad_m3: Number.parseFloat((peso * materials[id].cantidad_m3).toFixed(2)),
             id: this.select.value,
-            ecopuntos: peso * materials[id].ecopuntos
+            ecopuntos: Number.parseFloat((peso * materials[id].ecopuntos).toFixed(2))
           })
         }
       }
@@ -114,6 +114,10 @@ class NewEntry extends React.Component {
           }))
         } else {
           alert(res.data.mensaje)
+          this.setState(() => ({
+            cedulaValidada: false,
+            id_usuario: null,
+          }))
         }
       })
   }
@@ -126,6 +130,7 @@ class NewEntry extends React.Component {
     const {authedUser} = this.props
     createEntry(id_usuario, authedUser.id, entrada, total_kg, total_m3, total_ecopuntos, materiales)
       .then((res) => {
+        console.log(res)
         if(res.data.success === false){
           alert('Algo sucedio, intentalo denuevo')
           this.props.dispatch(toggleLoading(this.props.loading))
@@ -233,7 +238,7 @@ class NewEntry extends React.Component {
                   <li key={item.id}><span>{materials[item.id].nombre} - Peso: {item.cantidad_kg} Kg</span></li>
                 ))}
               </ul>
-              <h3>Puntos totales: <span>{this.state.total_ecopuntos}</span></h3>
+              <h3>Puntos totales: <span>{Number.parseFloat(this.state.total_ecopuntos)}</span></h3>
               <div style={{display: 'flex'}}>
                 <input id="cedulaInput" className="inputDefault" onChange={this.handleChange} />
                 <button className="btn-form" onClick={this.checkId}>Validar cédula</button>
