@@ -374,6 +374,7 @@ def crear_ecoAmigo():
     error = False
     data = request.data
     data_dictionary = json.loads(data)
+    print(data_dictionary)
     cedula = data_dictionary["cedula"]
     nombre = data_dictionary["nombre"]
     apellido = data_dictionary["apellido"]

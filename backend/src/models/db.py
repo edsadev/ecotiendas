@@ -260,8 +260,8 @@ class EcoAdmin(db.Model):
 class EcoTienda(db.Model):
     __tablename__ = 'ecoTiendas'
     id = db.Column(db.Integer, primary_key = True)
-    latitud = db.Column(db.String, nullable = False)
-    longitud = db.Column(db.String, nullable = False)
+    latitud = db.Column(db.String, nullable = True)
+    longitud = db.Column(db.String, nullable = True)
     fecha_registro = db.Column(db.DateTime(timezone=True), server_default=func.now())
     capacidad_maxima_m3 = db.Column(db.Float, nullable = False)
     capacidad_maxima_kg = db.Column(db.Float, nullable = False)
