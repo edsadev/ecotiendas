@@ -23,6 +23,7 @@ def after_request(response):
 
 @app.route('/')
 def index():
+    print("Hola")
     return jsonify({
         "hola":"Edmundo"
     })
