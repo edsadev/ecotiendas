@@ -1,11 +1,12 @@
 # import necessary packages
  
 import email.message
-import smtplib
+import smtplib, ssl
  
 # create message object instance
 
 def enviar_email(correo, ecopuntos, total_ecopuntos):
+    
     email_content = f"""
     <html>
 
@@ -33,19 +34,12 @@ def enviar_email(correo, ecopuntos, total_ecopuntos):
     msg.set_payload(email_content)
     # add in the message body
 
-    
-    #create server
-    server = smtplib.SMTP('smtp.gmail.com: 587')
-    
-    server.starttls()
-    
-    # Login Credentials for sending the mail
-    server.login(msg['From'], password)
-    
-    
-    # send the message via the server.
-    server.sendmail(msg['From'], msg['To'], msg.as_string())
-    
-    server.quit()
+    port = 465  # For SSL
+    smtp_server = "smtp.gmail.com"
+    ontext = ssl.create_default_context()
+    with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
+        server.login(msg['From'], password)
+        server.sendmail(msg['From'], msg['To'], msg.as_string())
+        server.quit()
     
     print(f"successfully sent email to: {msg['To']}")

@@ -827,6 +827,23 @@ def crear_ecoTienda():
                         'success': True,
                         'ecoTienda': ecotienda.response_create()
                         })
+@app.route('/verificar-canje', methods = ['POST'])
+def verificar_canje():
+    error = False
+    data = request.data
+    data_dictionary = json.loads(data)
+    token = data_dictionary['token']
+    cedula = data_dictionary['cedula']
+    ecoamigo = EcoAmigo.query.filter(EcoAmigo.cedula == cedula).first()
+    codigo = Codigos.query.filter(Codigos.token == token).first()
+    if ecoamigo.id == codigo.ecoamigo_id and not(codigo.canjeado):
+        premios = DetalleCanje.query.filter(DetalleCanje.codigo_id == codigo.id)
+        data_premios = [premio.format() for premio in premios]
+        return jsonify({
+                        'success': True,
+                        'premios': data_premios
+                        })
+        
 @app.route('/crear-canje', methods = ['POST'])
 def crear_canje():
     error = False
