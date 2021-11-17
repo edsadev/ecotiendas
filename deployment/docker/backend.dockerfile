@@ -4,5 +4,6 @@ WORKDIR /app
 COPY ./backend .
 RUN pip install -r requirements.txt
 EXPOSE 5000
+ENV PYTHONUNBUFFERED=0
 ENTRYPOINT [ "python" ]
 CMD [ "run.py" ]
