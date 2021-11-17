@@ -853,7 +853,7 @@ def crear_canje():
     total_ecopuntos = data_dictionary['total_ecopuntos']
     cantidad_total = data_dictionary['cantidad_total']
     premios = data_dictionary['premios']    
-    ecoamigo = EcoAmigo.query.filter(EcoAmigo.id == ecoamigo_id).fisrt()
+    ecoamigo = EcoAmigo.query.filter(EcoAmigo.id == ecoamigo_id).first()
 
     if total_ecopuntos > ecoamigo.ecopuntos:
             return jsonify({
