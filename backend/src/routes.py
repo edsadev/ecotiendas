@@ -869,7 +869,7 @@ def crear_canje():
         print(sys.exc_info())
 
     try:
-        token = secrets.token_hex(8)
+        token = secrets.token_hex(4)
         codigo = Codigos(token = token, ecoamigo_id = ecoamigo_id)
         codigo.insert()
     except:
