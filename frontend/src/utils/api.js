@@ -189,7 +189,7 @@ export function getReporte(opcion){
     })
 }
 
-export function createEcoAmigo(cedula, nombre, apellido, direccion, genero, correo, celular, sector, fecha_nacimiento){
+export function createEcoAmigo(cedula, nombre, apellido, direccion, genero, correo, celular, sector, fecha_nacimiento, foto){
   return axios({
     method: 'post',
     url: `${ipUrl}${puerto}eco-amigos`,
@@ -204,7 +204,8 @@ export function createEcoAmigo(cedula, nombre, apellido, direccion, genero, corr
       usuario: correo,
       contraseña: cedula,
       sector,
-      fecha_nacimiento
+      fecha_nacimiento,
+      foto
     }
   })
 }
