@@ -25,7 +25,7 @@ class KeyUser extends React.Component {
     tipos_productos: [],
     proyeccion: "",
     open: false,
-    option: "Plástico",
+    option: '',
     selected: 4
   }
 
@@ -47,9 +47,10 @@ class KeyUser extends React.Component {
         const data = res[1].data.data
         const ids = Object.keys(data)
         // const {history, materials, materialsId} = this.props
-        console.log(data)
+        console.log(res)
         this.setState(() => ({
           proyeccion: res[2].data.total,
+          option: res[0].data.tipos_productos[0].nombre,
           tipos_productos: res[0].data.tipos_productos,
           data: {
             labels: _setLabels(ids, data),

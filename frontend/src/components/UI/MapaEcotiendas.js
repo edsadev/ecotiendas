@@ -16,7 +16,6 @@ class MapaEcotiendas extends React.Component{
     pines: []
   }
   _onChildClick = (id, event) => {
-    console.log(id, event)
     this.props.history.push(`/ecotiendas/${event.id}`)
   }
   componentDidMount(){

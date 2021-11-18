@@ -31,7 +31,8 @@ class NewRegional extends React.Component {
   handleSubmit = (e) => {
     e.preventDefault()
     this.props.dispatch(toggleLoading(this.props.loading))
-    createEcoAdmin(this.ecotienda.value, this.cedula.value, this.nombre.value, this.apellido.value, this.direccion.value, this.genero.value, this.correo.value, this.state.photo64.result, this.fecha.value, this.celular.value, this.state.zonal_id)
+    if (this.ecotienda.value !== 'Escoja'){
+      createEcoAdmin(this.ecotienda.value, this.cedula.value, this.nombre.value, this.apellido.value, this.direccion.value, this.genero.value, this.correo.value, this.state.photo64.result, this.fecha.value, this.celular.value, this.state.zonal_id)
       .then(res => {
         if(res.data.success === false){
           alert(res.data.mensaje)
@@ -47,6 +48,10 @@ class NewRegional extends React.Component {
         alert(err)
         console.error(err)
       })
+    } else {
+      alert('Escoja una ecotienda o cree una si no hay ninguna')
+      this.props.dispatch(toggleLoading(true))
+    }
   }
   handleChange(e){
     const img = document.getElementById("userPhoto")
@@ -98,7 +103,7 @@ class NewRegional extends React.Component {
                 <div>
                   <div className="inputContainer">
                     <select className="dropdown-select" required ref={(input) => this.ecotienda = input} onChange={(e) => this.handleZonalId(e)}>
-                      <option selected disabled>Escoga</option>
+                      <option selected disabled>Escoja</option>
                       {this.state.ecotiendas && this.state.ecotiendas.map((ecotienda) => (
                         <option key={ecotienda.id} value={ecotienda.id}>{ecotienda.nombre}</option>
                       ))}

@@ -24,7 +24,7 @@ class KeyUser extends React.Component {
     options: undefined,
     tipos_productos: [],
     open: false,
-    option: "Plástico",
+    option: '',
     selected: 4
   }
 
@@ -49,6 +49,7 @@ class KeyUser extends React.Component {
         console.log(data)
         this.setState(() => ({
           tipos_productos: res[0].data.tipos_productos,
+          option: res[0].data.tipos_productos[0].nombre,
           data: {
             labels: _setLabels(ids, data),
             datasets: [

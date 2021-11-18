@@ -56,7 +56,7 @@ export function helloworld(){
   })
 }
 
-function getMaterials(){
+export function getMaterials(){
   return axios({
     method: 'get',
     url: `${ipUrl}${puerto}materiales`,
@@ -286,6 +286,26 @@ export function createProduct(nombre, photo, tipo_producto, ecopuntos, cantidad)
   })
 }
 
+export function actualizarProducto(nombre, tipo_producto, ecopuntos, cantidad, id){
+  return axios({
+    method: 'post',
+    url: `${ipUrl}${puerto}actualizar-producto`,
+    data: {
+      nombre, tipo_producto, ecopuntos, cantidad, id
+    }
+  })
+}
+
+export function actualizarPremio(nombre, tipo_premio, ecopuntos, stock, id){
+  return axios({
+    method: 'post',
+    url: `${ipUrl}${puerto}actualizar-premio`,
+    data: {
+      nombre, tipo_premio, ecopuntos, stock, id
+    }
+  })
+}
+
 export function createPremio(nombre, photo, tipo_premio, ecopuntos, stock){
   return axios({
     method: 'post',
@@ -419,5 +439,12 @@ export function getReporteHistorico(pais, zonal, provincia, producto, fecha_desd
     data: {
       pais, zonal, provincia, producto, fecha_desde, fecha_hasta
     }
+  })
+}
+
+export function getPremios(){
+  return axios({
+    method: 'get',
+    url: `${ipUrl}${puerto}premios`
   })
 }

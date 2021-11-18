@@ -16,8 +16,9 @@ export default function BtnsRegistro(){
           </BtnContainer>
           <BtnContainer>
             <Boton text="Registrar Producto" direction="/new-product" />
-            <Boton text="Registrar Premio" direction="/new-reward" />
             <Boton text="Editar Productos" direction="/edit-products" />
+            <Boton text="Registrar Premio" direction="/new-reward" />
+            <Boton text="Editar Premios" direction="/edit-rewards" />
           </BtnContainer>
         </Subcontainer>
         <Img src="./images/ilustraBotones.png"></Img>
