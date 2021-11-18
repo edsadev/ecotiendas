@@ -739,7 +739,8 @@ class Producto(db.Model):
     detalle = db.Column(db.String)
     codigo = db.Column(db.String)
     foto = db.Column(db.LargeBinary, nullable = False)
-    stock = db.Column(db.Integer, nullable = False)
+    stock_sin_despachar = db.Column(db.Integer, nullable = False)
+    stock_real = db.Column(db.Integer, nullable = False)
     ecopuntos = db.Column(db.Float, nullable = False)
     valor_max = db.Column(db.Float)
     valor_min = db.Column(db.Float)
@@ -751,7 +752,7 @@ class Producto(db.Model):
                 'nombre': self.nombre,
                 'ecopuntos': self.ecopuntos,
                 'tipo_material_id': self.tipo_producto_id,
-                'stock': self.stock,
+                'stock': self.stock_sin_despachar,
                 'foto': self.foto.decode('utf-8'),
         }
     

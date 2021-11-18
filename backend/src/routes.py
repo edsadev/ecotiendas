@@ -494,10 +494,11 @@ def crear_premio():
     foto = data_dictionary['photo'].encode('utf-8')
     tipo_premio_id = data_dictionary['tipo_premio']
     ecopuntos = data_dictionary['ecopuntos']
-    stock = data_dictionary['stock']
+    stock_sin_despachar = data_dictionary['stock']
+    stock_real = data_dictionary['stock']
     try: 
         premio = Producto(nombre = nombre, foto = foto, tipo_producto_id =tipo_premio_id, 
-                            ecopuntos = ecopuntos, stock = stock)
+                            ecopuntos = ecopuntos, stock_sin_despachar = stock_sin_despachar, stock_real = stock_real)
         premio.insert()
     except:
         error = True
@@ -562,9 +563,10 @@ def solicitar_ecopicker():
             ecotiendas_id.append(ecotienda.id)
     minimo = min(distancias)
     i_min = distancias.index(minimo)
+    ecotienda_cercana = EcoTienda.query.filter(EcoTienda.id == ecotiendas_id[i_min]).first()
     return jsonify({
                     'success': True,
-                    'mensaje': f"Gracias {ecoamigo.nombre } {ecoamigo.apellido}.Enviamos su pedido a la ecotienda { ecotiendas[i_min].nombre}, pronto se pondran en contacto con usted, muchas gracias."
+                    'mensaje': f"Gracias {ecoamigo.nombre } {ecoamigo.apellido}.\nEnviamos su pedido a la ecotienda { ecotienda_cercana.nombre}, pronto se pondran en contacto con usted, muchas gracias."
                     })
 
 @app.route('/ecotiendas-cercanas', methods=['POST'])
@@ -880,15 +882,17 @@ def crear_canje():
         token = secrets.token_hex(4)
         codigo = Codigos(token = token, ecoamigo_id = ecoamigo_id)
         codigo.insert()
-        for premio in premios:
+        for e in premios:
             canje_id = canje.id
-            premio_id = premio['id']
-            cantidad = premio['cantidad']
-            ecopuntos = premio['ecopuntos']
+            premio_id = e['id']
+            cantidad = e['cantidad']
+            ecopuntos = e['ecopuntos']
+            premio = Producto.query.filter(Producto.id == premio_id)
+            premio.stock_sin_despachar -= cantidad
             detalle = DetalleCanje( canje_id = canje_id, producto_id = premio_id, cantidad = cantidad, 
                                     ecopuntos = ecopuntos, codigo_id = codigo.id)
             detalle.insert()
-        
+            premio.update()
         ecoamigo.ecopuntos -= total_ecopuntos
         ecoamigo.update()
     except:
