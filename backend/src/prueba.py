@@ -8,7 +8,7 @@ import smtplib, ssl
 def enviar_email(correo, ecopuntos=0, total_ecopuntos=0, token = 0):
     email_content = ""
     subject = ""
-    if ecopuntos == 0:
+    if ecopuntos == 0 and token == 0:
         subject = "Usuario creado"
         email_content = f"""
         <html>
@@ -20,13 +20,7 @@ def enviar_email(correo, ecopuntos=0, total_ecopuntos=0, token = 0):
             <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
         <body style="margin: 0 !important; padding: 0 !important; background-color: #eeeeee;" bgcolor="#eeeeee">
-        Felicidades te has unido a la comunidad de reciclaje mas grande de ecuador.
-
-        Recuerda que tu usuario es tu correo electronnico y tu contraseña es tu numero de cedula.
-        Esto lo puedes editar en tu perfil :).
-        
-        Saludos, 
-        Ecotiendas
+        Excelente decision ahora formas parte de la mejor comunidad de reciclaje del ecuador
         </body>
 
         </html>
@@ -44,15 +38,7 @@ def enviar_email(correo, ecopuntos=0, total_ecopuntos=0, token = 0):
             <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
         <body style="margin: 0 !important; padding: 0 !important; background-color: #eeeeee;" bgcolor="#eeeeee">
-        Felicidades has podido canjear tu producto con exito.
-
-        Recuerda que puedes canjear tu premio en cualquiera de nuestras bodegas autorizada
-        presentando tu cedula y el siguiente codigo {token}.
-        
-        Gracias por reciclar con nosotros.
-        
-        Saludos, 
-        Ecotiendas
+        Canjeo realizado con exito, recuerda acercarte con tu cedula y el siguiente codigo {token}
         </body>
 
         </html>

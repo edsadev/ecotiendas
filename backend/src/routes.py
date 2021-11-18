@@ -165,6 +165,7 @@ def login():
     response = {}
     data = request.data
     data_dictionary = json.loads(data)
+    print(data_dictionary)
     if data_dictionary["user"]=="keyUser" and data_dictionary["pass"] == "123456789":
         return jsonify({
                         "id": 1,
@@ -426,7 +427,7 @@ def crear_ecoAmigo():
     if error:
         abort(422)
     else:
-        enviar_email(correo = ecoamigo.correo)
+        enviar_email(correo = ecoAmigo.correo)
         return jsonify({
                         'success': True,
                         'mensaje': "Usuario creado satisfactoriamente"
