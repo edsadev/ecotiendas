@@ -21,6 +21,36 @@ from sqlalchemy.sql import func
 #     #db.drop_all()
 #     db.create_all()
 #     return db
+
+class Problemas(db.Model):
+    __tablename__ = "problemas"
+    id = db.Column(db.Integer, primary_key = True)
+    ecoamigo_id = db.Column(db.Integer, db.ForeignKey('ecoAmigos.id'), nullable = False)
+    descripcion = db.Column(db.String)
+    fecha_registro = db.Column(db.DateTime(timezone=True), server_default=func.now())
+    numero_semana = db.Column(db.String, nullable = False, default =datetime.now().strftime("%W"))
+    mes = db.Column(db.String, nullable = False, default =datetime.now().strftime("%m"))
+    año = db.Column(db.String, nullable = False, default =datetime.now().strftime("%Y"))
+
+
+
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+    
+    def update(self):
+        db.session.commit()
+    
+    def rollback():
+        db.session.rollback()
+    
+    def __repre__(self):
+        return json.dumps(self.format())
+
 class Codigos(db.Model):
     __tablename__ = "codigos"
     id = db.Column(db.Integer, primary_key = True)
