@@ -1657,3 +1657,55 @@ def reportar_problema():
                         'success': True,
                         'mensaje': "Problema reportado exitosamente"
                         })
+
+@app.route('/eliminar-producto', methods=['POST'])
+def eliminar_producto():
+    error = False
+    data = request.data 
+    data_dictionary = json.loads(data)
+    material_id = data_dictionary["id"]
+    material = Material.query.filter(Material.id == material_id).first()
+
+    try:
+        material.delete()
+    except:
+        error = True
+        Material.rollback()
+        print(sys.exc_info())
+    if error:
+        abort(422)
+        return jsonify({
+                        'success': False,
+                        'mensaje': "Tenemos inconvenientes en este momento, prueba mas tarde"
+                        })
+    else:
+        return jsonify({
+                        'success': True,
+                        'mensaje': "Producto eliminado correctamente"
+                        })
+
+@app.route('/eliminar-premio', methods=['POST'])
+def eliminar_premio():
+    error = False
+    data = request.data 
+    data_dictionary = json.loads(data)
+    premio_id = data_dictionary["id"]
+    premio = Producto.query.filter(Producto.id == premio_id).first()
+
+    try:
+        premio.delete()
+    except:
+        error = True
+        Producto.rollback()
+        print(sys.exc_info())
+    if error:
+        abort(422)
+        return jsonify({
+                        'success': False,
+                        'mensaje': "Tenemos inconvenientes en este momento, prueba mas tarde"
+                        })
+    else:
+        return jsonify({
+                        'success': True,
+                        'mensaje': "Premio eliminado correctamente"
+                        })
