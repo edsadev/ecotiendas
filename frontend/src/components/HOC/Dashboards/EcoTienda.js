@@ -48,6 +48,7 @@ class Dashboard extends React.Component {
       getStockEcoAdmin(this.props.authedUser.id),
       getTipoProductos()
     ]).then((res) => {
+      console.log(res)
       const { cantidad_actual_m3, capacidad_maxima_m3 } = res[0].data.ecotienda
       const data = res[1].data.data
       const ids = Object.keys(data)

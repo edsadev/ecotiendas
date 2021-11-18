@@ -20,9 +20,8 @@ class NewEcosupervisor extends React.Component {
     createEcoAdmin(this.props.authedUser.id ,this.user.value, this.cedula.value, this.nombre.value, this.apellido.value, this.direccion.value, this.genero.value, this.correo.value, this.celular.value, this.fecha.value)
       .then(res => {
         if(res.data.success === false){
-          alert('Algo sucedio, intentalo denuevo')
+          alert(res.data.mensaje)
           this.props.dispatch(toggleLoading(this.props.loading))
-          console.error(res.data.mensaje)
         } else {
           alert('Usuario creado')
           this.props.dispatch(toggleLoading(this.props.loading))

@@ -25,9 +25,8 @@ class NewRegional extends React.Component {
     createZonal(this.cedula.value, this.nombre.value, this.apellido.value, this.direccion.value, this.genero.value, this.correo.value, this.celular.value, this.fecha.value, this.state.photo64.result)
       .then(res => {
         if(res.data.success === false){
-          alert('Algo sucedio, intentalo denuevo')
+          alert(res.data.mensaje)
           this.props.dispatch(toggleLoading(this.props.loading))
-          console.error(res.data.mensaje)
         } else {
           alert('EcoZonal creado')
           this.props.dispatch(toggleLoading(this.props.loading))

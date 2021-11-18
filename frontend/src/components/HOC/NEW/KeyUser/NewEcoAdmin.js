@@ -34,8 +34,7 @@ class NewRegional extends React.Component {
     createEcoAdmin(this.ecotienda.value, this.cedula.value, this.nombre.value, this.apellido.value, this.direccion.value, this.genero.value, this.correo.value, this.state.photo64.result, this.fecha.value, this.celular.value, this.state.zonal_id)
       .then(res => {
         if(res.data.success === false){
-          alert('Algo sucedio, intentalo denuevo')
-          console.error(res.data.mensaje)
+          alert(res.data.mensaje)
           this.props.dispatch(toggleLoading(this.props.loading))
         } else {
           alert('EcoAdmin creado')

@@ -31,9 +31,8 @@ class NewRegional extends React.Component {
     createProduct(this.nombreProducto.value, this.state.photo64.result, this.tipoProducto.value, this.cantEcopuntos.value, this.cantm3.value)
       .then(res => {
         if(res.data.success === false){
-          alert('Algo sucedio, intentalo denuevo')
+          alert(res.data.mensaje)
           this.props.dispatch(toggleLoading(this.props.loading))
-          console.error(res.data.mensaje)
         } else {
           alert('Producto creado')
           this.props.dispatch(toggleLoading(this.props.loading))

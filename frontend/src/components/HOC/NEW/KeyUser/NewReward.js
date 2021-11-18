@@ -30,9 +30,8 @@ class NewReward extends React.Component {
     createPremio(this.nombrePremio.value, this.state.photo64.result, this.tipoPremio.value, this.cantEcopuntos.value, this.stock.value)
       .then(res => {
         if(res.data.success === false){
-          alert('Algo sucedio, intentalo denuevo')
+          alert(res.data.mensaje)
           this.props.dispatch(toggleLoading(this.props.loading))
-          console.error(res.data.mensaje)
         } else {
           alert('Premio creado')
           this.props.dispatch(toggleLoading(this.props.loading))

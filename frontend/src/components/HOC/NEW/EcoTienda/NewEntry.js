@@ -6,6 +6,7 @@ import { validacionCedula, createEntry, balanza } from '../../../../utils/api'
 import { toggleLoading } from '../../../../actions/loading'
 
 import Carga from '../../../UI/Carga'
+import HighlightOffIcon from '@material-ui/icons/HighlightOff'
 
 class NewEntry extends React.Component {
   state = {
@@ -19,6 +20,12 @@ class NewEntry extends React.Component {
     total_kg: 0,
     total_m3: 0,
     total_ecopuntos: 0,
+  }
+  handleDelete = (e, id) => {
+    e.preventDefault()
+    this.setState((state => ({
+      materiales: state.materiales.filter(item => item.id !== id)
+    })))
   }
   addMaterial = (e) => {
     e.preventDefault()
@@ -41,6 +48,7 @@ class NewEntry extends React.Component {
             id: this.select.value,
             ecopuntos: Number.parseFloat((peso * materials[id].ecopuntos).toFixed(2))
           }],
+        peso: 0
       }))
     } else {
       let copiaMateriales = materiales.slice()
@@ -57,6 +65,7 @@ class NewEntry extends React.Component {
       }
       this.setState(() => ({
         materiales: copiaMateriales,
+        peso: 0
       }))
     }
   }
@@ -132,9 +141,8 @@ class NewEntry extends React.Component {
       .then((res) => {
         console.log(res)
         if(res.data.success === false){
-          alert('Algo sucedio, intentalo denuevo')
+          alert(res.data.mensaje)
           this.props.dispatch(toggleLoading(this.props.loading))
-          console.error(res.data.mensaje)
         } else {
           alert('Ingreso enviado correctamente')
           this.props.dispatch(toggleLoading(this.props.loading))
@@ -200,7 +208,12 @@ class NewEntry extends React.Component {
                     <ul>
                       {this.state.materiales.length !== 0
                         ? this.state.materiales.map((item) => (
-                        <li key={item.id} id={item.id}><span>{materials[item.id].nombre} - Peso: {item.cantidad_kg} Kg</span></li>
+                        <li key={item.id} id={item.id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                          <span>{materials[item.id].nombre} - Peso: {item.cantidad_kg} Kg</span>
+                          <Borrar onClick={(e) => this.handleDelete(e, item.id)}>
+                            <HighlightOffIcon />
+                          </Borrar>
+                        </li>
                       ))
                         : <span>Ingresa al menos un material</span>
                       }
@@ -329,6 +342,13 @@ const Form = styled.form`
   }
   ul li {
     list-style: none;
+  }
+`
+const Borrar = styled.button`
+  border: none;
+  color: red;
+  :hover {
+    cursor: pointer;
   }
 `
 

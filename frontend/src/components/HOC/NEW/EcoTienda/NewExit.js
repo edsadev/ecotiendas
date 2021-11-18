@@ -7,6 +7,7 @@ import { createExit, balanza } from '../../../../utils/api'
 import { toggleLoading } from '../../../../actions/loading'
 
 import Carga from '../../../UI/Carga'
+import HighlightOffIcon from '@material-ui/icons/HighlightOff'
 
 class NewExit extends React.Component {
   state = {
@@ -17,6 +18,12 @@ class NewExit extends React.Component {
     total_kg: 0,
     total_m3: 0,
     total_ecopuntos: 0,
+  }
+  handleDelete = (e, id) => {
+    e.preventDefault()
+    this.setState((state => ({
+      materiales: state.materiales.filter(item => item.id !== id)
+    })))
   }
   addMaterial = (e) => {
     e.preventDefault()
@@ -101,9 +108,8 @@ class NewExit extends React.Component {
     createExit(authedUser.id, entrada, total_kg, total_m3, materiales)
     .then((res) => {
       if(res.data.success === false){
-        alert("Algo sucedio, intentalo nuevamente")
+        alert(res.data.mensaje)
         this.props.dispatch(toggleLoading(this.props.loading))
-        console.error(res.data.mensaje)
       } else {
         alert('Ingreso enviado correctamente')
         this.props.dispatch(toggleLoading(this.props.loading))
@@ -162,7 +168,12 @@ class NewExit extends React.Component {
                     <ul>
                       {this.state.materiales.length !== 0
                         ? this.state.materiales.map((item) => (
-                        <li key={item.id} id={item.id}><span>{materials[item.id].nombre} - Peso: {item.cantidad_kg} Kg</span></li>
+                        <li key={item.id} id={item.id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                          <span>{materials[item.id].nombre} - Peso: {item.cantidad_kg} Kg</span>
+                          <Borrar onClick={(e) => this.handleDelete(e, item.id)}>
+                            <HighlightOffIcon />
+                          </Borrar>
+                        </li>
                       ))
                         : <span>Ingresa al menos un material</span>
                       }
@@ -279,6 +290,14 @@ const Form = styled.form`
   }
   ul li {
     list-style: none;
+  }
+`
+
+const Borrar = styled.button`
+  border: none;
+  color: red;
+  :hover {
+    cursor: pointer;
   }
 `
 
