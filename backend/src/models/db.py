@@ -762,7 +762,7 @@ class Producto(db.Model):
                 'nombre': self.nombre,
                 'ecopuntos': self.ecopuntos,
                 'tipo_material_id': self.tipo_producto_id,
-                'stock': self.stock,
+                'stock': self.stock_sin_despachar,
         }
     
     def insert(self):

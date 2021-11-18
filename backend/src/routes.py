@@ -420,11 +420,13 @@ def crear_ecoAmigo():
         except:
             error = True
             EcoAmigo.rollback()
+            usuario.delete()
             print(sys.exc_info())
 
     if error:
         abort(422)
     else:
+        enviar_email(correo = ecoamigo.correo)
         return jsonify({
                         'success': True,
                         'mensaje': "Usuario creado satisfactoriamente"
@@ -728,6 +730,7 @@ def crear_zonal():
         except:
             error = True
             Zonal.rollback()
+            usuario.delete()
             print(sys.exc_info())
 
     if error:
@@ -774,12 +777,13 @@ def crear_bodeguero():
             print(sys.exc_info())
         try:
             
-            bodeguero = Zonal(cedula = cedula, fecha_nacimiento = fecha_nacimiento, nombre = nombre, apellido = apellido, direccion = direccion, genero = genero, correo = correo,
+            bodeguero = Bodeguero(cedula = cedula, fecha_nacimiento = fecha_nacimiento, nombre = nombre, apellido = apellido, direccion = direccion, genero = genero, correo = correo,
                                 telefono = telefono, usuario_id = usuario.id, foto = foto)
-            zonal.insert()
+            bodeguero.insert()
         except:
             error = True
-            Zonal.rollback()
+            Bodeguero.rollback()
+            usuario.delete()
             print(sys.exc_info())
 
     if error:
@@ -835,6 +839,7 @@ def crear_ecoAdmin():
         except:
             error = True
             EcoAdmin.rollback()
+            usuario.delete()
             print(sys.exc_info())
         try:
             ecotienda = EcoTienda.query.filter(EcoTienda.id == ecotienda_id).first()
@@ -843,6 +848,8 @@ def crear_ecoAdmin():
         except:
             error = True
             EcoTienda.rollback()
+            ecoAdmin.delete()
+            usuario.delete()
             print(sys.exc_info())
 
     if error:
@@ -936,7 +943,7 @@ def crear_canje():
     cantidad_total = data_dictionary['cantidad_total']
     premios = data_dictionary['premios']    
     ecoamigo = EcoAmigo.query.filter(EcoAmigo.id == ecoamigo_id).first()
-
+    detalles = []
     if total_ecopuntos > ecoamigo.ecopuntos:
             return jsonify({
                             'success': False,
@@ -945,9 +952,20 @@ def crear_canje():
     try: 
         canje = Canje(total_ecopuntos = total_ecopuntos, cantidad_total = cantidad_total, ecoamigo_id = ecoamigo_id, nombre_cliente = f"{ecoamigo.nombre} {ecoamigo.apellido}")
         canje.insert()
+    except:
+        error = True
+        Canje.rollback()
+        print(sys.exc_info())
+    try:
         token = secrets.token_hex(4)
         codigo = Codigos(token = token, ecoamigo_id = ecoamigo_id)
         codigo.insert()
+    except:
+        error = True
+        Codigos.rollback()
+        canje.delete()
+        print(sys.exc_info())
+    try:
         for e in premios:
             canje_id = canje.id
             premio_id = e['id']
@@ -963,14 +981,17 @@ def crear_canje():
         ecoamigo.update()
     except:
         error = True
-        Canje.rollback()
-        Codigos.rollback()
+        Producto.rollback()
+        EcoAmigo.rollback()
         DetalleCanje.rollback()
-        print(sys.exc_info())
+        codigo.delete()
+        canje.delete()
+        
 
     if error:
         abort(422)
     else:
+        enviar_email(correo = ecoamigo.correo, token = codigo.token)
         return jsonify({
                         'success': True,
                         'token': codigo.token
@@ -1037,6 +1058,9 @@ def crear_ticket():
         except:
             error = True
             DetalleTickets.rollback()
+            EcoTienda.rollback()
+            EcoAmigo.rollback()
+            ticket.delete()
             print(sys.exc_info())
         enviar_email(cliente.correo, total_ecopuntos, cliente.ecopuntos)
     else:
@@ -1077,6 +1101,8 @@ def crear_ticket():
             error = True
             DetalleTickets.rollback()
             print(sys.exc_info())
+            ticket.delete()
+            EcoTienda.rollback()
                 
     if error:
         abort(422)
@@ -1171,11 +1197,9 @@ def historial_diario():
 def ingresar_peso():
     error = False
     data = request.data
-    print(data)
     data_dictionary = json.loads(data)
     ecotienda_id = data_dictionary['ecotienda']
     peso = float(data_dictionary['peso'])
-    print(data_dictionary)
     try:
         record = Records(ecotienda_id = ecotienda_id, peso = peso)
         record.insert()
@@ -1261,7 +1285,7 @@ def grafico_ecotienda():
                 response[material.material_id]["peso"] += material.cantidad_kg
             else:
                 response[material.material_id]["peso"] -= material.cantidad_kg
-        
+    print(response)
     return jsonify({
                         'success': True,
                         'data': response
@@ -1362,7 +1386,7 @@ def proyecciones():
 def grafico_general():
     error = False
 
-    
+
     response = {}
     valores = Tickets.query.join(DetalleTickets, Tickets.id==DetalleTickets.ticket_id)\
                 .order_by(DetalleTickets.material_id)
@@ -1375,6 +1399,8 @@ def grafico_general():
                 response[material.material_id]["peso"] += material.cantidad_kg
             else:
                 response[material.material_id]["peso"] -= material.cantidad_kg   
+    print(response)
+
     return jsonify({
                         'success': True,
                         'data': response
@@ -1496,7 +1522,6 @@ def crear_reporte():
     print(data_dictionary)
                 
     if zonal and provincia and producto:
-        print("dasdasda")
         ecotiendas = EcoTienda.query.filter(and_(EcoTienda.zonal_id == zonal, EcoTienda.provincia == provincia))
         for e in ecotiendas:
             response[e.id] = {"nombre": e.nombre, "peso": 0, "ecoadmin": f'{e.ecoadmin.nombre} {e.ecoadmin.apellido}', 'provincia': e.provincia, 'semaforo': e.cantidad_actual_m3/ e.capacidad_maxima_m3} 
