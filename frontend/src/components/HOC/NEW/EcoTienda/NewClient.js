@@ -62,8 +62,7 @@ class NewClient extends React.Component {
     createEcoAmigo(this.cedula.value, this.nombre.value, this.apellido.value, this.direccion.value, this.genero.value, this.correo.value, this.celular.value, Number.parseInt(this.sector.value), fecha_nacimiento, this.foto)
       .then(res => {
         if(res.data.success === false){
-          alert('Algo sucedio, intentalo denuevo')
-          console.error(res.data.mensaje)
+          alert(res.data.mensaje)
           this.props.dispatch(toggleLoading(this.props.loading))
         } else {
           alert('Usuario creado')
