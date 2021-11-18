@@ -26,13 +26,11 @@ class Problemas(db.Model):
     __tablename__ = "problemas"
     id = db.Column(db.Integer, primary_key = True)
     ecoamigo_id = db.Column(db.Integer, db.ForeignKey('ecoAmigos.id'), nullable = False)
-    descripcion = db.Column(db.String)
+    problema = db.Column(db.String)
     fecha_registro = db.Column(db.DateTime(timezone=True), server_default=func.now())
     numero_semana = db.Column(db.String, nullable = False, default =datetime.now().strftime("%W"))
     mes = db.Column(db.String, nullable = False, default =datetime.now().strftime("%m"))
     año = db.Column(db.String, nullable = False, default =datetime.now().strftime("%Y"))
-
-
 
     def insert(self):
         db.session.add(self)

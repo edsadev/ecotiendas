@@ -1535,3 +1535,30 @@ def total_kg():
                         'success': True,
                         'total': total
                         })
+
+@app.route('/reportar-problema', methods=['POST'])
+def reportar_problema():
+    error = False
+    data = request.data 
+    data_dictionary = json.loads(data)
+    problema = data_dictionary['problema']
+    ecoamigo_id = data_dictionary['id']
+    try: 
+        problema = Problemas(problema=problema, ecoamigo_id=ecoamigo_id)
+        problema.insert()
+    except:
+        error = True
+        Problemas.rollback()
+        print(sys.exc_info())
+    
+    if error:
+        abort(422)
+        return jsonify({
+                        'success': False,
+                        'mensaje': "Tenemos inconvenientes en este momento, prueba mas tarde"
+                        })
+    else:
+        return jsonify({
+                        'success': True,
+                        'mensaje': "Problema reportado exitosamente"
+                        })
