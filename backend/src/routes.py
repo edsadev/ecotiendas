@@ -458,6 +458,35 @@ def get_tipos_premios():
                             'success': False,
                             'mensaje': "No Hay ninguno tipo de premios ingresado"
                             })
+@app.route('/actualizar-producto', methods = ['POST'])
+def actualizar_producto():
+    error = False
+    data = request.data
+    data_dictionary = json.loads(data)
+    nombre = data_dictionary['nombre']
+    tipo_material_id = data_dictionary['tipo_producto']
+    ecopuntos = data_dictionary['ecopuntos']
+    cantidad_m3 = data_dictionary['cantidad']
+    producto_id = data_dictionary['id']
+    try:
+        material = Material.query.filter(Material.id == producto_id).first()
+        material.nombre = nombre
+        material.tipo_material_id = tipo_material_id
+        material.ecopuntos = ecopuntos
+        material.cantidad_m3 = cantidad_m3
+        material.update()
+    except:
+        error = True
+        Material.rollback()
+        print(sys.exc_info())
+    if error:
+        abort(422)
+    else:
+        return jsonify({
+                        'success': True,
+                        'mensaje': "Cambios realizados exitosamente"
+                        })
+
 @app.route('/producto', methods = ['POST'])
 def crear_producto():
     error = False
@@ -484,6 +513,37 @@ def crear_producto():
                         'producto': producto.response_create()
                         })
 
+@app.route('/actualizar-premio', methods = ['POST'])
+def actualizar_premio():
+    error = False
+    data = request.data
+    data_dictionary = json.loads(data)
+    premio_id = data_dictionary['id']
+    nombre = data_dictionary['nombre']
+    tipo_premio_id = data_dictionary['tipo_premio']
+    ecopuntos = data_dictionary['ecopuntos']
+    stock_sin_despachar = data_dictionary['stock']
+    stock_real = data_dictionary['stock']
+    premio = Producto.query.filter(Producto.id == premio_id).first()
+    premio.nombre = nombre
+    premio.tipo_premio = tipo_premio_id
+    premio.ecopuntos = ecopuntos
+    suma = stock_real - premio.stock_real
+    premio.stock_sin_despachar += suma
+    premio.stock_real = stock_real
+    try:
+        premio.update()
+    except:
+        error = True
+        Producto.rollback()
+        print(sys.exc_info())
+    if error:
+        abort(422)
+    else:
+        return jsonify({
+                        'success': True,
+                        'mensaje': "Cambios realizados satisfactoriamente"
+                        })
 
 @app.route('/premio', methods = ['POST'])
 def crear_premio():
@@ -516,7 +576,7 @@ def crear_premio():
 def get_premios():
     error = False
     premios = Producto.query.all()
-    response = [premio.format() for premio in premios if premio.stock > 0]
+    response = [premio.format() for premio in premios if premio.stock_sin_despachar > 0]
     if len(response) > 0:
         return jsonify({
                             'success': True,
@@ -580,15 +640,21 @@ def get_ecotiendas_cercanas():
     ecotiendas_dicc = {}
     response = {}
     for ecotienda in ecotiendas:
-        if ecotienda.latitud == 'null':
+        if ecotienda.latitud == 'null' or ecotienda.ecoadmin == None:
             pass
         else:
+            print(ecotienda.nombre)
+            
             distancia = calcular_distancia(latitud, longitud, ecotienda.latitud, ecotienda.longitud)
+            print(distancia)
             ubicaciones[ecotienda.id] = distancia
-            ecotiendas_dicc[ecotienda.id] = {'lat': ecotienda.latitud, 'lon': ecotienda.longitud, 'nombre': ecotienda.nombre}
+            ecotiendas_dicc[ecotienda.id] = {'lat': ecotienda.latitud, 'lon': ecotienda.longitud, 'nombre': ecotienda.nombre, 'id': ecotienda.id}
     ecotiendas_sort = sorted(ubicaciones.items(), key=operator.itemgetter(1), reverse=False)
-    for ecotienda_id in ecotiendas_sort[:4]:
-        response[ecotienda_id[0]] = ecotiendas_dicc[ecotienda_id[0]]
+    for index, ecotienda_id in enumerate(ecotiendas_sort[:4]):
+        response[index ] = ecotiendas_dicc[ecotienda_id[0]]
+    print(ubicaciones)
+    print(ecotiendas_sort)
+    print(response)
     return jsonify({
                     'success': True,
                     'data': response
@@ -887,7 +953,7 @@ def crear_canje():
             premio_id = e['id']
             cantidad = e['cantidad']
             ecopuntos = e['ecopuntos']
-            premio = Producto.query.filter(Producto.id == premio_id)
+            premio = Producto.query.filter(Producto.id == premio_id).first()
             premio.stock_sin_despachar -= cantidad
             detalle = DetalleCanje( canje_id = canje_id, producto_id = premio_id, cantidad = cantidad, 
                                     ecopuntos = ecopuntos, codigo_id = codigo.id)
