@@ -35,6 +35,9 @@ import Material from './components/UI/Material';
 import ReporteStock from './components/HOC/ReporteStock'
 import ReporteHistorico from './components/HOC/ReporteHistorico'
 import EditarProductos from './components/HOC/EditarProductos'
+import EditarProducto from './components/HOC/EditarProducto'
+import EditarPremios from './components/HOC/EditarPremios'
+import EditarPremio from './components/HOC/EditarPremio'
 
 class App extends React.Component {
   render() {
@@ -82,6 +85,9 @@ class App extends React.Component {
               <Route path="/new-reward" exact component={NewReward}/>
               <Route path="/registro" exact component={BtnsRegistro}/>
               <Route path="/edit-products" exact component={EditarProductos}/>
+              <Route path="/edit-products/:id" exact component={EditarProducto}/>
+              <Route path="/edit-rewards" exact component={EditarPremios}/>
+              <Route path="/edit-rewards/:id" exact component={EditarPremio}/>
               <Route path="/reporte" exact component={BtnsReporte}/>
               <Route path="/proyeccion" exact component={Proyeccion}/>
               <Route path="/ecotiendas/" exact component={MapaEcotiendas}/>

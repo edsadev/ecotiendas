@@ -9,19 +9,19 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { getMaterials } from '../../utils/api'
+import { getPremios } from '../../utils/api'
 import { Link } from 'react-router-dom';
 
-class EditarProductos extends React.Component {
+class EditarPremios extends React.Component {
   state = {
-    productos: [],
+    premios: [],
   }
   componentDidMount(){
-    getMaterials()
+    getPremios()
       .then(res => {
-        const ids = Object.keys(res.data.materiales)
+        console.log(res)
         this.setState(() => ({
-          productos: ids.map(id => res.data.materiales[id])
+          premios: res.data.premios
         }))
       })
       .catch(err => {
@@ -30,7 +30,7 @@ class EditarProductos extends React.Component {
       })
   }
   render(){
-    const {productos} = this.state
+    const {premios} = this.state
     return (
       <Container className="container-default background-default">
         <Fade>
@@ -45,13 +45,13 @@ class EditarProductos extends React.Component {
                   </TableRow>
                 </TableHead>
                <TableBody>
-                  {productos && productos.map((row) => (
+                  {premios && premios.map((row) => (
                     <TableRow key={row.id}>
                       {console.log(row)}
                       <TableCell align="center"><img width={50} height={50} alt='imagen del producto' src={row.foto}/></TableCell>
                       <TableCell align="center">{row.nombre}</TableCell>
                       <TableCell align="center">
-                        <Link to={`/edit-products/${row.id}`} style={{textDecoration: 'none'}}>Modificar</Link>
+                        <Link to={`/edit-rewards/${row.id}`} style={{textDecoration: 'none'}}>Modificar</Link>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -78,4 +78,4 @@ function mapStateToProps({authedUser}) {
   }
 }
 
-export default connect(mapStateToProps)(EditarProductos)
+export default connect(mapStateToProps)(EditarPremios)

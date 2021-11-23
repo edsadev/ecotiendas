@@ -30,7 +30,7 @@ class Dashboard extends React.Component {
     peso: 0,
     tipos_productos: [],
     open: false,
-    option: "Plástico",
+    option: '',
     selected: 4
   }
 
@@ -52,9 +52,9 @@ class Dashboard extends React.Component {
       const { cantidad_actual_m3, capacidad_maxima_m3 } = res[0].data.ecotienda
       const data = res[1].data.data
       const ids = Object.keys(data)
-
       this.setState(() => ({
         tipos_productos: res[2].data.tipos_productos,
+        option: res[2].data.tipos_productos[0].nombre,
         data: {
           labels: _setLabels(ids, data),
           datasets: [
@@ -79,15 +79,6 @@ class Dashboard extends React.Component {
             legend: {
               display: false
             },
-            datalabels: {
-              display: ctx => {
-                return true;
-              },
-              formatter: (ctx, data) => {
-                console.log(data)
-                return `${data.dataIndex}`;
-              }
-            }
           }
         },
         peso: Math.floor(cantidad_actual_m3 * 100 / capacidad_maxima_m3)
