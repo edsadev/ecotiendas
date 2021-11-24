@@ -1,8 +1,13 @@
 import axios from 'axios'
 
 // export const ipUrl = 'http://34.122.217.77'
+<<<<<<< HEAD
 export const ipUrl = 'http://192.168.36.227'
 export const puerto = ':5000/'
+=======
+export const ipUrl = process.env.HOST || 'http://localhost'
+export const puerto = process.env.PORT || ':5000/'
+>>>>>>> 8304b890b1cd72f3a3d22149b9ff6bca5bbba264
 
 export function getInitialUser (user, pass) {
   return axios({
