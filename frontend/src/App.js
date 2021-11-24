@@ -41,6 +41,7 @@ import EditarPremio from './components/HOC/EditarPremio'
 
 class App extends React.Component {
   render() {
+    console.log(this.props)
     const { authedUser } = this.props
     if (!authedUser){
       return (

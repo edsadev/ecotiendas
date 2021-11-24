@@ -1,0 +1,13 @@
+version: '3'
+services:
+  frontend:
+    image: gcr.io/ecotiendas-327016/frontend:c31ef08a252d658cb48d5822cb42e9f7b828e4b1
+    environment:
+      PORT: :5000/
+      HOST: http:/backend
+    ports:
+      - 80:80
+  backend:
+    image: gcr.io/ecotiendas-327016/backend:c31ef08a252d658cb48d5822cb42e9f7b828e4b1
+    ports:
+      - 5000:5000
