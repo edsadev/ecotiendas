@@ -65,7 +65,7 @@ def enviar_email(correo, ecopuntos=0, total_ecopuntos=0, token = 0):
     
     # setup the parameters of the message
     msg = email.message.Message()
-    password = "N0vaR3d.2020"
+    password = "1a6f3f054055b68D"
     msg['From'] = "info.ecotiendas@gmail.com"
     msg['To'] = correo
     msg['Subject'] = subject
