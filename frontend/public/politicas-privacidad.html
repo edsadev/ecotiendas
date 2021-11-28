@@ -1,19 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Politicas</title>
-    
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Politicas</title>
+  <style>
+    .main {
+      padding: 24px;
+    }
+    .titulo {
+      padding-left: 26px;
+      font-size: 36px;
+    }
+    .header {
+      display: flex; 
+      align-items: baseline;
+    }
+    @media (max-width: 680px){
+      .main {
+        padding: 10px;
+      }
+      .titulo {
+        font-size: 28px;
+      }
+      .header {
+        align-items: center;
+      }
+    }
+    </style>
 </head>
 <body>
-  <nav>
-  </nav>
-  <main style="padding: 24px;">
-    <div style="display: flex; align-items: baseline;">
-      <img alt="Logo" src="./images/logo_2.png"/>
-      <h1 style="padding-left: 26px; font-size: 36px;">Politicas de Privacidad</h1>
+  <main class="main">
+    <div class="header">
+      <img style="width: 50px; height: 50px;" alt="Logo" src="./images/logo_2.png"/>
+      <h1 class="titulo">Politicas de Privacidad</h1>
     </div>
     <h3>¿Qué es la aplicación Ecotiendas?</h3>
     <p>Ecotiendas es una aplicación diseñada para dispositivos móviles que le ofrece a quienes lo descargan, la posibilidad de realizar transacciones como consultas de ecopuntos, actualizaciones de informacion, solicitar ecopicker, información y más</p>
