@@ -1139,7 +1139,6 @@ def historial_pagination():
     ecotienda_id = data_dictionary['ecotienda']
     pagina = data_dictionary['pagina']
     cantidad = data_dictionary['cantidad']
-    print(pagina, cantidad, type(pagina), type(cantidad))
     tickets = Tickets.query.filter(Tickets.ecotienda_id == ecotienda_id)\
                 .order_by(desc(Tickets.id))\
                 .paginate(page=pagina, per_page=cantidad, error_out=False)
@@ -1163,6 +1162,24 @@ def historial():
     ecotienda_id = data_dictionary['ecotienda']
     tickets = Tickets.query.filter(Tickets.ecotienda_id == ecotienda_id)
     response = [ticket.format() for ticket in tickets]
+    if len(response) > 0:
+        return jsonify({
+                        'success': True,
+                        'historial': response
+                        })
+    else:
+        return jsonify({
+                            'success': False,
+                            'mensaje': "Historial no disponibles"
+                            })
+@app.route('/historial-ecoamigo', methods = ['POST'])
+def historial_ecoamigo():
+    error = False
+    data = request.data
+    data_dictionary = json.loads(data)
+    ecoamigo_id = data_dictionary['ecoamigo']
+    tickets = Tickets.query.filter(Tickets.ecoamigo_id == ecoamigo_id)
+    response = [ticket.format() for ticket in tickets[-9:]]
     if len(response) > 0:
         return jsonify({
                         'success': True,

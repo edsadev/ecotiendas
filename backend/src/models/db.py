@@ -549,7 +549,8 @@ class Tickets(db.Model):
                 'entrada': self.entrada,
                 'total_kg': self.total_kg,
                 'total_ecopuntos': self.total_ecopuntos,
-                'cliente': self.cliente
+                'cliente': self.cliente,
+                'ecotienda': EcoTienda.query.filter(EcoTienda.id == self.ecotienda_id).first().nombre
         }
     
     def insert(self):
