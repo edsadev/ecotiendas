@@ -40,6 +40,17 @@ import EditarPremios from './components/HOC/EditarPremios'
 import EditarPremio from './components/HOC/EditarPremio'
 
 class App extends React.Component {
+  componentDidMount(){
+    if ("geolocation" in navigator) {
+      console.log("Available");
+      navigator.geolocation.getCurrentPosition(function(position) {
+        console.log("Latitude is :", position.coords.latitude);
+        console.log("Longitude is :", position.coords.longitude);
+      });
+    } else {
+      console.log("Not Available");
+    }
+  }
   render() {
     console.log(this.props)
     const { authedUser } = this.props
