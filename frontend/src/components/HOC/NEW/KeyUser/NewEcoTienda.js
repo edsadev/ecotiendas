@@ -43,7 +43,7 @@ class NewRegional extends React.Component {
   handleSubmit = (e) => {
     e.preventDefault()
     this.props.dispatch(toggleLoading(this.props.loading))
-    createEcotienda(JSON.stringify(this.state.lat), JSON.stringify(this.state.lng), this.ecoZonal.value, this.maxm3.value, this.maxkg.value, this.nombre.value, this.provincia.value, this.ciudad.value, this.fecha.value ,this.zona.value)
+    createEcotienda(JSON.stringify(this.state.lat), JSON.stringify(this.state.lng), this.ecoZonal.value, this.maxm3.value, this.maxkg.value, this.nombre.value, this.provincia.value, this.ciudad.value, this.fecha.value ,this.zona.value, this.isMovil.value)
       .then(res => {
         if(res.data.success === false){
           alert(res.data.mensaje)
@@ -98,6 +98,15 @@ class NewRegional extends React.Component {
                       {this.state.ecoZonales && this.state.ecoZonales.map((ecozonal) => (
                         <option key={ecozonal.id} value={ecozonal.id}>{ecozonal.nombre}</option>
                       ))}
+                    </select>
+                  </div>
+                </div>
+                <label className="labelForm">¿Es una ecotienda movil?</label>
+                <div>
+                  <div className="inputContainer">
+                    <select className="dropdown-select" required ref={(input) => this.isMovil = input}>
+                      <option key="true" value={true}>Sí</option>
+                      <option key="true" value={false}>No</option>
                     </select>
                   </div>
                 </div>

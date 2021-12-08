@@ -232,7 +232,7 @@ export function createZonal(cedula, nombre, apellido, direccion, genero, correo,
   })
 }
 
-export function createEcotienda(latitud, longitud, zonal_id, capacidad_maxima_m3, capacidad_maxima_kg, nombre, provincia, ciudad, fecha_apertura, sector){
+export function createEcotienda(latitud, longitud, zonal_id, capacidad_maxima_m3, capacidad_maxima_kg, nombre, provincia, ciudad, fecha_apertura, sector, isMovil){
   return axios({
     method: 'post',
     url: `${ipUrl}${puerto}eco-tienda`,
@@ -246,7 +246,8 @@ export function createEcotienda(latitud, longitud, zonal_id, capacidad_maxima_m3
       provincia,
       ciudad,
       fecha_apertura,
-      sector
+      sector,
+      isMovil
     }
   })
 }
