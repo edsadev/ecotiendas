@@ -915,7 +915,7 @@ def crear_ecoTienda():
     ciudad = data_dictionary["ciudad"]
     fecha_apertura = data_dictionary["fecha_apertura"]
     sectores_id = data_dictionary["sector"]
-    is_movil = data_dictionary["isMovil"]
+    is_movil = data_dictionary["isMovil"] == 'true'
     
     try: 
         ecotienda = EcoTienda(latitud = latitud, longitud = longitud, 
