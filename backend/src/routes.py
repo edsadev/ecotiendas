@@ -189,14 +189,17 @@ def login():
             if usuario.tipo == "ecoadmin":
                 ecoadmin = EcoAdmin.query.filter(EcoAdmin.usuario_id == usuario.id).first()
                 ecotienda = EcoTienda.query.filter(EcoTienda.ecoadmin_id == ecoadmin.id).first()
+                rango = usuario.tipo
                 foto = ''
                 if ecoadmin.foto:
                     foto = ecoadmin.foto.decode("utf-8")
                 else:
                     pass
+                if ecotienda.is_movil:
+                    rango = "ecotienda_movil"
                 response = {
                         'succes': True,
-                        'rango': usuario.tipo,
+                        'rango': rango,
                         'id': ecotienda.id,
                         'nombre': ecoadmin.nombre + " " + ecoadmin.apellido,
                         'foto': foto
@@ -631,6 +634,24 @@ def solicitar_ecopicker():
                     'success': True,
                     'mensaje': f"Gracias {ecoamigo.nombre } {ecoamigo.apellido}.\nEnviamos su pedido a la ecotienda { ecotienda_cercana.nombre}, pronto se pondran en contacto con usted, muchas gracias."
                     })
+@app.route('/actualizar-ubicacion', methods=['POST'])
+def actualizar_ubicacion():
+    data = request.data
+    data_dictionary = json.loads(data)
+    latitud = data_dictionary["latitud"]
+    longitud = data_dictionary["longitud"]
+    ecotienda_id = data_dictionary["id"]
+    ecotienda = EcoTienda.query.filter(EcoTienda.id == ecotienda_id).first()
+    try:
+        ecotienda.latitud = latitud
+        ecotienda.longitud = longitud
+        ecotienda.update()
+    except:
+        EcoTienda.rollback()
+    return jsonify({
+                    'success': True,
+                    'mensaje': "Se actualizo correctamente tu ubicacion"
+                    })
 
 @app.route('/ecotiendas-cercanas', methods=['POST'])
 def get_ecotiendas_cercanas():
@@ -893,6 +914,7 @@ def crear_ecoTienda():
     ciudad = data_dictionary["ciudad"]
     fecha_apertura = data_dictionary["fecha_apertura"]
     sectores_id = data_dictionary["sector"]
+    is_movil = data_dictionary["isMovil"]
 
     try: 
         ecotienda = EcoTienda(latitud = latitud, longitud = longitud, 
@@ -902,7 +924,7 @@ def crear_ecoTienda():
                               cantidad_actual_kg = cantidad_actual_kg,
                               provincia = provincia, ciudad = ciudad, fecha_apertura = fecha_apertura,
                               sectores_id = sectores_id, zonal_id = zonal_id,
-                              nombre = nombre
+                              nombre = nombre, is_movil = is_movil
                               )
         ecotienda.insert()
     except:

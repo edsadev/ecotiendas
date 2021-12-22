@@ -300,6 +300,7 @@ class EcoTienda(db.Model):
     fecha_apertura = db.Column(db.String)
     nombre = db.Column(db.String)
     meta_semanal = db.Column(db.Integer)
+    is_movil = db.Column(db.Boolean)
     zonal_id = db.Column(db.Integer, db.ForeignKey('zonales.id'))
     ecoadmin_id = db.Column(db.Integer, db.ForeignKey('ecoAdmins.id'), nullable = True)
     sectores_id = db.Column(db.Integer, db.ForeignKey('sectores.id'), nullable = False)

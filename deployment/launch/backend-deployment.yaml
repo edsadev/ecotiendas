@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ecotiendas-backend
+  name: backend
   namespace: piloto
   labels:
-    service: ecotiendas-backend
+    service: backend
 spec:
   replicas: 1
   selector:
