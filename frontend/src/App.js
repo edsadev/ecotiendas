@@ -47,7 +47,7 @@ class App extends React.Component {
         console.log("Latitude is :", position.coords.latitude)
         console.log("Longitude is :", position.coords.longitude)
       }
-    } else {
+      )} else {
       console.log("Not Available");
     }
   }
