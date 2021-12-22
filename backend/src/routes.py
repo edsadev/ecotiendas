@@ -902,6 +902,7 @@ def crear_ecoTienda():
     error = False
     data = request.data
     data_dictionary = json.loads(data)
+    print(data_dictionary)
     latitud = data_dictionary["latitud"]
     longitud = data_dictionary["longitud"]
     zonal_id = data_dictionary["zonal_id"]
@@ -915,7 +916,7 @@ def crear_ecoTienda():
     fecha_apertura = data_dictionary["fecha_apertura"]
     sectores_id = data_dictionary["sector"]
     is_movil = data_dictionary["isMovil"]
-
+    
     try: 
         ecotienda = EcoTienda(latitud = latitud, longitud = longitud, 
                               capacidad_maxima_m3 = capacidad_maxima_m3, 
