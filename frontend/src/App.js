@@ -63,7 +63,7 @@ class App extends React.Component {
           </Router>
         </div>
       )
-    } else if (authedUser.rank === "ecoadmin" || "ecotienda_movil"){
+    } else if (authedUser.rank === "ecoadmin" || authedUser.rank === "ecotienda_movil"){
       return (
         <div className="App">
           <Router>

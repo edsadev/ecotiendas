@@ -1,6 +1,5 @@
 import axios from 'axios'
 
-// export const ipUrl = 'http://34.122.217.77'
 export const ipUrl = process.env.HOST || 'http://localhost'
 export const puerto = process.env.PORT || ':5000/'
 
