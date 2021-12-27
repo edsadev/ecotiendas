@@ -762,8 +762,8 @@ def crear_zonal():
                         'success': True,
                         'zonal': zonal.response_create()
                         })
-@app.route('/bodeguero', methods = ['POST'])
-def crear_bodeguero():
+@app.route('/new-ecopicker', methods = ['POST'])
+def crear_ecopicker():
     error = False
     data = request.data
     data_dictionary = json.loads(data)
@@ -773,18 +773,20 @@ def crear_bodeguero():
     direccion = data_dictionary["direccion"]
     genero = data_dictionary["genero"]
     correo = data_dictionary["correo"]
-    foto = data_dictionary["photo"].encode('utf-8')
+    foto = None #data_dictionary["photo"].encode('utf-8')
     telefono = data_dictionary["celular"]
     fecha_nacimiento = data_dictionary["fecha_nacimiento"]
     usuario = data_dictionary["usuario"]
     contraseña = data_dictionary["contraseña"]
-    tipo = "ecobodeguero"
+    zonal_id = data_dictionary["zonal_id"]
+    ecotienda_id = data_dictionary["ecotienda_id"]
+    tipo = "ecopicker"
     if Usuario.query.filter(Usuario.usuario == usuario).first():
         return jsonify({
                         'success': False,
                         'mensaje': "Usuario ya existe"
                         })
-    elif Bodeguero.query.filter(Bodeguero.cedula == cedula).first():
+    elif EcoPicker.query.filter(EcoPicker.cedula == cedula).first():
         return jsonify({
                         'success': False,
                         'mensaje': "Cedula ya existe"
@@ -799,12 +801,22 @@ def crear_bodeguero():
             print(sys.exc_info())
         try:
             
-            bodeguero = Bodeguero(cedula = cedula, fecha_nacimiento = fecha_nacimiento, nombre = nombre, apellido = apellido, direccion = direccion, genero = genero, correo = correo,
-                                telefono = telefono, usuario_id = usuario.id, foto = foto)
-            bodeguero.insert()
+            ecopicker = EcoPicker(cedula = cedula, fecha_nacimiento = fecha_nacimiento, nombre = nombre, apellido = apellido, direccion = direccion, genero = genero, correo = correo,
+                                telefono = telefono, usuario_id = usuario.id, foto = foto, zonal_id = zonal_id)
+            ecopicker.insert()
         except:
             error = True
-            Bodeguero.rollback()
+            EcoPicker.rollback()
+            usuario.delete()
+            print(sys.exc_info())
+        try:
+            ecotienda = EcoTienda.query.filter(EcoTienda.id == ecotienda_id).first()
+            ecotienda.ecopicker_id = ecopicker.id
+            ecotienda.update()
+        except:
+            error = True
+            EcoTienda.rollback()
+            ecopicker.delete()
             usuario.delete()
             print(sys.exc_info())
 
@@ -813,7 +825,7 @@ def crear_bodeguero():
     else:
         return jsonify({
                         'success': True,
-                        'zonal': zonal.format()
+                        'ecopicker': ecopicker.response_create()
                         })
 
 @app.route('/new-ecoadmin', methods = ['POST'])
@@ -885,6 +897,21 @@ def crear_ecoAdmin():
 @app.route('/ecotienda')
 def get_ecotiendas_disponibles():
     ecotiendas = EcoTienda.query.filter(EcoTienda.ecoadmin == None)
+    response = [ecotienda.response_create() for ecotienda in ecotiendas]
+    if len(response) > 0:
+        return jsonify({
+                            'success': True,
+                            'ecotiendas': response
+                            })
+    else:
+        return jsonify({
+                            'success': False,
+                            'mensaje': "No hay ecotiendas disponibles"
+                            })
+
+@app.route('/ecotienda-sin-ecopicker')
+def get_ecotiendas_disponibles_sin_ecopicker():
+    ecotiendas = EcoTienda.query.filter(and_(EcoTienda.ecoadmin == None, EcoTienda.ecopicker == None, EcoTienda.is_movil == False))
     response = [ecotienda.response_create() for ecotienda in ecotiendas]
     if len(response) > 0:
         return jsonify({

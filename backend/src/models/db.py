@@ -176,8 +176,8 @@ class Zonal(db.Model):
     def __repre__(self):
         return json.dumps(self.format())
 
-class Bodeguero(db.Model):
-    __tablename__ = "bodegueros"
+class EcoPicker(db.Model):
+    __tablename__ = "ecopicker"
     id = db.Column(db.Integer, primary_key = True)
     cedula = db.Column(db.String, nullable = False)
     fecha_nacimiento = db.Column(db.String)
@@ -185,24 +185,40 @@ class Bodeguero(db.Model):
     fecha_registro = db.Column(db.DateTime(timezone=True), server_default=func.now())
     apellido = db.Column(db.String)
     direccion = db.Column(db.String)
-    foto = db.Column(db.LargeBinary)
+    foto = db.Column(db.LargeBinary, nullable=True)
     genero = db.Column(db.String, nullable = False)
     correo = db.Column(db.String, nullable = False)
     telefono = db.Column(db.String)
     zonal_id = db.Column(db.Integer, db.ForeignKey('zonales.id'))
-    sector_id = db.Column(db.Integer, db.ForeignKey('sectores.id'), nullable = False)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable = False)
-    usuario = db.relationship("Usuario", backref=db.backref("bodeguero", uselist=False))
+    usuario = db.relationship("Usuario", backref=db.backref("ecopiker", uselist=False))
+    ecotiendas = db.relationship("EcoTienda", backref="ecopicker")
     def format(self):
         return {
                 'id': self.id,
                 'nombre': self.nombre,
-                'genero': self.genero,
+                'cedula': str(self.cedula),
+                'apellido': self.apellido,
+                'fecha_registro': self.fecha_registro.strftime("%m/%d/%Y, %H:%M:%S"),
+                'fecha_nacimiento': self.fecha_nacimiento,
                 'correo': self.correo,
-                'fecha': self.fecha_registro.strftime("%m/%d/%Y, %H:%M:%S"), 
+                'telefono': '0'+str(self.telefono),
+                'zonal_id': self.zonal_id,
                 'foto': self.foto.decode("utf-8")
         }
-    
+    def response_create(self):
+        return {
+            'id': self.id,
+                'nombre': self.nombre,
+                'cedula': str(self.cedula),
+                'apellido': self.apellido,
+                'fecha_registro': self.fecha_registro.strftime("%m/%d/%Y, %H:%M:%S"),
+                'fecha_nacimiento': self.fecha_nacimiento,
+                'correo': self.correo,
+                'telefono': '0'+str(self.telefono),
+                'zonal_id': self.zonal_id
+        }
+
     def insert(self):
         db.session.add(self)
         db.session.commit()
@@ -303,6 +319,7 @@ class EcoTienda(db.Model):
     is_movil = db.Column(db.Boolean)
     zonal_id = db.Column(db.Integer, db.ForeignKey('zonales.id'))
     ecoadmin_id = db.Column(db.Integer, db.ForeignKey('ecoAdmins.id'), nullable = True)
+    ecopicker_id = db.Column(db.Integer, db.ForeignKey('ecopicker.id'), nullable = True)
     sectores_id = db.Column(db.Integer, db.ForeignKey('sectores.id'), nullable = False)
     tickets = db.relationship("Tickets", backref="ecotienda")
 
