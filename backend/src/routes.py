@@ -241,7 +241,7 @@ def login():
                         'rango': rango,
                         'ecotienda_id': ecotienda.id,
                         'nombre': ecopicker.nombre + " " + ecopicker.apellido,
-                        'foto': foto
+                        'foto': foto,
                         'id': ecopicker.id
                         }
             elif usuario.tipo == "ecozonal":
