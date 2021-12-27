@@ -911,7 +911,7 @@ def get_ecotiendas_disponibles():
 
 @app.route('/ecotienda-sin-ecopicker')
 def get_ecotiendas_disponibles_sin_ecopicker():
-    ecotiendas = EcoTienda.query.filter(and_(EcoTienda.ecoadmin == None, EcoTienda.ecopicker == None, EcoTienda.is_movil == False))
+    ecotiendas = EcoTienda.query.filter(and_(EcoTienda.ecopicker == None, EcoTienda.is_movil == False))
     response = [ecotienda.response_create() for ecotienda in ecotiendas]
     if len(response) > 0:
         return jsonify({
