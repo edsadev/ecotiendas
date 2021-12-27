@@ -227,13 +227,22 @@ def login():
                         'nombre': ecoamigo.nombre,
 
                         }
-            elif usuario.tipo == "ecobodeguero":
-                bodeguero = Bodeguero.query.filter(Bodeguero.usuario_id == usuario.id).first()
+            elif usuario.tipo == "ecopicker":
+                ecopicker = EcoPicker.query.filter(EcoPicker.usuario_id == usuario.id).first()
+                ecotienda = EcoTienda.query.filter(EcoTienda.ecopicker_id == ecopicker.id).first()
+                rango = usuario.tipo
+                foto = ''
+                if ecopicker.foto:
+                    foto = ecopicker.foto.decode("utf-8")
+                else:
+                    pass
                 response = {
                         'succes': True,
-                        'rango': usuario.tipo,
-                        'id': bodeguero.id,
-                        'foto': bodeguero.foto.decode("utf-8")
+                        'rango': rango,
+                        'ecotienda_id': ecotienda.id,
+                        'nombre': ecopicker.nombre + " " + ecopicker.apellido,
+                        'foto': foto
+                        'id': ecopicker.id
                         }
             elif usuario.tipo == "ecozonal":
                 zonal = Zonal.query.filter(Zonal.usuario_id == usuario.id).first()
