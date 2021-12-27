@@ -773,7 +773,7 @@ def crear_ecopicker():
     direccion = data_dictionary["direccion"]
     genero = data_dictionary["genero"]
     correo = data_dictionary["correo"]
-    foto = None #data_dictionary["photo"].encode('utf-8')
+    foto = data_dictionary["photo"].encode('utf-8')
     telefono = data_dictionary["celular"]
     fecha_nacimiento = data_dictionary["fecha_nacimiento"]
     usuario = data_dictionary["usuario"]
