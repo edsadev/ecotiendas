@@ -620,6 +620,7 @@ def calcular_distancia(lat1, lon1, lat2, lon2):
 
 @app.route('/solicitar-ecopicker', methods=['POST'])
 def solicitar_ecopicker():
+    error = False 
     data = request.data
     data_dictionary = json.loads(data)
     latitud = data_dictionary["latitud"]
@@ -630,19 +631,57 @@ def solicitar_ecopicker():
     ecotiendas_id = []
     distancias = []
     for ecotienda in ecotiendas:
-        if ecotienda.latitud == 'null':
+        if ecotienda.latitud == 'null' or not(ecotienda.ecopicker_id):
             pass
         else:
             distancia = calcular_distancia(latitud, longitud, ecotienda.latitud, ecotienda.longitud)
             distancias.append(distancia)
             ecotiendas_id.append(ecotienda.id)
+    if len(distancias) == 0:
+        return jsonify({
+                        'success': False,
+                        'mensaje': f"Por el momento no contamos con servicio adomicilio, acercate a una ecotienda fisica"
+                        })
     minimo = min(distancias)
     i_min = distancias.index(minimo)
     ecotienda_cercana = EcoTienda.query.filter(EcoTienda.id == ecotiendas_id[i_min]).first()
-    return jsonify({
-                    'success': True,
-                    'mensaje': f"Gracias {ecoamigo.nombre } {ecoamigo.apellido}.\nEnviamos su pedido a la ecotienda { ecotienda_cercana.nombre}, pronto se pondran en contacto con usted, muchas gracias."
-                    })
+    print(ecotienda_cercana.id)
+    print(distancias)
+    try:
+        pedido = Pedidos(ecoamigo_id = ecoamigo_id, ecopicker_id = ecotienda_cercana.ecopicker_id,\
+                         latitud = latitud, longitud = longitud)
+        pedido.insert()
+    except:
+        error = True
+        print(sys.exc_info())
+        Pedidos.rollback()
+    
+    if error:
+        abort(422)
+    else:
+        return jsonify({
+                        'success': True,
+                        'mensaje': f"Gracias {ecoamigo.nombre } {ecoamigo.apellido}.\nEnviamos su pedido a la ecotienda { ecotienda_cercana.nombre}, pronto se pondran en contacto con usted, muchas gracias."
+                        })
+@app.route('/obtener-pedidos', methods=['POST'])
+def obtener_pedidos():
+    error = False
+    data = request.data
+    data_dictionary = json.loads(data)
+    ecopicker_id = data_dictionary["id"]
+    pedidos = Pedidos.query.filter(and_(Pedidos.ecopicker_id == ecopicker_id, Pedidos.completado == False))
+    response = [pedido.format() for pedido in pedidos]
+    if len(response) > 0:
+        return jsonify({
+                            'success': True,
+                            'pedidos': response
+                            })
+    else:
+        return jsonify({
+                            'success': False,
+                            'mensaje': "No hay pedidos disponibles"
+                            })
+    
 @app.route('/actualizar-ubicacion', methods=['POST'])
 def actualizar_ubicacion():
     data = request.data
@@ -1056,8 +1095,122 @@ def crear_canje():
                         'success': True,
                         'token': codigo.token
                         })
+@app.route('/tickets-transito', methods=['POST'])
+def get_tickets_transito():
+    error = False
+    data = request.data
+    data_dictionary = json.loads(data)
+    print(data_dictionary)
+    ecotienda_id = data_dictionary["id"]
+    tickets = Tickets.query.filter(and_(Tickets.ecotienda_id == ecotienda_id, Tickets.transito == True))
+    response = [ticket.format_ticket_transito() for ticket in tickets]
+    if len(response) > 0:
+        return jsonify({
+                            'success': True,
+                            'tickets': response
+                            })
+    else:
+        return jsonify({
+                            'success': False,
+                            'mensaje': "No hay tickets en transito"
+                            })
+
+@app.route('/completar-ticket', methods = ['POST'])
+def completar_ticket():
+    error = False
+    data = request.data
+    data_dictionary = json.loads(data)
+    print(data_dictionary)
+    ticket_id = data_dictionary["id"]
+    ticket = Tickets.query.filter(Tickets.id == ticket_id).first()
+    try:
+        ticket.transito = False
+        ticket.completado = True
+        ticket.update()
+    except:
+        error = True
+        Tickets.rollback()
+        print(sys.exc_info())
+    if error:
+        abort(422)
+    else:
+        return jsonify({
+                        'success': True,
+                        'mensaje': "ticket completado"
+                        })
+
+@app.route('/crear-ticket-ecopicker', methods = ['POST'])
+def crear_ticket_ecopicker():
+    error = False
+    data = request.data
+    data_dictionary = json.loads(data)
+    print(data_dictionary)
+    pedido_id = data_dictionary['pedido']
+    ecopicker_id = data_dictionary['ecopicker']
+    total_ecopuntos = data_dictionary['total_ecopuntos']
+    ecoamigo_id = data_dictionary['ecoamigo']
+    total_kg = data_dictionary['total_kg']
+    total_m3 = data_dictionary['total_m3']
+    materiales = data_dictionary['materiales']
+    ecotienda = EcoTienda.query.filter(EcoTienda.ecopicker_id == ecopicker_id).first()
+    ecoamigo = EcoAmigo.query.filter(EcoAmigo.id == ecoamigo_id).first()
+    pedido = Pedidos.query.filter(Pedidos.id == pedido_id).first()
+    zonal_id = ecotienda.zonal_id
+    if pedido.completado:
+        return jsonify({
+                        'success': False,
+                        'mensaje': "Lo sentimos este pedido ya fue realizado"
+                        })
+    if not(pedido.ecoamigo_id == ecoamigo_id) or not(pedido.ecopicker_id == ecopicker_id):
+        return jsonify({
+                        'success': False,
+                        'mensaje': "Lo sentimos tenemos inconvenientes"
+                        })
+    try: 
+        ticket = Tickets(zonal_id = zonal_id, entrada = True, total_kg = total_kg, total_m3 = total_m3, total_ecopuntos = total_ecopuntos, ecopicker_id = ecopicker_id,
+                            ecoamigo_id = ecoamigo_id, ecotienda_id = ecotienda.id, cliente = f"{ecoamigo.nombre} {ecoamigo.apellido}", completado = False, transito = True  )
+        ticket.insert()
+    except:
+        error = True
+        Tickets.rollback()
+        print(sys.exc_info())
+
+    try:
+        for material in materiales:
+            ticket_id = ticket.id
+            material_id = material['id']
+            cantidad_kg = material['cantidad_kg']
+            ecopuntos = material['ecopuntos']
+            cantidad_m3  = material['cantidad_m3']
+            detalle = DetalleTickets(entrada = True, ticket_id = ticket_id, material_id = material_id, cantidad_kg = cantidad_kg, 
+                                    ecopuntos = ecopuntos, cantidad_m3 = cantidad_m3)
+            detalle.insert()
+        
+        ecotienda.cantidad_actual_kg += total_kg
+        ecotienda.cantidad_actual_m3 += total_m3
+        ecoamigo.ecopuntos += total_ecopuntos
+        pedido.completado = True
+        ecotienda.update()
+        ecoamigo.update()
+        pedido.update()
     
-    
+    except:
+        error = True
+        DetalleTickets.rollback()
+        EcoTienda.rollback()
+        EcoAmigo.rollback()
+        Pedidos.rollback()
+        ticket.delete()
+        print(sys.exc_info())
+    #enviar_email(cliente.correo, total_ecopuntos, cliente.ecopuntos)
+    if error:
+        abort(422)
+    else:
+        return jsonify({
+                        'success': True,
+                        'ticket': ticket.format()
+                        })
+
 @app.route('/crear-ticket', methods = ['POST'])
 def crear_ticket():
     error = False
@@ -1091,7 +1244,7 @@ def crear_ticket():
         cliente = EcoAmigo.query.filter(EcoAmigo.id == cliente_id).first()
         try: 
             ticket = Tickets(zonal_id = zonal_id, entrada = entrada, total_kg = total_kg, total_m3 = total_m3, total_ecopuntos = total_ecopuntos,
-                                ecoamigo_id = cliente_id, ecotienda_id = ecotienda_id, cliente = f"{cliente.nombre} {cliente.apellido}"  )
+                                ecoamigo_id = cliente_id, ecotienda_id = ecotienda_id, cliente = f"{cliente.nombre} {cliente.apellido}", completado = True  )
             ticket.insert()
         except:
             error = True
@@ -1136,7 +1289,7 @@ def crear_ticket():
                             })
         try: 
             ticket = Tickets(zonal_id = zonal_id, entrada = entrada, total_kg = total_kg, total_m3 = total_m3, 
-                                ecotienda_id = ecotienda_id)
+                                ecotienda_id = ecotienda_id, completado = True)
             ticket.insert()
         except:
             error = True
