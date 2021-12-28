@@ -37,12 +37,13 @@ class Pedidos(db.Model):
     def format(self):
         ecoamigo = EcoAmigo.query.filter(EcoAmigo.id == self.ecoamigo_id).first()
         return {
-            "id": self.id,
+            "pedido_id": self.id,
             "cliente": f"{ecoamigo.nombre} {ecoamigo.apellido}",
             "celular": f"{ecoamigo.telefono}",
             "latitud": self.latitud,
             "longitud": self.longitud,
-            "fecha_registro": self.fecha_registro
+            "fecha_registro": self.fecha_registro,
+            "ecoamigo_id": ecoamigo.id
         }
     def insert(self):
         db.session.add(self)
