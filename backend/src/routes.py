@@ -1147,10 +1147,10 @@ def crear_ticket_ecopicker():
     print(data_dictionary)
     pedido_id = data_dictionary['pedido']
     ecopicker_id = data_dictionary['ecopicker']
-    total_ecopuntos = data_dictionary['total_ecopuntos']
     ecoamigo_id = data_dictionary['ecoamigo']
-    total_kg = data_dictionary['total_kg']
-    total_m3 = data_dictionary['total_m3']
+    total_ecopuntos = 0
+    total_kg = 0
+    total_m3 = 0
     materiales = data_dictionary['materiales']
     ecotienda = EcoTienda.query.filter(EcoTienda.ecopicker_id == ecopicker_id).first()
     ecoamigo = EcoAmigo.query.filter(EcoAmigo.id == ecoamigo_id).first()
@@ -1167,7 +1167,7 @@ def crear_ticket_ecopicker():
                         'mensaje': "Lo sentimos tenemos inconvenientes"
                         })
     try: 
-        ticket = Tickets(zonal_id = zonal_id, entrada = True, total_kg = total_kg, total_m3 = total_m3, total_ecopuntos = total_ecopuntos, ecopicker_id = ecopicker_id,
+        ticket = Tickets(zonal_id = zonal_id, entrada = True, ecopicker_id = ecopicker_id,
                             ecoamigo_id = ecoamigo_id, ecotienda_id = ecotienda.id, cliente = f"{ecoamigo.nombre} {ecoamigo.apellido}", completado = False, transito = True  )
         ticket.insert()
     except:
@@ -1179,19 +1179,27 @@ def crear_ticket_ecopicker():
         for material in materiales:
             ticket_id = ticket.id
             material_id = material['id']
-            cantidad_kg = material['cantidad_kg']
-            ecopuntos = material['ecopuntos']
-            cantidad_m3  = material['cantidad_m3']
+            cantidad_kg = material['peso']
+            material_db = Material.query.filter(Material.id == material_id).first()
+            ecopuntos = material_db.ecopuntos * cantidad_kg
+            cantidad_m3  = material_db.cantidad_m3 * cantidad_kg
+            total_kg += cantidad_kg
+            total_ecopuntos += ecopuntos
+            total_m3 += cantidad_m3
             detalle = DetalleTickets(entrada = True, ticket_id = ticket_id, material_id = material_id, cantidad_kg = cantidad_kg, 
                                     ecopuntos = ecopuntos, cantidad_m3 = cantidad_m3)
             detalle.insert()
         
+        ticket.total_kg = total_kg
+        ticket.total_ecopuntos = total_ecopuntos
+        ticket.total_m3 = total_m3
         ecotienda.cantidad_actual_kg += total_kg
         ecotienda.cantidad_actual_m3 += total_m3
         ecoamigo.ecopuntos += total_ecopuntos
         pedido.completado = True
         ecotienda.update()
         ecoamigo.update()
+        ticket.update()
         pedido.update()
     
     except:
@@ -1199,6 +1207,7 @@ def crear_ticket_ecopicker():
         DetalleTickets.rollback()
         EcoTienda.rollback()
         EcoAmigo.rollback()
+        Tickets.rollback()
         Pedidos.rollback()
         ticket.delete()
         print(sys.exc_info())
