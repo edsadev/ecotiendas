@@ -630,6 +630,13 @@ def solicitar_ecopicker():
     ecoamigo = EcoAmigo.query.filter(EcoAmigo.id == ecoamigo_id).first()
     ecotiendas_id = []
     distancias = []
+    pedido = Pedidos.query.filter(and_(Pedidos.ecoamigo_id == ecoamigo_id, Pedidos.completado == False)).first()
+    print(pedido)
+    if pedido:
+        return jsonify({
+                        'success': False,
+                        'mensaje': f"Ya cuentas con un pedido en transito, pronto te contactaremos"
+                        })
     for ecotienda in ecotiendas:
         if ecotienda.latitud == 'null' or not(ecotienda.ecopicker_id):
             pass
