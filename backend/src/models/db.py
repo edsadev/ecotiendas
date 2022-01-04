@@ -22,6 +22,46 @@ from sqlalchemy.sql import func
 #     db.create_all()
 #     return db
 
+class Pedidos(db.Model):
+    __tablename__ = "pedidos"
+    id = db.Column(db.Integer, primary_key = True)
+    completado = db.Column(db.Boolean, default= False)
+    ecoamigo_id = db.Column(db.Integer, db.ForeignKey('ecoAmigos.id'), nullable = False)
+    ecopicker_id = db.Column(db.Integer, db.ForeignKey('ecopicker.id'), nullable = False)
+    latitud = db.Column(db.String, nullable = True)
+    longitud = db.Column(db.String, nullable = True)
+    fecha_registro = db.Column(db.DateTime(timezone=True), server_default=func.now())
+    numero_semana = db.Column(db.String, nullable = False, default =datetime.now().strftime("%W"))
+    mes = db.Column(db.String, nullable = False, default =datetime.now().strftime("%m"))
+    año = db.Column(db.String, nullable = False, default =datetime.now().strftime("%Y"))
+    def format(self):
+        ecoamigo = EcoAmigo.query.filter(EcoAmigo.id == self.ecoamigo_id).first()
+        return {
+            "pedido_id": self.id,
+            "cliente": f"{ecoamigo.nombre} {ecoamigo.apellido}",
+            "celular": f"{ecoamigo.telefono}",
+            "latitud": self.latitud,
+            "longitud": self.longitud,
+            "fecha_registro": self.fecha_registro,
+            "ecoamigo_id": ecoamigo.id
+        }
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+    
+    def update(self):
+        db.session.commit()
+    
+    def rollback():
+        db.session.rollback()
+    
+    def __repre__(self):
+        return json.dumps(self.format())
+
 class Problemas(db.Model):
     __tablename__ = "problemas"
     id = db.Column(db.Integer, primary_key = True)
@@ -176,8 +216,8 @@ class Zonal(db.Model):
     def __repre__(self):
         return json.dumps(self.format())
 
-class Bodeguero(db.Model):
-    __tablename__ = "bodegueros"
+class EcoPicker(db.Model):
+    __tablename__ = "ecopicker"
     id = db.Column(db.Integer, primary_key = True)
     cedula = db.Column(db.String, nullable = False)
     fecha_nacimiento = db.Column(db.String)
@@ -185,24 +225,40 @@ class Bodeguero(db.Model):
     fecha_registro = db.Column(db.DateTime(timezone=True), server_default=func.now())
     apellido = db.Column(db.String)
     direccion = db.Column(db.String)
-    foto = db.Column(db.LargeBinary)
+    foto = db.Column(db.LargeBinary, nullable=True)
     genero = db.Column(db.String, nullable = False)
     correo = db.Column(db.String, nullable = False)
     telefono = db.Column(db.String)
     zonal_id = db.Column(db.Integer, db.ForeignKey('zonales.id'))
-    sector_id = db.Column(db.Integer, db.ForeignKey('sectores.id'), nullable = False)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable = False)
-    usuario = db.relationship("Usuario", backref=db.backref("bodeguero", uselist=False))
+    usuario = db.relationship("Usuario", backref=db.backref("ecopiker", uselist=False))
+    ecotiendas = db.relationship("EcoTienda", backref="ecopicker")
     def format(self):
         return {
                 'id': self.id,
                 'nombre': self.nombre,
-                'genero': self.genero,
+                'cedula': str(self.cedula),
+                'apellido': self.apellido,
+                'fecha_registro': self.fecha_registro.strftime("%m/%d/%Y, %H:%M:%S"),
+                'fecha_nacimiento': self.fecha_nacimiento,
                 'correo': self.correo,
-                'fecha': self.fecha_registro.strftime("%m/%d/%Y, %H:%M:%S"), 
+                'telefono': '0'+str(self.telefono),
+                'zonal_id': self.zonal_id,
                 'foto': self.foto.decode("utf-8")
         }
-    
+    def response_create(self):
+        return {
+            'id': self.id,
+                'nombre': self.nombre,
+                'cedula': str(self.cedula),
+                'apellido': self.apellido,
+                'fecha_registro': self.fecha_registro.strftime("%m/%d/%Y, %H:%M:%S"),
+                'fecha_nacimiento': self.fecha_nacimiento,
+                'correo': self.correo,
+                'telefono': '0'+str(self.telefono),
+                'zonal_id': self.zonal_id
+        }
+
     def insert(self):
         db.session.add(self)
         db.session.commit()
@@ -303,6 +359,7 @@ class EcoTienda(db.Model):
     is_movil = db.Column(db.Boolean)
     zonal_id = db.Column(db.Integer, db.ForeignKey('zonales.id'))
     ecoadmin_id = db.Column(db.Integer, db.ForeignKey('ecoAdmins.id'), nullable = True)
+    ecopicker_id = db.Column(db.Integer, db.ForeignKey('ecopicker.id'), nullable = True)
     sectores_id = db.Column(db.Integer, db.ForeignKey('sectores.id'), nullable = False)
     tickets = db.relationship("Tickets", backref="ecotienda")
 
@@ -534,11 +591,14 @@ class Tickets(db.Model):
     año = db.Column(db.String, nullable = False, default =datetime.now().strftime("%Y"))
     cliente = db.Column(db.String)
     entrada = db.Column(db.Boolean, nullable = False)
-    total_kg = db.Column(db.Float, nullable = False)
-    total_m3 = db.Column(db.Float, nullable = False)
-    total_ecopuntos = db.Column(db.Float)
+    transito = db.Column(db.Boolean, nullable = True, default = False)
+    completado = db.Column(db.Boolean, nullable = True, default = False)
+    total_kg = db.Column(db.Float, nullable = True)
+    total_m3 = db.Column(db.Float, nullable = True)
+    total_ecopuntos = db.Column(db.Float, nullable = True)
     ecoamigo_id = db.Column(db.Integer, db.ForeignKey('ecoAmigos.id'))
     ecotienda_id = db.Column(db.Integer, db.ForeignKey('ecoTiendas.id'), nullable = False)
+    ecopicker_id = db.Column(db.Integer, db.ForeignKey('ecopicker.id'), nullable = True)
     zonal_id = db.Column(db.Integer, db.ForeignKey('zonales.id'), nullable = False)
     materiales = db.relationship('DetalleTickets', backref='ticket')
     fecha_registro = db.Column(db.DateTime(timezone=True), server_default=func.now())
@@ -552,6 +612,19 @@ class Tickets(db.Model):
                 'total_ecopuntos': self.total_ecopuntos,
                 'cliente': self.cliente,
                 'ecotienda': EcoTienda.query.filter(EcoTienda.id == self.ecotienda_id).first().nombre
+        }
+    def format_ticket_transito(self):
+        ecopicker = EcoPicker.query.filter(EcoPicker.id == self.ecopicker_id).first()
+        print(f"este es el id{ecopicker.id}")
+        return {
+                'id': self.id,
+                'fecha': self.fecha_registro.isoformat(),
+                'entrada': self.entrada,
+                'total_kg': self.total_kg,
+                'total_ecopuntos': self.total_ecopuntos,
+                'cliente': self.cliente,
+                'ecopicker': f"{ecopicker.nombre} {ecopicker.apellido}",
+                'telefono': f"0{ecopicker.telefono}"
         }
     
     def insert(self):

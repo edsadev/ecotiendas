@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export const ipUrl = process.env.HOST
+export const ipUrl = process.env.HOST || 'http://200.93.217.234'
 export const puerto = process.env.PORT || ':5000/'
 
 export function getInitialUser (user, pass) {
