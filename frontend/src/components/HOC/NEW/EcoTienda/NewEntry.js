@@ -100,7 +100,6 @@ class NewEntry extends React.Component {
       total_kg: totalKg,
       total_m3: totalM3
     }))
-
   }
   handleChange = (e) => {
     const cedulaInput = e.target.value

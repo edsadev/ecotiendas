@@ -56,7 +56,7 @@ class MapaEcotiendas extends React.Component{
             <SubContainer>
               <GoogleMapReact
                 bootstrapURLKeys={{ 
-                  key: "AIzaSyBua99z0BGTt28kcqRTOGTgYGiWS0M5kxc",
+                  key: "AIzaSyAQchOFADA-fkZY7nrx4DgEzrjLM3y96AE",
                   language: 'en'
                 }}
                 defaultCenter={this.state.center}

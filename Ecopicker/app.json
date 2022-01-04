@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "Ecotiendas-ecopicker",
+    "slug": "Ecotiendas-ecopicker",
+    "version": "1.0.0",
+    "sdkVersion": "42.0.0",
+    "icon": "https://i.imgur.com/q3EcaSh.png",
+    "notification": {
+      "icon": "https://i.imgur.com/q3EcaSh.png"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "userInterfaceStyle": "automatic",
+    "android": {
+      "package": "com.edmundo994.Ecotiendasecopicker"
+    }
+  },
+  "name": "Ecotiendas-ecopicker"
+}

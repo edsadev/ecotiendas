@@ -1,0 +1,90 @@
+{
+  "project_info": {
+    "project_number": "615811092118",
+    "project_id": "ecoamigoapp",
+    "storage_bucket": "ecoamigoapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:615811092118:android:b07b73eb6abdb71eff3cb7",
+        "android_client_info": {
+          "package_name": "com.ecoamigofirebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "615811092118-tgndkkj00254cfucn6trfd2qqgbb0n9v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ecoamigofirebase",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "615811092118-h7o854buh052gdjnhpp0bfiub3nflrp9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxUY7chxYUftPUEm_cOHbi4eIMh7Q66Hs"
+        },
+        {
+          "current_key": "AIzaSyB5sMgS2RQ9cjffJe46V1finOvWTPogzwk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "615811092118-h7o854buh052gdjnhpp0bfiub3nflrp9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:615811092118:android:08b73e634a42c99dff3cb7",
+        "android_client_info": {
+          "package_name": "com.ecotiendasapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "615811092118-15eg2hfpvquvkgmm71j52h8j1scu40vb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ecotiendasapp",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "615811092118-h7o854buh052gdjnhpp0bfiub3nflrp9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxUY7chxYUftPUEm_cOHbi4eIMh7Q66Hs"
+        },
+        {
+          "current_key": "AIzaSyB5sMgS2RQ9cjffJe46V1finOvWTPogzwk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "615811092118-h7o854buh052gdjnhpp0bfiub3nflrp9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

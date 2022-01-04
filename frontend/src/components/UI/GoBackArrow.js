@@ -9,7 +9,13 @@ export default class GoBackArrow extends React.Component{
   render(){
     return (
       <div className={this.props.classTo} style={{display: "inline-block"}}>
-        <ArrowBackIcon style={{cursor:"pointer"}} onClick={this.handleBack}/>
+        {this.props.goTo 
+          ? <ArrowBackIcon style={{cursor:"pointer"}} onClick={() => {
+            console.log(this.props.goTo)
+            this.props.history.push(this.props.goTo)
+          }}/>
+          : <ArrowBackIcon style={{cursor:"pointer"}} onClick={this.handleBack}/>
+        }
       </div>
     )
   }
