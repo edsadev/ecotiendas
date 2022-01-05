@@ -163,3 +163,53 @@ Existen dos aplicaciones dentro del proyecto Ecotiendas las cuales son:
 - EcoAmigo app (disponible en Android y iOS)
 - EcoPicker app (disponible en Android y iOS)
 
+### Dependencias
+Primero necesitamos instalar eas-cli y expo-cli lo cual lo hacemos con el siguiente comando 
+
+```bash 
+
+npm install -g eas-cli expo-cli
+
+```
+Segundo instalaremos Yarn 
+
+```bash 
+
+npm install -g yarn
+
+```
+### EcoPicker (Development) 
+
+1. Necesitamos instalar la aplicacion de ExpoGo en el celular 
+2. Ejecutamos el siguiente comando en la consola 
+
+```bash 
+
+cd ecotiendas/apps/Ecoamigo
+
+yarn install 
+
+expo start
+
+```
+3. Te aparecera un codigo QR en la consola lo escaneas con la aplicacion de Expo Go 
+
+### EcoPicker (APK)
+
+1. Configurar la cuenta de expo, puedes revisar la **[documentacion](https://docs.expo.dev/build/setup/)**
+
+2. Ejecutamos el siguiente comando 
+```bash 
+
+eas build
+
+```
+3. Se creara un link en la consola que te redireccionara a la pagina de expo.
+
+4. Una vez terminado el proceso, descarga el bundle.aab.
+
+5. Con el bundle puedes ir a la consola de google play developer y subirlo.
+
+>**_NOTE_**: Recuerda cambiar la version del bundle `apps/Ecopicker/android/app/build.gradle`. Sino cambias la version x.x.x no podras subir el bundle al store
+
+### EcoAmigo (Development)
