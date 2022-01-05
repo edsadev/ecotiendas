@@ -16,7 +16,10 @@ class Nav extends React.Component {
           <div className="perfil-container">
             <img src={this.props.authedUser.foto} alt="avatar"/>
             <h3>{this.props.authedUser.name}</h3>
-            <h5>Ecotienda</h5>
+            {user === "ecoadmin"
+              ? <h5>Ecotienda</h5>
+              : <h5>Ecotienda Móvil</h5>
+            }
           </div>
           <ul className="nav-items">
             <li className="nav-item"><Link to="/">Dashboard</Link></li>
