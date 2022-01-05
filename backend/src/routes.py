@@ -166,14 +166,14 @@ def login():
     data = request.data
     data_dictionary = json.loads(data)
     print(data_dictionary)
-    if data_dictionary["user"]=="keyUser" and data_dictionary["pass"] == "123456789":
+    if data_dictionary["user"]=="keyUser" and data_dictionary["pass"] == "qtD-y7a_kAC-Tg":
         return jsonify({
                         "id": 1,
                         "rango": "keyUser",
                         "nombre": "Gabriela Baque",
                         "succes": True
                         })
-    elif data_dictionary["user"]=="Administrativo" and data_dictionary["pass"] == "123456789":
+    elif data_dictionary["user"]=="Administrativo" and data_dictionary["pass"] == "g2sm-DH92ZUlkQ":
         return jsonify({
                         "id": 1,
                         "rango": "administrativo",
@@ -242,7 +242,13 @@ def login():
                         'ecotienda_id': ecotienda.id,
                         'nombre': ecopicker.nombre + " " + ecopicker.apellido,
                         'foto': foto,
-                        'id': ecopicker.id
+                        'id': ecopicker.id,
+                        'fecha_registro': ecopicker.fecha_registro.strftime("%m/%d/%Y, %H:%M:%S"),
+                        'fecha_nacimiento': ecopicker.fecha_nacimiento,
+                        'correo': ecopicker.correo,
+                        'telefono': str(ecopicker.telefono),
+                        'zonal_id': ecopicker.zonal_id,
+
                         }
             elif usuario.tipo == "ecozonal":
                 zonal = Zonal.query.filter(Zonal.usuario_id == usuario.id).first()
