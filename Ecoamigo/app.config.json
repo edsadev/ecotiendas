@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "Ecotiendas",
+    "orientation": "portrait",
+    "description": "La mejor app para ganar premios reciclando tus desechos",
+    "slug": "EcoAmigos-app",
+    "sdkVersion": "42.0.0",
+    "version": "1.0.8",
+    "icon": "https://i.ibb.co/qYKKTPQ/Recurso-5-2x.png",
+    "notification": {
+      "icon": "https://i.ibb.co/qYKKTPQ/Recurso-5-2x.png"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "userInterfaceStyle": "automatic",
+    "android": {
+      "googleServicesFile": "./google-services.json",
+      "package": "com.ecotiendasapp"
+    },
+    "ios": {},
+    "plugins": [
+      "@react-native-firebase/app",
+      [
+        "expo-image-picker", 
+        {"photosPermission": "La aplicación accede a tus fotos para poder cumplir con funcionalidades básicas del programa."}
+      ],
+      "expo-location"
+    ]
+  },
+  "name": "Ecotiendas-app",
+  "android": {
+    "config": {
+      "googleMaps": {
+        "apiKey": "AIzaSyB5sMgS2RQ9cjffJe46V1finOvWTPogzwk"
+      }
+    },
+    "versionCode": 8
+  }
+}

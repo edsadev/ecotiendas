@@ -124,6 +124,13 @@ export function getEcotiendaForEcoadmin(){
   })
 }
 
+export function getEcotiendaForEcopicker(){
+  return axios({
+    method: 'get',
+    url: `${ipUrl}${puerto}ecotienda-sin-ecopicker`
+  })
+}
+
 export function getMarkersMap(isZonal, zonal = ""){
   return axios({
     method: 'post',
@@ -255,6 +262,28 @@ export function createEcoAdmin(ecotienda_id, cedula, nombre, apellido, direccion
   return axios({
     method: 'post',
     url: `${ipUrl}${puerto}new-ecoadmin`,
+    data: {
+      ecotienda_id,
+      cedula,
+      nombre,
+      apellido,
+      direccion,
+      genero,
+      correo,
+      photo,
+      fecha_nacimiento,
+      celular,
+      usuario: correo,
+      contraseña: cedula,
+      zonal_id,
+    }
+  })
+}
+
+export function createEcoPicker(ecotienda_id, cedula, nombre, apellido, direccion, genero, correo, photo, fecha_nacimiento, celular, zonal_id){
+  return axios({
+    method: 'post',
+    url: `${ipUrl}${puerto}new-ecopicker`,
     data: {
       ecotienda_id,
       cedula,
@@ -447,5 +476,25 @@ export function getPremios(){
   return axios({
     method: 'get',
     url: `${ipUrl}${puerto}premios`
+  })
+}
+
+export function getTicketsInTransit(id){
+  return axios({
+    method: 'post',
+    url: `${ipUrl}${puerto}tickets-transito`,
+    data: {
+      id
+    }
+  })
+}
+
+export function completTicketInTransit(id){
+  return axios({
+    method: 'post',
+    url: `${ipUrl}${puerto}completar-ticket`,
+    data: {
+      id
+    }
   })
 }

@@ -13,6 +13,7 @@ export default function BtnsRegistro(){
             {/* <Boton text="Registrar EcoSupervisor" direction="/new-ecosupervisor" /> */}
             <Boton text="Registrar EcoTienda" direction="/new-ecotienda" />
             <Boton text="Registrar EcoAdmin" direction="/new-ecoadmin" />
+            <Boton text="Registrar EcoPicker" direction="/new-ecopicker" />
           </BtnContainer>
           <BtnContainer>
             <Boton text="Registrar Producto" direction="/new-product" />

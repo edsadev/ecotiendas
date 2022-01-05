@@ -11,7 +11,6 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import TablePagination from '@material-ui/core/TablePagination';
 
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 
@@ -93,15 +92,6 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-`
-
-const SubContainer = styled.div`
-  width: 70vw;
-  min-height: 80vh;
-  background-color: white;
-  display: flex;
-  box-shadow: 0px 0px 20px -5px rgba(0,0,0,0.73);
-  border-radius: 40px;
 `
 
 function mapStateToProps({authedUser}){

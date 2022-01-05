@@ -10,7 +10,7 @@ import Carga from '../../../UI/Carga'
 
 import { _actualDate } from '../../../../utils/_helpers'
 
-class NewRegional extends React.Component {
+class NewEcoAdmin extends React.Component {
   state = {
     ecotiendas: [],
     photo64: "",
@@ -243,4 +243,4 @@ function mapStateToProps({authedUser, loading}){
   }
 }
 
-export default connect(mapStateToProps)(NewRegional)
+export default connect(mapStateToProps)(NewEcoAdmin)

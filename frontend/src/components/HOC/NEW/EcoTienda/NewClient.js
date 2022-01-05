@@ -41,28 +41,33 @@ class NewClient extends React.Component {
   check = () => {
     console.log(this.cedula.value, this.nombre.value, this.apellido.value, this.direccion.value, this.genero.value, this.correo.value, this.celular.value, this.sector.value, this.fecha.value)
   }
-  handleSubmit = (e) => {
+  handleSubmit = async (e) => {
     e.preventDefault()
     this.props.dispatch(toggleLoading(this.props.loading))
     const fecha_nacimiento = this.fecha.value
+    const cedula = this.cedula.value
+    const nombre = this.nombre.value
+    const apellido = this.apellido.value
+    const direccion = this.direccion.value
+    const genero = this.genero.value
+    const correo = this.correo.value
+    const celular = this.celular.value
+    const sector = this.sector.value
+    let success = false
+    let mensaje = ""
     imageToBase64(DefaultUser) // Path to the image
-    .then(
-      (response) => {
-        debugger
+      .then((response) => {
         console.log(response)
-        this.foto = response
-      }
-    )
-    .catch(
-      (error) => {
-        this.props.dispatch(toggleLoading(this.props.loading))
-        console.error(error) // Logs an error if there was one
-      }
-    )
-    createEcoAmigo(this.cedula.value, this.nombre.value, this.apellido.value, this.direccion.value, this.genero.value, this.correo.value, this.celular.value, Number.parseInt(this.sector.value), fecha_nacimiento, this.foto)
-      .then(res => {
-        if(res.data.success === false){
-          alert(res.data.mensaje)
+        return createEcoAmigo(cedula, nombre, apellido, direccion, genero, correo, celular, Number.parseInt(sector), fecha_nacimiento, response)
+          .then(res => {
+            debugger
+            success = res.data.success
+            mensaje = res.data.mensaje
+          })
+      })
+      .then(() => {
+        if(success === false){
+          alert(mensaje)
           this.props.dispatch(toggleLoading(this.props.loading))
         } else {
           alert('Usuario creado')
@@ -70,10 +75,10 @@ class NewClient extends React.Component {
           this.props.history.push('/new-entry')
         }
       })
-      .catch(err => {
-        this.props.dispatch(toggleLoading(this.props.loading))
-        alert(err)
-        console.error(err)
+      .catch((error) => {
+          this.props.dispatch(toggleLoading(this.props.loading))
+          alert(error)
+          console.error(error) // Logs an error if there was one
       })
   }
   render(){

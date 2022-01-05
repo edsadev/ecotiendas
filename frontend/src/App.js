@@ -27,6 +27,7 @@ import NewEcoAdmin from './components/HOC/NEW/KeyUser/NewEcoAdmin';
 import NewEcoTienda from './components/HOC/NEW/KeyUser/NewEcoTienda';
 import NewProduct from './components/HOC/NEW/KeyUser/NewProduct'
 import NewReward from './components/HOC/NEW/KeyUser/NewReward'
+import NewEcoPicker from './components/HOC/NEW/KeyUser/NewEcoPicker';
 import BtnsRegistro from './components/UI/BtnsRegistro'
 import BtnsReporte from './components/UI/BtnsReporte'
 import Proyeccion from './components/UI/Proyeccion';
@@ -38,6 +39,8 @@ import EditarProductos from './components/HOC/EditarProductos'
 import EditarProducto from './components/HOC/EditarProducto'
 import EditarPremios from './components/HOC/EditarPremios'
 import EditarPremio from './components/HOC/EditarPremio'
+import TicketsTransito from './components/UI/TicketsTransito'
+import Ticket from './components/UI/Ticket'
 
 class App extends React.Component {
   componentDidMount(){
@@ -77,6 +80,8 @@ class App extends React.Component {
               <Route path="/review-points" exact component={ReviewPoints} />
               <Route path="/history" exact component={HistoryEcoTienda}/>
               <Route path="/detalle/:id" exact component={Detalle}/>
+              <Route path="/transito" exact component={TicketsTransito}/>
+              <Route path="/transito/:id" exact component={Ticket}/>
             </Switch>
           </Router>
         </div>
@@ -93,6 +98,7 @@ class App extends React.Component {
               <Route path="/new-ecosupervisor" exact component={NewEcosupervisor}/>
               <Route path="/new-ecotienda" exact component={NewEcoTienda}/>
               <Route path="/new-ecoadmin" exact component={NewEcoAdmin}/>
+              <Route path="/new-ecopicker" exact component={NewEcoPicker}/>
               <Route path="/new-product" exact component={NewProduct}/>
               <Route path="/new-reward" exact component={NewReward}/>
               <Route path="/registro" exact component={BtnsRegistro}/>

@@ -11,7 +11,7 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff'
 
 class NewExit extends React.Component {
   state = {
-    peso: 0,
+    peso: 10,
     entrada: false,
     materiales: [],
     toggle: true,
