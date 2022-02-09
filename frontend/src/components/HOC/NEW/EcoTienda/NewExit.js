@@ -11,11 +11,11 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff'
 
 class NewExit extends React.Component {
   state = {
-    peso: 10,
+    peso: 0,
     entrada: false,
     materiales: [],
     toggle: true,
-    total_kg: 0,
+    total_kg: parseFloat('0'),
     total_m3: 0,
     total_ecopuntos: 0,
   }
@@ -41,8 +41,8 @@ class NewExit extends React.Component {
         materiales: [
           ...materiales,
           {
-            cantidad_kg: Number.parseInt(peso),
-            cantidad_m3: peso * materials[id].cantidad_m3,
+            cantidad_kg: Number.parseFloat(peso),
+            cantidad_m3: Number.parseFloat(peso * materials[id].cantidad_m3),
             id: this.select.value,
             ecopuntos: peso * materials[id].ecopuntos
           }],
@@ -53,8 +53,8 @@ class NewExit extends React.Component {
         if(ids[i] === id){
           copiaMateriales.splice(i, 1)
           copiaMateriales.push({
-            cantidad_kg: Number.parseInt(peso),
-            cantidad_m3: peso * materials[id].cantidad_m3,
+            cantidad_kg: Number.parseFloat(peso),
+            cantidad_m3: Number.parseFloat(peso * materials[id].cantidad_m3),
             id: this.select.value,
             ecopuntos: peso * materials[id].ecopuntos
           })
@@ -67,7 +67,9 @@ class NewExit extends React.Component {
   }
   calcularPeso = (e) => {
     e.preventDefault()
-
+    // this.setState(() => ({
+    //   peso: parseFloat(Math.random() * 100).toFixed(2)
+    // }))
     balanza(this.props.authedUser.id)
       .then((res) => {
         this.setState(() => ({

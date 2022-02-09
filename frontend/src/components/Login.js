@@ -21,7 +21,8 @@ class Login extends React.Component {
       })
       .then((res) => {
         this.props.dispatch(toggleLoading(this.props.loading))
-        if (res.data.rango === "ecoadmin" || res.data.rango === "keyUser" || res.data.rango === "administrativo" || res.data.rango === "ecozonal"){
+        console.log(res.data)
+        if (res.data.rango === "ecoadmin" || res.data.rango === "keyUser" || res.data.rango === "administrativo" || res.data.rango === "ecozonal" || res.data.rango === "ecotienda_movil"){
           this.props.history.push('/')
         // } else if (res.data.rango === "bodegero"){
         //   this.props.history.push('/new-ecoadmin')

@@ -71,7 +71,9 @@ class NewEntry extends React.Component {
   }
   calcularPeso = (e) => {
     e.preventDefault()
-
+    // this.setState(() => ({
+    //   peso: parseFloat(Math.random() * 100).toFixed(2)
+    // }))
     balanza(this.props.authedUser.id)
       .then((res) => {
         this.setState(() => ({
